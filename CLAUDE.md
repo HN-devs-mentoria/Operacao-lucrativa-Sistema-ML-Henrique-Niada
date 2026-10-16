@@ -7,7 +7,6 @@ Responda em português do Brasil. Instalação do zero: siga `PRD-INSTALACAO.md`
 - `npm run setup` — instala tudo (uv, Python, Chromium) e roda os testes. Idempotente.
 - `npm start` — sobe painel (`localhost:3100`) e scraper Python (`127.0.0.1:8100`) juntos.
   Processo longo: rode em segundo plano. `Ctrl+C` ou `npm run parar` encerra os dois.
-- `npm run atualizar` — traz as correções do repositório da aula (fork não recebe sozinho).
 - `npm run mcp` — servidor MCP por stdio (só para depurar; o Claude Code sobe sozinho pelo
   `.mcp.json` de quem abre esta pasta). Confira com `/mcp`.
 - `npm test` — testes do painel. Scraper: `cd scraper && uv run python test_api.py`.

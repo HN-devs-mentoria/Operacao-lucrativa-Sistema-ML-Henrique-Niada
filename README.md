@@ -33,8 +33,6 @@ npm start
 
 O navegador abre sozinho em `http://localhost:3100`. **Não existe arquivo para editar**: App ID e chave secreta são cadastrados na própria tela — e, se o plugin hn-anuncio-ml já estiver instalado, eles já vêm preenchidos.
 
-**Sempre com as correções mais novas:** `npm run atualizar` busca a versão mais nova do repositório da aula (fork não recebe atualizações sozinho) e só avança a sua cópia — nunca apaga mudança sua.
-
 Mudou o código? `Ctrl+C` e `npm start` de novo. Para fechar tudo, mesmo sem o terminal: `npm run parar`.
 
 ---
@@ -195,7 +193,6 @@ A API escuta **só em 127.0.0.1**, de propósito. Um perfil de navegador aceita 
 ├── iniciar.js               npm start: sobe painel + scraper
 ├── instalar.js              npm run setup: uv, Python, Chromium, .env, app do plugin, testes
 ├── parar.js                 npm run parar: fecha painel e scraper
-├── atualizar.js             npm run atualizar: traz as correções do repositório da aula
 ├── server.js                painel (só localhost) e login do ML com code colado
 ├── mcp.js                   servidor MCP local: as rotas do painel como ferramentas do Claude Code
 ├── .mcp.json                registra o servidor MCP para quem abrir o Claude Code nesta pasta
