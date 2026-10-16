@@ -1,9 +1,10 @@
 {
   "name": "aula-mercado-livre-henrique-niada",
   "version": "1.0.0",
-  "description": "Aula Mercado Livre - Henrique Niada: painel da API oficial do Mercado Livre + scraper com navegador logado, rodando só neste computador.",
+  "description": "Gestor ML — Sistema Operação Lucrativa (Henrique Niada): painel da API oficial do Mercado Livre + scraper com navegador logado, rodando só neste computador.",
   "private": true,
-  "license": "MIT",
+  "license": "PolyForm-Noncommercial-1.0.0",
+  "author": "Henrique Niada — IA H NIADA TREINAMENTOS LTDA",
   "main": "iniciar.js",
   "scripts": {
     "setup": "node --disable-warning=ExperimentalWarning instalar.js",

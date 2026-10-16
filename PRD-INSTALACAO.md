@@ -1,4 +1,4 @@
-# PRD — Instalar e rodar o projeto "Aula Mercado Livre - Henrique Niada"
+# PRD — Instalar e rodar o "Gestor ML — Sistema Operação Lucrativa" (Henrique Niada)
 
 > **Aluno:** copie este arquivo inteiro e cole no Claude Code, numa pasta vazia.
 >
@@ -13,7 +13,7 @@
 Deixar o projeto rodando no computador do aluno, com o painel aberto no navegador, e
 acompanhar o aluno até a conta do Mercado Livre estar conectada.
 
-Repositório: `https://github.com/HN-devs-mentoria/Operacao-lucrativa-Sistema-ML-Henrique-Niada` (branch `sem-tunel`)
+Repositório: `https://github.com/HN-devs-mentoria/Operacao-lucrativa-Sistema-ML-Henrique-Niada` (branch `main`)
 
 ## Regras (valem para a sessão inteira)
 
@@ -47,12 +47,21 @@ Identifique se é macOS, Windows ou Linux. Os comandos abaixo mudam conforme o s
 ## Passo 3 — Baixar o projeto
 
 ```bash
-git clone -b sem-tunel https://github.com/HN-devs-mentoria/Operacao-lucrativa-Sistema-ML-Henrique-Niada.git
+git clone https://github.com/HN-devs-mentoria/Operacao-lucrativa-Sistema-ML-Henrique-Niada.git
 cd Operacao-lucrativa-Sistema-ML-Henrique-Niada
 ```
 
-Se a pasta já existir de uma instalação anterior, entre nela e rode `git pull` em vez de
-clonar de novo.
+Se a pasta já existir de uma instalação anterior, não clone de novo: entre nela e rode
+
+```bash
+git fetch origin
+git switch -C main origin/main
+```
+
+O histórico do repositório foi refeito, então `git pull` numa instalação antiga falha.
+Esses dois comandos põem a pasta na versão atual sem tocar em `.env`, `dados.sqlite` nem
+na sessão do scraper (as contas continuam conectadas). Se o `git switch` recusar por
+arquivo do projeto alterado à mão, mostre ao aluno quais são e pergunte antes de descartar.
 
 ## Passo 4 — Instalar
 

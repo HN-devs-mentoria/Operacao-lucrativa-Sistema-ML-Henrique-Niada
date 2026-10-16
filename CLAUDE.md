@@ -1,6 +1,10 @@
-# Aula Mercado Livre - Henrique Niada
+# Gestor ML — Sistema Operação Lucrativa (Henrique Niada)
 
 Responda em português do Brasil. Instalação do zero: siga `PRD-INSTALACAO.md`.
+
+Autoria e propriedade intelectual: Henrique Niada, por meio da IA H NIADA TREINAMENTOS LTDA.
+Licença PolyForm Noncommercial 1.0.0 (`LICENSE`): não troque a licença nem tire a linha
+`Required Notice:` ou o aviso MIT do fim do `LICENSE`.
 
 ## Rodar
 

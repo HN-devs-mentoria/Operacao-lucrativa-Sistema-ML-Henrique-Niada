@@ -1,6 +1,71 @@
-# Aula Mercado Livre - Henrique Niada
+# Gestor ML — Sistema Operação Lucrativa
 
-Dois programas que trabalham na mesma conta do Mercado Livre por caminhos opostos, e sobem juntos com **um comando só**, no seu computador, sem Docker:
+**Um conteúdo de Henrique Niada, ofertado no evento Operação Lucrativa.**
+
+Painel de gestão para quem vende no Mercado Livre: publicar anúncios, acompanhar vendas do dia, ver lucro real e margem de cada anúncio, Mercado Ads e posição na busca. Tudo roda **no seu computador**, sem túnel, sem senha e sem Docker.
+
+---
+
+## Autoria e propriedade intelectual
+
+- Este sistema é conteúdo de **autoria de Henrique Niada**.
+- Ele foi **ofertado aos participantes do evento Operação Lucrativa**.
+- A **propriedade intelectual é de Henrique Niada**, por meio da empresa **IA H NIADA TREINAMENTOS LTDA** (CNPJ 67.202.891/0001-30).
+
+```
+Required Notice: Copyright (c) 2026 IA H NIADA TREINAMENTOS LTDA — CNPJ 67.202.891/0001-30
+```
+
+## Licença
+
+Este repositório usa a **[PolyForm Noncommercial License 1.0.0](LICENSE)**. O código é aberto para leitura (*source-available*), mas **não é open source**: o uso é livre só para fins **não comerciais**.
+
+| Pode | Não pode sem licença à parte |
+|---|---|
+| baixar, instalar e estudar o sistema | usar com fim comercial |
+| modificar e criar versões próprias para fins não comerciais | vender, alugar ou revender o sistema ou uma versão dele |
+| repassar cópias para fins não comerciais, **junto com o [`LICENSE`](LICENSE)** e a linha `Required Notice:` acima | oferecer o sistema como serviço pago, ou dentro de um curso ou produto pago de outra pessoa ou empresa |
+
+Uso comercial exige uma licença à parte com a **IA H NIADA TREINAMENTOS LTDA**. Este resumo não substitui os termos: vale o texto completo do [`LICENSE`](LICENSE).
+
+---
+
+## Comece aqui
+
+Você precisa ter o **Git** e o **Node.js 22.13 ou mais novo** instalados. **Não precisa de conta no GitHub**: o repositório é público e o download é anônimo.
+
+### Opção A — com o Claude Code (a do evento)
+
+1. Abra o Claude Code numa pasta vazia.
+2. Cole o conteúdo de [`PRD-INSTALACAO.md`](PRD-INSTALACAO.md).
+3. Ele instala o que faltar, sobe tudo e abre o painel no navegador. Siga a tela.
+
+### Opção B — no terminal
+
+```bash
+git clone https://github.com/HN-devs-mentoria/Operacao-lucrativa-Sistema-ML-Henrique-Niada.git
+cd Operacao-lucrativa-Sistema-ML-Henrique-Niada
+npm run setup
+npm start
+```
+
+O navegador abre sozinho em `http://localhost:3100`. **Não existe arquivo para editar**: App ID e chave secreta são cadastrados na própria tela — e, se o plugin hn-anuncio-ml já estiver instalado, eles já vêm preenchidos.
+
+Para fechar tudo, mesmo sem o terminal: `npm run parar`. Para abrir de novo: `npm start`.
+
+---
+
+## O que vem no sistema
+
+| Tela | Para que serve |
+|---|---|
+| **Início** | vendas de hoje, comparação com ontem, os últimos 14 dias e os mais vendidos do dia (ou dos últimos 7 dias, se hoje ainda não vendeu) |
+| **Publicar** | anúncio novo com categoria sugerida pelo título, ficha técnica da categoria, fotos e descrição |
+| **Meus anúncios** | listar, editar, pausar; vendas, curva ABC e tendência do período; lucro real e margem; Mercado Ads; análise completa de cada anúncio com posição na busca |
+| **Navegador** | o navegador do scraper dentro do painel, para fazer login no Mercado Livre ou resolver um reCAPTCHA |
+| **Configurações** | primeiro acesso: aplicativo do Mercado Livre, conta conectada, scraper e MCP |
+
+Por baixo, são dois programas que sobem juntos com o `npm start`:
 
 | | **Painel** (raiz do repo) | **Scraper** (`scraper/`) |
 |---|---|---|
@@ -10,30 +75,7 @@ Dois programas que trabalham na mesma conta do Mercado Livre por caminhos oposto
 | Endereço | `http://localhost:3100` | `127.0.0.1:8100` (só o painel usa) |
 | Precisa de app no DevCenter | sim | não |
 
-O `npm start` sobe o painel e o scraper. **Nada fica exposto à internet**: o painel só abre neste computador, sem túnel e sem senha. Quem já usa o **plugin hn-anuncio-ml** encontra o mesmo aplicativo do Mercado Livre já preenchido.
-
----
-
-## Comece aqui
-
-### Opção A — com o Claude Code (a da aula)
-
-1. Faça um **fork** deste repositório na sua conta do GitHub.
-2. Abra o Claude Code numa pasta vazia e cole o conteúdo de [`PRD-INSTALACAO.md`](PRD-INSTALACAO.md), trocando `SEU_USUARIO` pelo seu usuário do GitHub.
-3. Ele instala o que faltar, sobe tudo e abre o painel no navegador. Siga a tela.
-
-### Opção B — no terminal
-
-```bash
-git clone https://github.com/SEU_USUARIO/Aula-Mercado-Livre-Henrique-Niada.git
-cd Aula-Mercado-Livre-Henrique-Niada
-npm run setup
-npm start
-```
-
-O navegador abre sozinho em `http://localhost:3100`. **Não existe arquivo para editar**: App ID e chave secreta são cadastrados na própria tela — e, se o plugin hn-anuncio-ml já estiver instalado, eles já vêm preenchidos.
-
-Mudou o código? `Ctrl+C` e `npm start` de novo. Para fechar tudo, mesmo sem o terminal: `npm run parar`.
+**Nada fica exposto à internet**: o painel só abre neste computador. Quem já usa o **plugin hn-anuncio-ml** encontra o mesmo aplicativo do Mercado Livre já preenchido. E o servidor **MCP** leva o painel para dentro do Claude Code (ver [seção 14](#14-mcp-o-painel-dentro-do-claude-code)).
 
 ---
 
@@ -53,7 +95,7 @@ Mudou o código? `Ctrl+C` e `npm start` de novo. Para fechar tudo, mesmo sem o t
 12. [Quando der errado](#12-quando-der-errado)
 13. [Segurança](#13-segurança)
 14. [MCP: o painel dentro do Claude Code](#14-mcp-o-painel-dentro-do-claude-code)
-15. [Créditos e licença](#15-créditos-e-licença)
+15. [Créditos](#15-créditos)
 
 ---
 
@@ -101,7 +143,7 @@ O `npm run setup` pode ser rodado quantas vezes quiser: cada passo confere antes
 
 ## 3. Primeiro acesso
 
-O painel guia pelos três passos numa tela só (**Configurações**, no menu do topo), com o progresso no topo.
+O painel guia pelos três passos numa tela só (**Configurações**, no menu lateral), com o progresso no topo.
 
 Até conectar uma conta, só a tela **Configurações** fica disponível: Início, Publicar, Meus anúncios e Navegador dependem da conta e voltam para ela.
 
@@ -155,7 +197,7 @@ O `npm start` sobe o scraper sozinho (`uv run python -m uvicorn api:app --host 1
 
 ### 5.1 Login da conta no scraper
 
-Pela aba **Navegador** do painel (`/navegador.html`): o Chromium abre no seu computador e a tela dele aparece na aba (~5 quadros/s). Seus cliques, o que você digita, colagens e rolagem vão para o navegador. Ao terminar, **Terminei — verificar** mede listagem e produto. Se liberou, o navegador fecha; se ainda estiver bloqueado, ele fica aberto na página do bloqueio para você continuar.
+Pela aba **Navegador** do painel (`/navegador.html`): o Chromium roda em segundo plano no seu computador e a tela dele aparece dentro da aba (~5 quadros/s), sem abrir outra janela. Seus cliques, o que você digita, colagens e rolagem vão para o navegador. Ao terminar, **Terminei — verificar** mede listagem e produto. Se liberou, o navegador fecha; se ainda estiver bloqueado, ele fica aberto na página do bloqueio para você continuar.
 
 - Enquanto o navegador está aberto, as rotas de raspagem respondem `423` na hora (não ficam presas no lock do perfil).
 - Ele fecha sozinho após 10 min sem clique ou tecla, ou 30 min no total.
@@ -190,6 +232,7 @@ A API escuta **só em 127.0.0.1**, de propósito. Um perfil de navegador aceita 
 
 ```
 .
+├── LICENSE                  PolyForm Noncommercial 1.0.0 (IA H NIADA TREINAMENTOS LTDA)
 ├── iniciar.js               npm start: sobe painel + scraper
 ├── instalar.js              npm run setup: uv, Python, Chromium, .env, app do plugin, testes
 ├── parar.js                 npm run parar: fecha painel e scraper
@@ -209,8 +252,12 @@ A API escuta **só em 127.0.0.1**, de propósito. Um perfil de navegador aceita 
 │   ├── publicar.html        publicar anúncio
 │   ├── anuncios.html        listar, editar e analisar anúncios
 │   ├── navegador.html       tela remota do Chromium do scraper (login, reCAPTCHA)
-│   ├── configuracao.html    primeiro acesso: URI de redirect, credenciais, conta, scraper
+│   ├── configuracao.html    primeiro acesso: URI de redirect, credenciais, conta, scraper, MCP
+│   ├── analise.js           contas da análise (janela, tendência, curva ABC, lucro, margem)
+│   ├── mascaras.js          campos de dinheiro e número em formato brasileiro
 │   ├── layout.css           menu lateral e barra de título, iguais em todas as telas
+│   ├── tema-hn.css          identidade visual (fundo, cores, logo animada)
+│   ├── logo-*.png           logos do Gestor ML
 │   └── aviso.js             aviso no topo das telas (falta configurar)
 └── scraper/
     ├── scrape_cli.py        scraper e CLI (Playwright + BeautifulSoup)
@@ -252,7 +299,7 @@ Só atende pedidos com `Host` local, e `POST` só com `Origin` do próprio paine
 | GET | `/api/items/:id` | anúncio completo + descrição + visitas |
 | PUT | `/api/items/:id` | edita o anúncio |
 | PUT | `/api/items/:id/description` | troca a descrição |
-| GET | `/api/items/:id/analytics?dias=` | painel do anúncio numa janela (15/30/60/90/150 dias), com lucro |
+| GET | `/api/items/:id/analytics?dias=` | painel do anúncio numa janela (15/30/60/90/150 dias), com os dados do lucro |
 | GET | `/api/items/:id/quality` | health e sugestões do ML |
 | GET | `/api/items/:id/upgrades` | trocas de tipo de anúncio disponíveis |
 | POST | `/api/items/:id/listing-type` | troca o tipo de anúncio |
@@ -267,7 +314,8 @@ Só atende pedidos com `Host` local, e `POST` só com `Origin` do próprio paine
 | POST | `/api/navegador/abrir` · `/acao` · `/concluir` · `/fechar` | sessão interativa (ver 5.1) |
 | GET/POST | `/api/keywords` · POST `/api/keywords/remove` | termos acompanhados por anúncio |
 | POST | `/api/posicao` | mede a posição agora e grava no histórico |
-| GET | `/api/ads/status` · `/api/ads/advertising/*` | Mercado Ads (`api-version: 2`) |
+| GET | `/api/ads/metricas?dias=` | Mercado Ads da conta: campanhas e anúncios com investimento, receita, ROAS, ACOS e TACOS (até 90 dias) |
+| GET | `/api/ads/status` · `/api/ads/advertising/*` | status do Mercado Ads e leitura restrita a `/advertising/*` (`api-version: 2`) |
 
 ### 7.2 Scraper (`127.0.0.1:8100`)
 
@@ -335,12 +383,12 @@ secundárias". A API entrega as duas coisas na mesma chamada — o que separa é
   6    obrigatórios      (required / catalog_required)
   3    condicionais
   69   ocultos ou read-only  → não dá para editar
-  54   EDITÁVEIS            → é o que a tela mostra agora
+  54   EDITÁVEIS            → é o que a tela mostra
 ```
 
-A primeira versão mostrava só os 6. Num anúncio real, 23 dos outros 48 estavam em
-branco — e é exatamente isso que faz a ML avisar *"corrija as características principais
-para recuperar sua exposição"*.
+Num anúncio real, 23 dos 48 campos não obrigatórios estavam em branco — e é exatamente
+isso que faz o ML avisar *"corrija as características principais para recuperar sua
+exposição"*.
 
 `GET /api/category` devolve os 54 com `obrigatorio`, `value_type`, `values`, `unidades`,
 `unidade_padrao` e `dica`. Quem escolhe o que mostrar é a tela:
@@ -397,14 +445,16 @@ Outras regras medidas:
 
 ## 9. Análise por anúncio
 
-O menu **⋮ → Análise do anúncio** abre um painel com tudo que a API entrega sobre um item.
-No topo, o nome do produto (H1), o código do anúncio e o link para vê-lo no Mercado Livre.
-`GET /api/items/:id/analytics` junta oito chamadas em paralelo; cada bloco falha sozinho,
+Em **Meus anúncios**, cada anúncio tem duas análises: a do próprio cartão (botão
+**Análise**), com o resumo do período, e o menu **⋮ → Análise do anúncio**, que abre um
+painel com tudo que a API entrega sobre o item. No topo, o nome do produto (H1), o código do
+anúncio e o link para vê-lo no Mercado Livre.
+`GET /api/items/:id/analytics` junta as chamadas em paralelo; cada bloco falha sozinho,
 então um endpoint fora do ar não derruba o resto.
 
 | Bloco | De onde vem | Exemplo real |
 |---|---|---|
-| Visitas 30 dias + série diária | `/items/{id}/visits/time_window` | 484 visitas, pico de 69 num dia |
+| Visitas da janela + série diária | `/items/{id}/visits/time_window` | 484 visitas, pico de 69 num dia |
 | Visitas desde sempre | `/visits/items` | 9.449 |
 | Pedidos, unidades, faturamento, ticket | cópia local dos pedidos (9.1) | só pedidos pagos da janela, sem teto |
 | **Conversão** | pedidos ÷ visitas | 10,3% |
@@ -413,7 +463,7 @@ então um endpoint fora do ar não derruba o resto.
 | **Lucro real e margem** | pedidos + frete + o custo que o vendedor digita (9.2) | lucro do período, margem e markup |
 | Avaliações e nota | `/reviews/item/{id}` | 65 avaliações · nota 5,0 |
 | Perguntas e sem responder | `/questions/search` | 41 · 0 sem responder |
-| Mercado Ads | `/advertising/product_ads/ads/{id}` | active · id da campanha |
+| **Mercado Ads** | `/advertising/{site}/advertisers/{id}/product_ads/...` | investimento, receita, ROAS, ACOS e TACOS do anúncio |
 | Tendências da categoria | `/trends/{site}/{categoria}` | o que as pessoas buscam |
 
 Visitas e vendas ficam em **dois gráficos**, cada um com a sua escala (nunca dois eixos no
@@ -465,9 +515,10 @@ lucro real (período)
   = Σ preço pago nos pedidos − Σ tarifas cobradas − frete − custo × unidades − outros − imposto
 ```
 
-A conta é a convencional: margem = lucro ÷ preço, markup = lucro ÷ custo.
-A análise mostra também o **preço mínimo sem
-prejuízo** (aproximado: tarifa e frete mudam por faixa de preço).
+A conta é a convencional: margem = lucro ÷ preço, markup = lucro ÷ custo. A conta fica
+num lugar só (`public/analise.js`), usado pela listagem, pelas duas análises e pelo MCP.
+A análise mostra também o **preço mínimo sem prejuízo** (aproximado: tarifa e frete mudam
+por faixa de preço).
 
 **Frete é o cobrado de verdade, não a estimativa.** Medido em 19/09/2026: para o mesmo
 anúncio a estimativa do ML (`/users/{id}/shipping_options/free`) deu R$ 8,25 e o cobrado
@@ -478,6 +529,16 @@ unidade = Σ frete ÷ Σ unidades** desses envios: numa conta real o frete por e
 a R$ 253 conforme a quantidade no pedido, e a média por envio errava. A estimativa só entra
 quando o anúncio não vendeu na janela. Sem custo ou sem frete conhecido, o painel **não
 mostra lucro** — nunca troca o que falta por zero.
+
+### 9.3 Mercado Ads
+
+A listagem mostra o bloco **Mercado Ads** da conta e, em cada anúncio anunciado, os números
+dele. As métricas só existem sob o **anunciante** da conta: o painel acha o anunciante,
+percorre as campanhas e os anúncios de `/advertising/{site}/advertisers/{id}/product_ads/...`
+e soma **todas as páginas**. ROAS, ACOS, TACOS, CTR, CPC e CVR são **recalculados dos
+somatórios**, nunca somados (`test-ads.js` prova as duas regras). A API recusa janelas acima
+de 90 dias. Conta sem anunciante recebe a explicação de como ativar a publicidade, em vez
+de zeros.
 
 ### Até onde o histórico vai — medido
 
@@ -494,20 +555,11 @@ grave as medições no banco — é o que o histórico de posições já faz.
 Medido numa conta real: pedidos de 2023 e 2024 voltam `0`, e 2025 volta 3.377. A API não
 promete profundidade ilimitada; confira antes de tratar um total como definitivo.
 
-### Um erro que essa medição corrigiu
-
-A primeira versão do analytics pegava os **50 pedidos mais recentes sem filtro de data** e
-rotulava "Pedidos 30 dias". Num anúncio real esses 50 cobriam **cinco meses**, e a
-conversão dividia esse número pelas visitas de 30 dias:
-
-```
-errado : 50 pedidos ÷ 523 visitas 30d = 9,6%
-certo  : 11 pedidos ÷ 523 visitas 30d = 2,1%
-```
-
-Quase 5× inflado. Agora visitas, pedidos, faturamento e conversão usam **a mesma janela**,
-escolhida no seletor da modal (15, 30, 60, 90 ou 150 dias) — e a conversão fica estável entre
-elas (2,1% / 2,2% / 2,3%), que é o sinal de que a conta fecha.
+**Visitas, pedidos, faturamento e conversão usam sempre a mesma janela.** Pegar "os 50
+pedidos mais recentes" e dividir pelas visitas de 30 dias inflava a conversão quase 5×
+num anúncio real (50 pedidos cobriam cinco meses: 9,6% contra os 2,1% verdadeiros). Com a
+janela única, a conversão fica estável entre 15, 30 e 60 dias (2,1% / 2,2% / 2,3%) — o
+sinal de que a conta fecha.
 
 ### Posição na listagem
 
@@ -515,55 +567,47 @@ A API oficial **não entrega**: `/sites/{site}/search` responde `403` mesmo com 
 vendedor. Quem mede é o scraper, a partir da **ordem que o próprio Mercado Livre declara**
 no JSON da página de busca (`position`).
 
-Como o número é calculado (desde 18/09/2026, medição "v2"):
+Na análise do anúncio, seção **Posição na listagem**: cadastre os termos que importam para
+aquele produto e clique em **Medir agora**. Cada medição leva ~3 s e fica gravada, então a
+próxima mostra se o anúncio **▲ subiu** ou **▼ caiu**. Acompanhar um termo novo já mede, com
+contador de segundos.
+
+Como o número é calculado:
 
 - O `position` do ML começa em **0** e conta **banners** (ex.: `CART_INTERVENTION`) como
   casas da grade. O painel mostra o **número do card que o comprador vê**: a partir de 1, só
   anúncios, somando as páginas lidas.
-- Cada anúncio vem de um objeto JSON **lido inteiro**. A v1 lia uma janela de 900 caracteres
-  depois do `item_id`, maior que o objeto (~700), e pegava posição e preço do vizinho
-  (medido: 11 de 59 com preço, e posições puladas).
+- Cada anúncio vem de um objeto JSON **lido inteiro**, para nunca pegar posição ou preço do
+  vizinho. Medições de uma versão antiga, que errava nisso, ficam no banco (`versao = 1`)
+  para auditoria, mas não entram na tela nem na variação ▲▼.
 - **Preço é o do card** (o que o comprador vê). Nos anúncios pagos o `price` do JSON é o
   total parcelado: card R$ 224,82 à vista contra JSON R$ 236,65 = 8× R$ 29,58.
   O preço sem desconto (`price_base`) aparece riscado.
 - O mesmo anúncio pode aparecer **duas vezes** (pago e orgânico): os dois cards contam.
-- As medições v1 ficam no banco (`versao = 1`) para auditoria, mas não entram na tela nem
-  na variação ▲▼, porque comparar v1 com v2 mostraria um movimento que não aconteceu.
 - **Não apareceu ≠ não mediu.** Se o anúncio não está nas posições lidas, a tela diz
   "fora das 60 primeiras posições" e oferece **Buscar em 3 páginas**. Junto, mostra os
   **outros anúncios seus** que apareceram na mesma busca (o painel pergunta ao ML, via
   `/items?ids=` em lotes de 20, quem é o vendedor de cada resultado). Isso importa: o ML
-  costuma mostrar só um anúncio por vendedor para o mesmo produto. Medido numa conta real: para
-  um dos termos acompanhados, o anúncio medido ficou de fora, e outros **9**
-  anúncios da mesma conta ocupavam o 5º, 6º, 7º, 8º, 19º, 20º, 21º, 22º e 57º lugares.
+  costuma mostrar só um anúncio por vendedor para o mesmo produto.
 - **A tabela tem todos os vendedores.** Cada medição guarda a busca inteira (coluna `lista`,
   ~25 KB). O resumo mostra os primeiros colocados, os vizinhos e os seus anúncios; cada
   "⋯ N anúncios de outros vendedores" abre ali mesmo, e **Ver todos** mostra os 60. Cada linha
   traz foto, título, vendedor, preço (com o sem desconto riscado) e quanto está acima ou
   abaixo do seu. Título, foto e vendedor vêm do card da página, porque a API devolve 403
-  para anúncio de outro vendedor (medido): cobertura de 60/60 em título e foto e 52/60 em
-  vendedor. O selo **SEU** vem da API (ela responde 200 só para os seus).
-- **Lentidão não é bloqueio.** Se a página do ML não carrega em 45 s (medido com o Mac em
-  load 74), o scraper responde `504 — tente de novo`; só um bloqueio de verdade vira `503`
-  e pede a aba Navegador. Antes os dois viravam "bloqueio" e o painel guardava a sessão como
-  bloqueada por 10 min.
-- **Acompanhar termo já mede.** O termo novo entra medindo, com contador de segundos.
+  para anúncio de outro vendedor. O selo **SEU** vem da API (ela responde 200 só para os seus).
+- **Lentidão não é bloqueio.** Se a página do ML não carrega em 45 s, o scraper responde
+  `504 — tente de novo`; só um bloqueio de verdade vira `503` e pede a aba Navegador.
 - O painel lembra por 10 min se a sessão do scraper está válida (`GET /api/scraper`;
-  `?forcar=1` checa de novo). Antes, cada abertura da análise abria uma listagem de teste no
-  ML: segurava o navegador por 5–10 s e somava acessos que aumentam o risco de reCAPTCHA.
-  Medições e o desbloqueio atualizam esse estado.
+  `?forcar=1` checa de novo), para não abrir uma listagem de teste no ML a cada análise —
+  acessos a mais aumentam o risco de reCAPTCHA.
 - O ícone ao lado de cada anúncio abre a URL limpa do item
   (`produto.mercadolivre.com.br/MLB-…`), nunca o link do card: o dos pagos passa por
   `click1.mercadolivre` e conta um clique pago para o concorrente.
 
-Na modal de análise, seção **Posição na listagem**: cadastre os termos que importam para
-aquele produto e clique em **Medir agora**. Cada medição leva ~3 s e fica gravada, então a
-próxima mostra se o anúncio **▲ subiu** ou **▼ caiu**.
-
 A mesma página ainda entrega, de cada vizinho: **preço, unidades vendidas, pago ou
 orgânico e frete grátis** — sem custo extra, é a mesma requisição.
 
-Medido num anúncio real (v2; termo e IDs trocados por exemplos):
+Exemplo (termo e IDs trocados por exemplos):
 
 ```
 suporte de parede inox → 5º de 60 · 4 pagos acima
@@ -581,20 +625,6 @@ e o resto da análise continua funcionando.
 
 **A posição não é absoluta.** Varia por termo, região e personalização da sessão logada.
 Serve para acompanhar a tendência do seu anúncio, não como número oficial.
-
-Por que não usar o `/busca` que já existia: ele raspa **cada produto** (4 s × N). Para
-posição basta a página de listagem. E o `links_de_busca` só enxerga os `<a href>` — numa
-medição achou 35 links onde a página tinha 60 anúncios. O `resultados_da_busca` lê o JSON
-e pega os 60.
-
-### O que a API não entrega
-
-- **Posição na listagem pela API oficial.** `/sites/{site}/search` responde **403**. Está
-  resolvido pelo scraper (acima), não pela API.
-- **Métricas do Mercado Ads** (impressões, cliques, ACOS, investimento). O único caminho
-  que responde é `/advertising/product_ads/ads/{item_id}`, que devolve status, campanha e
-  grupo — não os números. Todos os caminhos de campanha e de métrica testados deram 404.
-  O repasse `GET /api/ads/advertising/*` continua aberto para quando o caminho certo for
 
 ---
 
@@ -627,6 +657,7 @@ npm test
 | `test.js` | montagem do payload de publicação e de edição |
 | `test-db.js` | cifra, multi-conta, troca de conta ativa, isolamento, configuração |
 | `test-analise.js` | janela até ontem, série fora de ordem, tendência e "pouco dado", curva ABC, lucro real, margem, preço mínimo, frete por unidade, venda cancelada saindo da conta |
+| `test-ads.js` | Mercado Ads: total somando todas as páginas e razões (ROAS, ACOS, TACOS…) recalculadas dos somatórios |
 | `test-config.js` | URI de redirect no cadastro (confere, faltando, barra no fim, fluxos), o endereço colado e a leitura do app do plugin |
 | `test-servidor.js` | sobe o painel com um Mercado Livre falso e prova: só localhost, `POST` de outro site recusado, rotas de túnel/senha fora, telas travadas sem conta, app do plugin pré-preenchido sem vazar chave nem token, login completo com code colado (`state`, PKCE, uso único), URI fora do cadastro e chave recusada explicadas antes do ML, sem escapar de `public/` |
 | `test-mcp.js` | o servidor MCP por stdio de verdade: toda ferramenta cai numa rota que existe, `stdout` só com JSON-RPC, notificação sem resposta, erro de ferramenta como `isError` legível, e `ML_MCP_ESCRITA=0` escondendo e bloqueando o que muda dados |
@@ -694,7 +725,7 @@ O painel precisa do Node 22.13 ou mais novo (`node:sqlite`). Atualize e rode `np
 
 ## 14. MCP: o painel dentro do Claude Code
 
-O `mcp.js` é um servidor **MCP local**: ele entrega ao Claude Code (ou a outro cliente MCP) as mesmas capacidades do painel — listar anúncios, melhores produtos, curva ABC, análise por anúncio, publicar, editar, medir posição — e mais o repasse para a API do Mercado Livre inteira. Assim dá para perguntar em português, no terminal, e o Claude Code busca o dado:
+O `mcp.js` é um servidor **MCP local**: ele entrega ao Claude Code (ou a outro cliente MCP) as mesmas capacidades do painel — listar anúncios, melhores produtos, curva ABC, análise por anúncio, publicar, editar, medir posição — e mais o acesso à API do Mercado Livre inteira. Assim dá para perguntar em português, no terminal, e o Claude Code busca o dado:
 
 > *"quais foram meus 10 melhores produtos nos últimos 30 dias?"*
 > *"quem está na curva A e perdendo venda?"*
@@ -741,13 +772,13 @@ Para depurar fora do Claude Code: `npm run mcp` e digite uma linha de JSON-RPC (
 
 ---
 
-## 15. Créditos e licença
+## 15. Créditos
 
-Projeto da **Aula Mercado Livre - Henrique Niada**.
+**Autoria e propriedade intelectual:** Henrique Niada, por meio da IA H NIADA TREINAMENTOS LTDA (CNPJ 67.202.891/0001-30). Conteúdo ofertado no evento **Operação Lucrativa**. Licença: [PolyForm Noncommercial 1.0.0](LICENSE).
 
-O scraper começou a partir do projeto `alxmares/webscraping-MercadoLibre`, uma ferramenta em Tkinter para copiar dados de anúncios do Mercado Livre. A abordagem original — `requests` direto na página — parou de funcionar: o Mercado Livre bloqueia acesso anônimo à listagem e devolve parede de login ou reCAPTCHA. Este repositório troca isso por um navegador real com a sua sessão logada (Playwright, perfil persistente), e acrescenta CLI, API HTTP, sessão interativa pelo painel e testes. Nenhum arquivo do projeto original foi incluído: o repositório de origem **não declara licença**, então os direitos permanecem com o autor.
+**Base inicial do código:** publicada por Elio Bonfim Júnior sob a licença MIT. O aviso MIT dele é mantido no fim do [`LICENSE`](LICENSE), como essa licença exige; a licença deste repositório é a PolyForm Noncommercial.
 
-Licença **MIT** — ver [`LICENSE`](LICENSE). Pode usar, copiar, modificar e redistribuir, mantendo o aviso de copyright.
+**Scraper:** começou a partir do projeto `alxmares/webscraping-MercadoLibre`, uma ferramenta em Tkinter para copiar dados de anúncios do Mercado Livre. A abordagem original — `requests` direto na página — parou de funcionar: o Mercado Livre bloqueia acesso anônimo à listagem e devolve parede de login ou reCAPTCHA. Este repositório troca isso por um navegador real com a sua sessão logada (Playwright, perfil persistente), e acrescenta CLI, API HTTP, sessão interativa pelo painel e testes. Nenhum arquivo do projeto original foi incluído: o repositório de origem **não declara licença**, então os direitos permanecem com o autor.
 
 ---
 
