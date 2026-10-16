@@ -1,0 +1,27 @@
+# Segredos e dados locais — NUNCA versionar.
+.env*
+!.env.example
+dados.sqlite*
+*.sqlite
+*.sqlite-*
+.tokens.json*
+notificacoes.jsonl
+
+# Gerados ao rodar
+node_modules/
+logs/
+
+# Sessão do navegador do scraper = cookies logados da conta do Mercado Livre
+scraper/.sessao_ml/
+scraper/.venv/
+scraper/saida/
+__pycache__/
+*.pyc
+
+# Sistema / editores
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+.impeccable/
+.kilo/

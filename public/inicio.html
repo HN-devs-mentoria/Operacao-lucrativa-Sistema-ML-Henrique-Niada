@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Início — Mercado Livre</title>
+<style>
+  :root{--bg:#f2f3f5;--card:#fff;--ink:#1a1a1a;--muted:#5f6368;--line:#e0e2e6;
+    --brand:#2968c8;--ok:#00a650;--err:#d93025;--radius:8px}
+  *{box-sizing:border-box}
+  body{margin:0;color:var(--ink);
+    font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  main{max-width:1040px;margin:0 auto;padding:24px 16px 72px;width:100%}
+  h2{font-size:15px;margin:0 0 12px;font-weight:700}
+  .sub{color:var(--muted);font-size:13px;margin:0}
+
+  .cartoes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-bottom:22px}
+  .cartao{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+  .cartao .rotulo{font-size:13px;color:var(--muted);margin:0 0 6px}
+  .cartao .valor{font-size:26px;font-weight:700;letter-spacing:-.02em;line-height:1.15;
+    font-variant-numeric:tabular-nums}
+  .cartao.destaque{background:#17181a;border-color:#17181a;color:#fff}
+  .cartao.destaque .rotulo{color:#b9bcc2}
+  .comparar{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;font-size:12px}
+  .chip{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;
+    background:#eef0f3;color:#3c4043;white-space:nowrap}
+  .cartao.destaque .chip{background:#2a2c30;color:#e4e6ea}
+  .chip.sobe{background:#e6f4ea;color:#0b6b33}
+  .chip.desce{background:#fce8e6;color:#8c1d18}
+  .cartao.destaque .chip.sobe{background:#123d24;color:#8ee0ab}
+  .cartao.destaque .chip.desce{background:#4a1a15;color:#ffb4ab}
+
+  section.bloco{background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:18px;margin-bottom:20px}
+  .grafico{display:flex;align-items:flex-end;gap:6px;height:170px;margin-top:6px}
+  .barra{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:6px;
+    min-width:0}
+  .barra .haste{width:100%;background:#c9d3e6;border-radius:5px 5px 0 0;min-height:3px}
+  .barra.hoje .haste{background:#ffd400}
+  .barra .dia{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    max-width:100%}
+  .barra.hoje .dia{font-weight:700;color:var(--ink)}
+
+  ul.lista{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+  ul.lista li{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--line)}
+  ul.lista li:first-child{border-top:0}
+  ul.lista img{width:44px;height:44px;object-fit:contain;background:#f2f3f5;border-radius:8px;flex:0 0 44px}
+  .item-nome{font-size:14px;font-weight:600;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .item-sub{font-size:12px;color:var(--muted);margin:0}
+  .item-valor{margin-left:auto;text-align:right;font-weight:700;font-variant-numeric:tabular-nums;
+    white-space:nowrap}
+  .cresce{min-width:0;flex:1}
+  a{color:var(--brand)}
+  .vazio{color:var(--muted);font-size:14px;margin:0;padding:6px 0}
+  .pe{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;
+    font-size:12px;color:var(--muted)}
+  button.recarregar{font:inherit;font-size:13px;font-weight:600;background:#fff;color:var(--ink);
+    border:1px solid #d5d7db;border-radius:8px;padding:7px 14px;cursor:pointer}
+  button.recarregar:hover{background:#f2f3f5}
+  #msg{padding:13px;border-radius:var(--radius);margin-bottom:16px;display:none;font-size:14px;
+    background:#fce8e6;color:#8c1d18;border:1px solid #f0b3ad}
+  .esqueleto{color:var(--muted)}
+  @media (min-width:1100px){
+    .cartoes{grid-template-columns:repeat(4,minmax(0,1fr))}
+  }
+  @media (max-width:560px){
+    .cartoes{grid-template-columns:1fr}
+    .grafico{height:130px}
+    .barra .dia{font-size:10px}
+  }
+</style>
+<link rel="stylesheet" href="/layout.css">
+<link rel="stylesheet" href="/tema-hn.css?v=5">
+</head>
+<body>
+<div class="hn-fundo" aria-hidden="true"><div class="hn-emblema"><span class="hn-onda"></span><span class="hn-onda"></span><span class="hn-onda"></span><img src="/logo-emblema.png" alt=""></div></div>
+
+<div class="app">
+  <aside class="lateral" aria-label="Menu principal do Gestor ML">
+  <a class="hn-marca" href="/" aria-label="Gestor ML, por Henrique Niada: ir para o Início"><img src="/logo-gestor-ml.png" alt="" width="600" height="155"></a>
+  <div class="hn-rotulo">SEU ESPAÇO DE GESTÃO</div>
+  <nav aria-label="Navegação principal">
+    <a href="/" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7M5.5 9v11h5v-6h3v6h5V9"/></svg><span>Início</span><svg class="seta" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></a>
+    <a href="/publicar.html"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="5"/><path d="M12 8v8m-4-4h8"/></svg><span>Publicar</span><svg class="seta" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></a>
+    <a href="/anuncios.html"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 9h8m-8 4h5m-5 4h3"/></svg><span>Meus anúncios</span><svg class="seta" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></a>
+    <a href="/navegador.html"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 12h18M5 6.5c4 2 10 2 14 0M5 17.5c4-2 10-2 14 0"/></svg><span>Navegador</span><svg class="seta" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></a>
+    <a href="/configuracao.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h5m4 0h7M4 17h9m4 0h3"/><circle cx="11" cy="7" r="2"/><circle cx="15" cy="17" r="2"/></svg><span>Configurações</span><svg class="seta" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></a>
+  </nav>
+  <div class="hn-social">
+    <a class="hn-insta" href="https://www.instagram.com/henriqueniada/" target="_blank" rel="noopener noreferrer" aria-label="Seguir @henriqueniada: abrir perfil no Instagram em nova aba">
+      <div class="hn-capa">
+        <div class="hn-capa-meta"><span><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5.5"/><circle cx="12" cy="12" r="4.1"/><circle cx="17.5" cy="6.5" r=".7" fill="currentColor" stroke="none"/></svg>INSTAGRAM</span><span class="hn-vale">VALE SEGUIR</span></div>
+        <h2>Conexão<em>direta.</em></h2>
+        <svg class="hn-ig-gigante" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5.5"/><circle cx="12" cy="12" r="4.1"/><circle cx="17.5" cy="6.5" r=".7" fill="currentColor" stroke="none"/></svg>
+        <svg class="hn-estrela" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c0 7-3 10-10 10 7 0 10 3 10 10 0-7 3-10 10-10-7 0-10-3-10-10Z" fill="currentColor" stroke="none"/></svg>
+      </div>
+      <div class="hn-ticket">
+        <div class="hn-ticket-meta"><span class="hn-avatar" aria-hidden="true">HN</span><div class="hn-perfil">Henrique Niada<small>Do Gestor ML para o seu feed.</small></div><svg class="hn-ponteiro" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c0 7-3 10-10 10 7 0 10 3 10 10 0-7 3-10 10-10-7 0-10-3-10-10Z" fill="currentColor" stroke="none"/></svg></div>
+        <div class="hn-arroba"><span>@</span>henriqueniada</div>
+      </div>
+      <div class="hn-picote" aria-hidden="true"></div>
+      <div class="hn-ticket-pe"><p><strong>Vamos nos conectar?</strong>Siga no Instagram.</p><span class="hn-ticket-seta" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12"/></svg></span></div>
+    </a>
+  </div>
+  <footer class="hn-rodape"><div class="hn-rodape-titulo">Sistema gratuito <span><i aria-hidden="true"></i>USO LOCAL</span></div><p>Disponibilizado por <strong>Henrique Niada.</strong><br>Roda no seu computador.</p></footer>
+</aside>
+  <div class="conteudo">
+<header>
+  <h1 id="titulo">Vendas de hoje</h1>
+  <div id="barraContas">
+    <label for="selConta" id="rotuloConta">Conta</label>
+    <select id="selConta" aria-describedby="rotuloConta"></select>
+    <a href="/configuracao.html#passo-conta" id="addConta">+ conectar outra</a>
+  </div>
+</header>
+
+<main>
+  <div id="msg" role="status" aria-live="polite"></div>
+
+  <div class="cartoes" id="cartoes">
+    <div class="cartao destaque"><p class="rotulo">Faturamento de hoje</p>
+      <div class="valor esqueleto" id="vFat">—</div><div class="comparar" id="cFat"></div></div>
+    <div class="cartao"><p class="rotulo">Pedidos</p>
+      <div class="valor esqueleto" id="vPed">—</div><div class="comparar" id="cPed"></div></div>
+    <div class="cartao"><p class="rotulo">Unidades</p>
+      <div class="valor esqueleto" id="vUni">—</div><div class="comparar" id="cUni"></div></div>
+    <div class="cartao"><p class="rotulo">Ticket médio</p>
+      <div class="valor esqueleto" id="vTic">—</div><div class="comparar" id="cTic"></div></div>
+  </div>
+
+  <!-- Saúde da conta: leitura do catálogo inteiro, não de uma venda. -->
+  <section class="bloco saude-conta" id="saudeConta" hidden>
+    <h2>Saúde da conta</h2>
+    <p class="sub">Leitura geral do catálogo: o que está sustentando o faturamento e o que está travando.</p>
+    <div class="sc-topo">
+      <div class="sc-nota"><b id="scNota">—</b><span>de 100</span></div>
+      <div class="sc-barra" role="img" aria-labelledby="scNota"><i id="scBarra"></i></div>
+    </div>
+    <div class="sc-colunas">
+      <div class="sc-col sc-forte">
+        <h3>Pontos fortes</h3>
+        <ul id="scFortes"></ul>
+      </div>
+      <div class="sc-col sc-melhora">
+        <h3>Pontos de melhoria</h3>
+        <ul id="scMelhorar"></ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="bloco">
+    <h2 id="tGrafico">Últimos dias</h2>
+    <p class="sub" id="subGrafico">Faturamento por dia. A última barra é hoje, ainda em andamento.</p>
+    <div class="grafico" id="grafico" role="img" aria-labelledby="tGrafico"></div>
+  </section>
+
+  <section class="bloco">
+    <h2 id="tTop">Mais vendidos hoje</h2>
+    <ul class="lista" id="top"></ul>
+  </section>
+
+  <section class="bloco">
+    <h2>Pedidos de hoje</h2>
+    <ul class="lista" id="recentes"></ul>
+  </section>
+
+  <div class="pe">
+    <span id="atualizado">—</span>
+    <button type="button" class="recarregar" id="btAtualizar">Atualizar agora</button>
+  </div>
+<div class="hn-credito">
+  <span class="selo-livre">Gratuito</span>
+  <span>Sistema <b>gratuito</b>, disponibilizado pelo <b>Henrique Niada</b>. Roda no seu computador &mdash; seus dados e suas chaves nao saem daqui.</span>
+</div>
+</main>
+  </div>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const real = (n) => (n || 0).toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
+const numero = (n) => (n || 0).toLocaleString('pt-BR');
+
+async function api(caminho){
+  const r = await fetch(caminho);
+  const j = await r.json();
+  if(!r.ok) throw Object.assign(new Error(j.error || 'Falhou'), { status: r.status });
+  return j;
+}
+
+// ---------- contas (igual às outras telas) ----------
+const selConta = $('selConta');
+async function carregarContas(){
+  try{
+    const { ativa, contas } = await api('/api/accounts');
+    selConta.innerHTML = '';
+    if(!contas.length){
+      selConta.hidden = true; $('rotuloConta').textContent = 'nenhuma conta —';
+      $('addConta').textContent = 'conectar Mercado Livre →'; return;
+    }
+    selConta.hidden = false;
+    for(const c of contas){
+      const o = document.createElement('option');  // textContent: nickname vem do ML
+      o.value = c.ml_user_id;
+      o.textContent = `${c.nickname} · ${c.site_id}`;
+      o.selected = c.ml_user_id === ativa;
+      selConta.appendChild(o);
+    }
+  }catch{ selConta.hidden = true; }
+}
+selConta.onchange = async () => {
+  await fetch('/api/accounts/active', { method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ ml_user_id: Number(selConta.value) }) });
+  location.reload();
+};
+
+// ---------- comparações ----------
+// Sem base (ontem zerado), "+100%" não diz nada: mostra só o valor de referência.
+function chip(destino, rotulo, atual, base, formata){
+  if(!atual && !base) return;              // "ontem: 0" com hoje 0 não informa nada
+  const c = document.createElement('span');
+  c.className = 'chip';
+  if(base > 0 && atual > 0){
+    const pct = Math.round(((atual - base) / base) * 100);
+    if(pct > 0){ c.className = 'chip sobe'; c.textContent = `▲ ${pct}% vs ${rotulo}`; }
+    else if(pct < 0){ c.className = 'chip desce'; c.textContent = `▼ ${Math.abs(pct)}% vs ${rotulo}`; }
+    else c.textContent = `igual a ${rotulo}`;
+  } else {
+    c.textContent = `${rotulo}: ${formata(base)}`;
+  }
+  destino.appendChild(c);
+}
+
+function grafico(serie, hoje){
+  const g = $('grafico');
+  g.innerHTML = '';
+  const teto = Math.max(...serie.map((d) => d.faturamento), 1);
+  if(!serie.some((d) => d.faturamento > 0)){
+    g.innerHTML = '';
+    const p = document.createElement('p');
+    p.className = 'vazio';
+    p.textContent = 'Nenhuma venda nos últimos ' + serie.length + ' dias.';
+    g.appendChild(p);
+    g.style.alignItems = 'center';
+    return;
+  }
+  g.style.alignItems = 'flex-end';
+  for(const d of serie){
+    const col = document.createElement('div');
+    col.className = 'barra' + (d.dia === hoje ? ' hoje' : '');
+    const h = document.createElement('div');
+    h.className = 'haste';
+    h.style.height = Math.max(3, Math.round((d.faturamento / teto) * 140)) + 'px';
+    const [ , mes, dia] = d.dia.split('-');
+    h.title = `${dia}/${mes}: ${real(d.faturamento)} · ${numero(d.pedidos)} pedido(s)`;
+    const rot = document.createElement('div');
+    rot.className = 'dia';
+    rot.textContent = d.dia === hoje ? 'hoje' : `${dia}/${mes}`;
+    col.append(h, rot);
+    g.appendChild(col);
+  }
+}
+
+function listaTop(dados){
+  const ul = $('top');
+  ul.innerHTML = '';
+  $('tTop').textContent = dados.periodo === 'hoje' ? 'Mais vendidos hoje' : 'Mais vendidos nos últimos 7 dias';
+  if(!dados.itens.length){
+    ul.innerHTML = '<p class="vazio">Nenhuma venda ainda por aqui.</p>';
+    return;
+  }
+  for(const it of dados.itens){
+    const li = document.createElement('li');
+    if(it.foto){
+      const img = document.createElement('img');
+      img.src = it.foto; img.alt = ''; img.loading = 'lazy';
+      li.appendChild(img);
+    }
+    const meio = document.createElement('div');
+    meio.className = 'cresce';
+    const nome = document.createElement('p');
+    nome.className = 'item-nome';
+    nome.textContent = it.titulo || it.item_id;   // textContent: título vem do ML
+    const sub = document.createElement('p');
+    sub.className = 'item-sub';
+    sub.textContent = `${numero(it.unidades)} un. · ${numero(it.pedidos)} pedido(s) · ${it.item_id}`;
+    meio.append(nome, sub);
+    const val = document.createElement('div');
+    val.className = 'item-valor';
+    val.textContent = real(it.faturamento);
+    li.append(meio, val);
+    ul.appendChild(li);
+  }
+}
+
+function listaRecentes(pedidos){
+  const ul = $('recentes');
+  ul.innerHTML = '';
+  if(!pedidos.length){
+    ul.innerHTML = '<p class="vazio">Nenhum pedido hoje até agora. Assim que entrar uma venda, ela aparece aqui.</p>';
+    return;
+  }
+  for(const p of pedidos){
+    const li = document.createElement('li');
+    const meio = document.createElement('div');
+    meio.className = 'cresce';
+    const nome = document.createElement('p');
+    nome.className = 'item-nome';
+    const hora = new Date(p.data).toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' });
+    nome.textContent = `${hora} · pedido ${p.order_id}`;
+    const sub = document.createElement('p');
+    sub.className = 'item-sub';
+    sub.textContent = `${numero(p.quantidade)} un. · ${p.anuncios > 1 ? p.anuncios + ' anúncios' : p.item_id}`;
+    meio.append(nome, sub);
+    const val = document.createElement('div');
+    val.className = 'item-valor';
+    val.textContent = real(p.total);
+    li.append(meio, val);
+    ul.appendChild(li);
+  }
+}
+
+function erro(texto, comLink){
+  const m = $('msg');
+  m.textContent = texto + ' ';
+  if(comLink){
+    const a = document.createElement('a');
+    a.href = '/configuracao.html';
+    a.textContent = 'Ir para Configurações →';
+    m.appendChild(a);
+  }
+  m.style.display = 'block';
+}
+
+async function carregar(){
+  $('btAtualizar').disabled = true;
+  try{
+    const d = await api('/api/dashboard?dias=14');
+    $('msg').style.display = 'none';
+    const [ , mes, dia] = d.dia.split('-');
+    $('titulo').textContent = `Vendas de hoje · ${dia}/${mes}`;
+
+    $('vFat').textContent = real(d.hoje.faturamento); $('vFat').classList.remove('esqueleto');
+    $('vPed').textContent = numero(d.hoje.pedidos);   $('vPed').classList.remove('esqueleto');
+    $('vUni').textContent = numero(d.hoje.unidades);  $('vUni').classList.remove('esqueleto');
+    $('vTic').textContent = real(d.hoje.ticket);      $('vTic').classList.remove('esqueleto');
+
+    for(const [alvo, campo, fmt] of [['cFat','faturamento',real], ['cPed','pedidos',numero],
+                                     ['cUni','unidades',numero]]){
+      const box = $(alvo); box.innerHTML = '';
+      chip(box, 'ontem', d.hoje[campo], d.ontem[campo], fmt);
+      chip(box, 'média', d.hoje[campo], d.media[campo], fmt);
+    }
+    const bt = $('cTic'); bt.innerHTML = '';
+    chip(bt, 'ontem', d.hoje.ticket, d.ontem.ticket, real);
+
+    grafico(d.serie, d.dia);
+    listaTop(d.top);
+    listaRecentes(d.recentes);
+    $('atualizado').textContent = 'Atualizado às '
+      + new Date().toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' })
+      + (d.baixados_agora ? ` · ${d.baixados_agora} pedido(s) novos do Mercado Livre` : '');
+  }catch(e){
+    erro(e.message, e.status === 401);
+  }finally{
+    $('btAtualizar').disabled = false;
+  }
+}
+
+// Saúde da conta: só aparece se houver leitura. Falha silenciosa é de propósito —
+// a seção é complemento, não pode derrubar o painel de vendas.
+async function carregarSaude(){
+  try{
+    const s = await api('/api/saude');
+    $('scNota').textContent = s.nota;
+    $('scBarra').style.width = s.nota + '%';
+    const pinta = (alvo, arr) => {
+      const ul = $(alvo);
+      ul.innerHTML = '';
+      for(const p of arr){
+        const li = document.createElement('li');
+        const t = document.createElement('b'); t.textContent = p.titulo;
+        const d = document.createElement('span'); d.textContent = p.texto;
+        li.append(t, d);
+        ul.appendChild(li);
+      }
+    };
+    pinta('scFortes', s.fortes);
+    pinta('scMelhorar', s.melhorar);
+    $('saudeConta').hidden = false;
+  }catch(e){ /* sem saúde, a tela segue normal */ }
+}
+
+$('btAtualizar').onclick = () => { carregar(); carregarSaude(); };
+carregarContas();
+carregar();
+carregarSaude();
+// Sozinho de 2 em 2 minutos: quem deixa o painel aberto vê a venda entrar.
+setInterval(() => { if(!document.hidden) carregar(); }, 120000);
+</script>
+<script src="/aviso.js" defer></script>
+</body>
+</html>

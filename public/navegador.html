@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Navegador do scraper — Mercado Livre</title>
+<style>
+  :root{--bg:#f2f3f5;--card:#fff;--ink:#1a1a1a;--muted:#5f6368;--line:#e0e2e6;
+    --brand:#2968c8;--ok:#00a650;--err:#d93025;--radius:8px}
+  *{box-sizing:border-box}
+  [hidden]{display:none !important}  /* regras com display abaixo não podem vencer o hidden */
+  body{margin:0;color:var(--ink);
+    font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  main{max-width:1100px;margin:0 auto;padding:24px 16px 72px}
+  section.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:18px 20px;margin-bottom:20px}
+  section.card h2{font-size:15px;margin:0 0 6px}
+  .nota{font-size:13px;color:var(--muted);margin:0 0 12px;max-width:72ch}
+  input,button{font:inherit}
+  input{padding:9px 11px;border:1px solid var(--line);border-radius:var(--radius);background:#fff}
+  input:focus,button:focus-visible{outline:2px solid var(--brand);outline-offset:1px}
+  button{background:var(--brand);color:#fff;border:0;border-radius:var(--radius);
+    padding:9px 14px;font-weight:600;cursor:pointer;touch-action:manipulation}
+  button:hover{filter:brightness(.94)}
+  button.ghost{background:#eef3fd;color:#1b5fc4}
+  button.perigo{background:#fce8e6;color:#a1160a}
+  button[disabled]{opacity:.5;cursor:not-allowed}
+  .acoes{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  #msg{padding:13px;border-radius:var(--radius);margin-bottom:16px;display:none;white-space:pre-wrap;font-size:14px}
+  #msg.ok{display:block;background:#e6f4ea;color:#14532d;border:1px solid #a6dcb6}
+  #msg.err{display:block;background:#fce8e6;color:#7f1d1d;border:1px solid #f0b3ad}
+  #msg.info{display:block;background:#eef3fd;color:#173a73;border:1px solid #c5d8fb}
+
+  .situacao{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;margin:0 0 14px;font-size:14px}
+  .selo{display:inline-block;padding:2px 10px;border-radius:999px;font-size:12px;font-weight:700;
+    white-space:nowrap}
+  .selo.ok{background:#e6f4ea;color:#14532d}
+  .selo.erro{background:#fce8e6;color:#7f1d1d}
+  .selo.aviso{background:#fff4e0;color:#7a4a00}
+  .selo.neutro{background:#eef0f3;color:#3c4043}
+
+  .barra{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+  .barra .onde{min-width:0;font-size:13px;color:var(--muted)}
+  .barra .onde strong{color:var(--ink);font-size:14px;margin-right:6px}
+  #pagina{overflow-wrap:anywhere}
+  #tela{position:relative;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;
+    background:#202124;aspect-ratio:1440/900;cursor:crosshair}
+  #tela:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  #tela img{width:100%;height:100%;display:block;object-fit:contain;user-select:none;-webkit-user-drag:none}
+  #abrindo{position:absolute;inset:0;display:grid;place-items:center;color:#e8eaed;font-size:14px}
+  #foco{position:absolute;top:8px;right:8px;padding:3px 9px;border-radius:999px;font-size:12px;
+    font-weight:600;background:rgba(32,33,36,.82);color:#fff;pointer-events:none}
+  #tela:focus #foco{background:#1b5fc4}
+  .ponto{position:absolute;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;
+    border:3px solid #3483fa;pointer-events:none;animation:ponto .45s ease-out forwards}
+  @keyframes ponto{from{transform:scale(.4);opacity:1}to{transform:scale(1.4);opacity:0}}
+  @media (prefers-reduced-motion:reduce){.ponto{animation:none;opacity:.8}}
+  .teclado{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;margin-top:14px}
+  .teclado label{font-size:13px;font-weight:500;display:block;margin-bottom:4px}
+  .teclado .campo{flex:1 1 260px}
+  .teclado input{width:100%}
+  .rodape{font-size:12px;color:var(--muted);margin:10px 0 0}
+  .cabecaNota{font-size:13px;margin:0;color:#4a4712;background:rgba(255,255,255,.55);border-radius:999px;padding:6px 12px}
+</style>
+<link rel="stylesheet" href="/layout.css">
+<link rel="stylesheet" href="/tema-hn.css?v=5">
+</head>
+<body>
+<div class="hn-fundo" aria-hidden="true"><div class="hn-emblema"><span class="hn-onda"></span><span class="hn-onda"></span><span class="hn-onda"></span><img src="/logo-emblema.png" alt=""></div></div>
+
+<div class="app">
+  <aside class="lateral" aria-label="Menu principal do Gestor ML">
+  <a class="hn-marca" href="/" aria-label="Gestor ML, por Henrique Niada: ir para o Início"><img src="/logo-gestor-ml.png" alt="" width="600" height="155"></a>
+  <div class="hn-rotulo">SEU ESPAÇO DE GESTÃO</div>
+  <nav aria-label="Navegação principal">
+    <a href="/"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7M5.5 9v11h5v-6h3v6h5V9"/></svg><span>Início</span><svg class="seta" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></a>
+    <a href="/publicar.html"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="5"/><path d="M12 8v8m-4-4h8"/></svg><span>Publicar</span><svg class="seta" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></a>
+    <a href="/anuncios.html"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 9h8m-8 4h5m-5 4h3"/></svg><span>Meus anúncios</span><svg class="seta" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></a>
+    <a href="/navegador.html" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 12h18M5 6.5c4 2 10 2 14 0M5 17.5c4-2 10-2 14 0"/></svg><span>Navegador</span><svg class="seta" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></a>
+    <a href="/configuracao.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h5m4 0h7M4 17h9m4 0h3"/><circle cx="11" cy="7" r="2"/><circle cx="15" cy="17" r="2"/></svg><span>Configurações</span><svg class="seta" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></a>
+  </nav>
+  <div class="hn-social">
+    <a class="hn-insta" href="https://www.instagram.com/henriqueniada/" target="_blank" rel="noopener noreferrer" aria-label="Seguir @henriqueniada: abrir perfil no Instagram em nova aba">
+      <div class="hn-capa">
+        <div class="hn-capa-meta"><span><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5.5"/><circle cx="12" cy="12" r="4.1"/><circle cx="17.5" cy="6.5" r=".7" fill="currentColor" stroke="none"/></svg>INSTAGRAM</span><span class="hn-vale">VALE SEGUIR</span></div>
+        <h2>Conexão<em>direta.</em></h2>
+        <svg class="hn-ig-gigante" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5.5"/><circle cx="12" cy="12" r="4.1"/><circle cx="17.5" cy="6.5" r=".7" fill="currentColor" stroke="none"/></svg>
+        <svg class="hn-estrela" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c0 7-3 10-10 10 7 0 10 3 10 10 0-7 3-10 10-10-7 0-10-3-10-10Z" fill="currentColor" stroke="none"/></svg>
+      </div>
+      <div class="hn-ticket">
+        <div class="hn-ticket-meta"><span class="hn-avatar" aria-hidden="true">HN</span><div class="hn-perfil">Henrique Niada<small>Do Gestor ML para o seu feed.</small></div><svg class="hn-ponteiro" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c0 7-3 10-10 10 7 0 10 3 10 10 0-7 3-10 10-10-7 0-10-3-10-10Z" fill="currentColor" stroke="none"/></svg></div>
+        <div class="hn-arroba"><span>@</span>henriqueniada</div>
+      </div>
+      <div class="hn-picote" aria-hidden="true"></div>
+      <div class="hn-ticket-pe"><p><strong>Vamos nos conectar?</strong>Siga no Instagram.</p><span class="hn-ticket-seta" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12"/></svg></span></div>
+    </a>
+  </div>
+  <footer class="hn-rodape"><div class="hn-rodape-titulo">Sistema gratuito <span><i aria-hidden="true"></i>USO LOCAL</span></div><p>Disponibilizado por <strong>Henrique Niada.</strong><br>Roda no seu computador.</p></footer>
+</aside>
+  <div class="conteudo">
+<header>
+  <h1>Navegador do scraper</h1>
+  <p class="cabecaNota">Uma sessão só, neste Mac — vale para todas as contas.</p>
+</header>
+
+
+<main>
+  <div id="msg" role="status" aria-live="polite"></div>
+
+  <section class="card" aria-labelledby="tResumo">
+    <h2 id="tResumo">Sessão de pesquisa do Mercado Livre</h2>
+    <p class="nota">O scraper usa uma conta do Mercado Livre logada neste Mac para medir a posição dos
+      anúncios na busca. Quando o Mercado Livre pede login, código de verificação ou reCAPTCHA, abra o
+      navegador aqui e resolva você mesmo. O painel não digita senha nem resolve captcha: ele só repassa
+      seus cliques e o que você digita.</p>
+    <div class="situacao">
+      <span id="selo" class="selo neutro">Verificando…</span>
+      <span id="situacaoTexto"></span>
+    </div>
+    <div class="acoes">
+      <button type="button" id="btnDesbloquear">Resolver reCAPTCHA</button>
+      <button type="button" id="btnLogin" class="ghost">Fazer login</button>
+      <button type="button" id="btnVerificar" class="ghost">Verificar sessão</button>
+    </div>
+  </section>
+
+  <section class="card" id="sessao" aria-labelledby="tSessao" hidden>
+    <div class="barra">
+      <div class="onde"><strong id="tSessao">Navegador aberto</strong><span id="pagina"></span></div>
+      <div class="acoes">
+        <button type="button" class="ghost" id="btnVoltar">Voltar</button>
+        <button type="button" class="ghost" id="btnRecarregar">Recarregar</button>
+        <button type="button" id="btnConcluir">Terminei — verificar</button>
+        <button type="button" class="perigo" id="btnFechar">Fechar navegador</button>
+      </div>
+    </div>
+
+    <div id="tela" tabindex="0" role="application" aria-roledescription="navegador remoto"
+         aria-label="Tela do navegador do scraper. Clique para interagir. Com a tela em foco, o que você digita vai para o navegador; Tab sai da tela."
+         aria-describedby="dicaTela">
+      <img id="frame" alt="" hidden>
+      <div id="abrindo">Abrindo o navegador…</div>
+      <span id="foco" aria-hidden="true">Clique para digitar</span>
+    </div>
+    <p class="rodape" id="dicaTela">Clique na tela para interagir. Com a tela em foco, o que você digita vai
+      direto para o navegador — inclusive senha e código, que o painel não guarda. <kbd>Tab</kbd> sai da tela;
+      use os botões abaixo para Tab e Enter. <span id="expira"></span></p>
+
+    <div class="teclado">
+      <div class="campo">
+        <label for="txt">Digitar ou colar texto</label>
+        <input id="txt" type="text" autocomplete="off" autocapitalize="off" spellcheck="false"
+               placeholder="Texto para o campo selecionado na tela">
+      </div>
+      <button type="button" id="btnEnviar">Enviar texto</button>
+      <button type="button" class="ghost" data-tecla="Tab">Tab</button>
+      <button type="button" class="ghost" data-tecla="Enter">Enter</button>
+      <button type="button" class="ghost" data-tecla="Backspace" aria-label="Apagar (Backspace)">Apagar</button>
+      <button type="button" class="ghost" data-rolar="-600" aria-label="Rolar a página para cima">▲ Rolar</button>
+      <button type="button" class="ghost" data-rolar="600" aria-label="Rolar a página para baixo">▼ Rolar</button>
+    </div>
+  </section>
+<div class="hn-credito">
+  <span class="selo-livre">Gratuito</span>
+  <span>Sistema <b>gratuito</b>, disponibilizado pelo <b>Henrique Niada</b>. Roda no seu computador &mdash; seus dados e suas chaves nao saem daqui.</span>
+</div>
+</main>
+  </div>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+async function api(path, opts){
+  const r = await fetch(path, opts);
+  if(r.status === 401){
+    const j = await r.json().catch(()=>({}));
+    throw new Error(j.error || 'não autorizado');
+  }
+  const j = await r.json();
+  if(!r.ok) throw new Error(j.error || 'erro ' + r.status);
+  return j;
+}
+const post = (path, body) => api(path, { method:'POST', headers:{'Content-Type':'application/json'},
+  body: JSON.stringify(body || {}) });
+function msg(texto, tipo){ const m = $('msg'); m.className = texto ? (tipo || 'info') : ''; m.textContent = texto || ''; }
+function selo(classe, rotulo, texto){
+  $('selo').className = 'selo ' + classe; $('selo').textContent = rotulo;
+  $('situacaoTexto').textContent = texto || '';
+}
+const MOTIVO = { listagem:'listagem', produto:'página de produto' };
+const motivosTexto = (m) => Object.entries(m || {}).filter(([,v]) => v)
+  .map(([k,v]) => `${MOTIVO[k] || k}: ${v}`).join('; ');
+const minutos = (s) => s >= 60 ? Math.round(s / 60) + ' min' : s + ' s';
+
+// ---------- situação da sessão (abre o navegador sem janela, ~5 s) ----------
+let verificando = false;
+async function verificarSessao(forcar = false){
+  if(verificando) return;
+  verificando = true; $('btnVerificar').disabled = true;
+  selo('neutro', 'Verificando…', forcar ? 'Abrindo uma listagem de teste no Mercado Livre.' : '');
+  try{
+    const s = await api('/api/scraper' + (forcar ? '?forcar=1' : ''));
+    if(!s.ligado) selo('erro', 'Scraper desligado', s.motivo);
+    else if(s.sessao === 'valida') selo('ok', 'Sessão válida', 'A medição de posição está funcionando.');
+    else if(s.sessao === 'em_uso') selo('aviso', 'Navegador aberto', 'Conclua ou feche o navegador abaixo.');
+    else selo('erro', 'Sessão bloqueada',
+      'O Mercado Livre está pedindo verificação. Comece por "Resolver reCAPTCHA"; se aparecer a tela de login, use "Fazer login".');
+  }catch(e){ selo('erro', 'Sem resposta', e.message); }
+  finally{ verificando = false; $('btnVerificar').disabled = aberto; }
+}
+
+// ---------- ciclo da sessão interativa ----------
+let aberto = false, estadoAtual = 'fechado', ciclo = 0, acordar = null, urlFrame = null;
+const dorme = (ms) => new Promise((ok) => {
+  const t = setTimeout(ok, ms);
+  acordar = () => { clearTimeout(t); acordar = null; ok(); };
+});
+
+function aplica(e){
+  const ativo = e.estado !== 'fechado';
+  estadoAtual = e.estado;
+  $('sessao').hidden = !ativo;
+  for(const id of ['btnDesbloquear', 'btnLogin', 'btnVerificar']) $(id).disabled = ativo;
+  const pronto = e.estado === 'aberto';
+  for(const b of document.querySelectorAll('#sessao button')) if(b.id !== 'btnFechar') b.disabled = !pronto;
+  $('tSessao').textContent = e.estado === 'abrindo' ? 'Abrindo…'
+    : e.estado === 'verificando' ? 'Verificando…' : 'Navegador aberto';
+  $('pagina').textContent = e.pagina ? (e.titulo ? e.titulo + ' · ' : '') + e.pagina : '';
+  $('expira').textContent = e.fecha_em_s != null
+    ? `Fecha sozinho em ${minutos(e.fecha_em_s)} sem clique ou tecla.` : '';
+  if(ativo && !aberto){ aberto = true; iniciar(); }
+  if(!ativo && aberto){
+    aberto = false; parar();
+    if(e.erro) msg(e.erro, 'err');
+    verificarSessao();
+  }
+}
+
+async function atualizarEstado(){
+  try{ aplica(await api('/api/navegador')); }
+  catch(e){ if(aberto) msg(e.message, 'err'); }
+}
+
+function iniciar(){
+  const meu = ++ciclo;
+  $('abrindo').hidden = false;
+  laçoTela(meu); laçoEstado(meu);
+}
+function parar(){
+  ciclo++; if(acordar) acordar();
+  $('frame').hidden = true; $('frame').removeAttribute('src');
+  if(urlFrame){ URL.revokeObjectURL(urlFrame); urlFrame = null; }
+}
+
+async function laçoTela(meu){
+  while(aberto && meu === ciclo){
+    if(document.hidden){ await dorme(1000); continue; }
+    const t0 = performance.now();
+    try{
+      const r = await fetch('/api/navegador/tela', { cache:'no-store' });
+      if(meu !== ciclo) return;
+      if(r.ok){
+        const u = URL.createObjectURL(await r.blob());
+        $('frame').src = u;
+        if(urlFrame) URL.revokeObjectURL(urlFrame);
+        urlFrame = u; $('frame').hidden = false; $('abrindo').hidden = true;
+      }else if(r.status === 409){ await atualizarEstado(); }
+    }catch{ /* rede oscilou: tenta de novo no próximo quadro */ }
+    // cada quadro é um screenshot no Mac: rápido logo depois de uma ação, lento com a tela parada
+    const intervalo = Date.now() - ultimaAcao < 5000 ? 400 : 1500;
+    await dorme(Math.max(80, intervalo - (performance.now() - t0)));
+  }
+}
+async function laçoEstado(meu){
+  while(aberto && meu === ciclo){
+    await new Promise((ok) => setTimeout(ok, 2000));
+    if(aberto && meu === ciclo) await atualizarEstado();
+  }
+}
+
+// ---------- ações: uma fila, para texto e Enter chegarem na ordem ----------
+let fila = Promise.resolve(), ultimaAcao = Date.now();
+function enviar(acao){
+  ultimaAcao = Date.now();
+  fila = fila.then(() => post('/api/navegador/acao', acao))
+    .then(() => { if(acordar) acordar(); })
+    .catch((e) => msg(e.message, 'err'));
+  return fila;
+}
+let buffer = '', tBuffer = null;
+function digitar(texto){ buffer += texto; clearTimeout(tBuffer); tBuffer = setTimeout(esvaziar, 120); }
+function esvaziar(){
+  clearTimeout(tBuffer);
+  for(let i = 0; i < buffer.length; i += 500) enviar({ tipo:'texto', texto: buffer.slice(i, i + 500) });
+  buffer = '';
+}
+
+const tela = $('tela'), frame = $('frame');
+tela.addEventListener('focus', () => { $('foco').textContent = 'Teclado ativo'; });
+tela.addEventListener('blur', () => { $('foco').textContent = 'Clique para digitar'; esvaziar(); });
+
+frame.addEventListener('click', (e) => {
+  if(estadoAtual !== 'aberto' || !frame.naturalWidth) return;
+  const r = frame.getBoundingClientRect();
+  const px = e.clientX - r.left, py = e.clientY - r.top;
+  const ponto = document.createElement('span');
+  ponto.className = 'ponto'; ponto.style.left = px + 'px'; ponto.style.top = py + 'px';
+  tela.appendChild(ponto); setTimeout(() => ponto.remove(), 500);
+  esvaziar();
+  enviar({ tipo:'clique', x: px * frame.naturalWidth / r.width, y: py * frame.naturalHeight / r.height });
+  tela.focus();
+});
+
+const ESPECIAIS = new Set(['Enter','Backspace','Delete','Escape','ArrowUp','ArrowDown','ArrowLeft',
+  'ArrowRight','Home','End','PageUp','PageDown']);
+tela.addEventListener('keydown', (e) => {
+  if(estadoAtual !== 'aberto' || e.isComposing || e.key === 'Tab') return; // Tab sai da tela
+  const atalho = e.ctrlKey || e.metaKey;
+  if(atalho && e.key.toLowerCase() === 'v') return;          // o evento paste cuida
+  if(!atalho && e.key.length === 1){ e.preventDefault(); digitar(e.key); return; }
+  const letra = e.key.length === 1 && /^[a-z0-9]$/i.test(e.key);
+  if(!ESPECIAIS.has(e.key) && !(atalho && letra)) return;
+  e.preventDefault(); esvaziar();
+  const mods = [e.ctrlKey && 'Control', e.altKey && 'Alt', e.shiftKey && !letra && 'Shift', e.metaKey && 'Meta']
+    .filter(Boolean);
+  enviar({ tipo:'tecla', tecla: [...mods, letra ? e.key.toLowerCase() : e.key].join('+') });
+});
+document.addEventListener('paste', (e) => {
+  if(document.activeElement !== tela || estadoAtual !== 'aberto') return;
+  const t = e.clipboardData.getData('text');
+  if(t){ e.preventDefault(); digitar(t); esvaziar(); }
+});
+let dyAcum = 0, tRolar = null;
+tela.addEventListener('wheel', (e) => {
+  if(estadoAtual !== 'aberto' || !frame.naturalHeight) return;
+  e.preventDefault();
+  dyAcum += e.deltaY * frame.naturalHeight / frame.getBoundingClientRect().height;
+  if(tRolar) return;
+  tRolar = setTimeout(() => {
+    tRolar = null;
+    const dy = Math.max(-3000, Math.min(3000, Math.round(dyAcum))); dyAcum = 0;
+    if(dy) enviar({ tipo:'rolar', dy });
+  }, 120);
+}, { passive:false });
+
+// ---------- botões ----------
+async function abrir(destino){
+  msg('');
+  try{
+    aplica(await post('/api/navegador/abrir', { destino }));
+    msg(destino === 'login'
+      ? 'Faça login na tela abaixo. Se o Mercado Livre pedir código de verificação, digite-o também. Depois clique em "Terminei — verificar".'
+      : 'Resolva o reCAPTCHA na tela abaixo. Depois clique em "Terminei — verificar".');
+    $('sessao').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+  }catch(e){ msg(e.message, 'err'); }
+}
+$('btnDesbloquear').onclick = () => abrir('desbloquear');
+$('btnLogin').onclick = () => abrir('login');
+$('btnVerificar').onclick = () => { msg(''); verificarSessao(true); };
+$('btnVoltar').onclick = () => enviar({ tipo:'voltar' });
+$('btnRecarregar').onclick = () => enviar({ tipo:'recarregar' });
+$('btnEnviar').onclick = () => {
+  const t = $('txt').value;
+  if(!t) return;
+  digitar(t); esvaziar(); $('txt').value = '';
+};
+$('txt').addEventListener('keydown', (e) => {
+  if(e.key === 'Enter'){ e.preventDefault(); $('btnEnviar').click(); }
+});
+for(const b of document.querySelectorAll('[data-tecla]')){
+  b.onclick = () => { esvaziar(); enviar({ tipo:'tecla', tecla: b.dataset.tecla }); };
+}
+for(const b of document.querySelectorAll('[data-rolar]')){
+  b.onclick = () => enviar({ tipo:'rolar', dy: Number(b.dataset.rolar) });
+}
+$('btnConcluir').onclick = async () => {
+  esvaziar(); await fila;
+  $('btnConcluir').disabled = true;
+  msg('Verificando: o navegador abre uma listagem e um produto de teste…');
+  try{
+    const r = await post('/api/navegador/concluir');
+    if(r.liberado) msg('Sessão liberada. A medição de posição volta a funcionar.', 'ok');
+    else msg(`Ainda bloqueado (${motivosTexto(r.motivos)}). A tela mostra o bloqueio: resolva e clique em "Terminei — verificar" de novo.`, 'err');
+  }catch(e){ msg(e.message, 'err'); }
+  finally{ atualizarEstado(); }
+};
+$('btnFechar').onclick = async () => {
+  buffer = ''; clearTimeout(tBuffer);
+  try{ aplica(await post('/api/navegador/fechar')); msg('Navegador fechado sem verificar.'); }
+  catch(e){ msg(e.message, 'err'); }
+};
+
+// Pode já haver uma sessão aberta (outra aba, outro aparelho): retoma em vez de abrir outra.
+atualizarEstado().then(() => { if(!aberto) verificarSessao(); });
+</script>
+<script src="/aviso.js" defer></script>
+</body>
+</html>

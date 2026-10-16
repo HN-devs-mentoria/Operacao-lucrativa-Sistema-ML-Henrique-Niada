@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Configurações — Mercado Livre</title>
+<style>
+  :root{
+    --bg:#f2f3f5; --card:#fff; --ink:#1a1a1a; --muted:#5f6368; --line:#e0e2e6;
+    --brand:#2968c8; --link:#1a5fc4; --ok:#0b6b3a; --ok-bg:#e6f4ea; --ok-line:#a6dcb6;
+    --warn:#7a4a00; --warn-bg:#fff4e0; --warn-line:#f0c46b;
+    --err:#8c1d18; --err-bg:#fce8e6; --err-line:#f0b3ad; --radius:8px;
+  }
+  *{box-sizing:border-box}
+  [hidden]{display:none !important}
+  body{margin:0;color:var(--ink);
+    font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  main{max-width:780px;margin:0 auto;padding:24px 16px 72px}
+  section{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:20px 22px 22px;margin:0 0 20px}
+  h2{font-size:19px;line-height:1.3;margin:0 0 6px}
+  h2 .num{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;
+    background:var(--brand);color:#fff;font-size:13px;margin-right:8px;vertical-align:1px}
+  h2 .num.feito{background:var(--ok)}
+  .sub{color:var(--muted);font-size:13px;margin:0 0 14px}
+  label{display:block;margin:14px 0 4px;font-size:13px;font-weight:600}
+  input{width:100%;padding:10px 12px;border:1px solid #c4c7cc;border-radius:var(--radius);
+    font:inherit;background:#fff;color:inherit}
+  input[readonly]{background:#f7f8fa;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px}
+  input:focus,button:focus-visible,a:focus-visible,summary:focus-visible{outline:2px solid var(--brand);outline-offset:1px}
+  button,.botao{background:var(--brand);color:#fff;border:0;border-radius:var(--radius);
+    padding:10px 16px;font:inherit;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block}
+  button:hover,.botao:hover{filter:brightness(.94)}
+  button.ghost{background:#eef3fd;color:#1a5fc4}
+  button[disabled],.botao[aria-disabled="true"]{opacity:.5;cursor:not-allowed;pointer-events:none}
+  .linha{display:flex;gap:8px;align-items:stretch}
+  .linha input{flex:1;min-width:0}
+  .acoes{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:16px}
+  .passos{display:flex;gap:6px;list-style:none;padding:0;margin:0 0 20px;font-size:13px;color:var(--muted)}
+  .passos li{flex:1;border-top:3px solid var(--line);padding-top:6px}
+  .passos li.feito{border-color:var(--ok);color:var(--ok)}
+  .passos li[aria-current]{border-color:var(--brand);color:var(--ink);font-weight:600}
+  .caixa{border-radius:var(--radius);padding:12px 14px;font-size:15px;margin:14px 0 0;border:1px solid}
+  .caixa.ok{background:var(--ok-bg);border-color:var(--ok-line);color:var(--ok)}
+  .caixa.warn{background:var(--warn-bg);border-color:var(--warn-line);color:var(--warn)}
+  .caixa.err{background:var(--err-bg);border-color:var(--err-line);color:var(--err)}
+  .caixa p{margin:4px 0 0}
+  .caixa code,.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;word-break:break-all}
+  .status{display:grid;grid-template-columns:max-content 1fr;gap:6px 14px;margin:0}
+  .status dt{color:var(--muted)}
+  .status dd{margin:0;word-break:break-word}
+  .pilula{display:inline-block;font-size:12px;font-weight:600;padding:2px 8px;border-radius:999px;border:1px solid}
+  .pilula.ok{background:var(--ok-bg);color:var(--ok);border-color:var(--ok-line)}
+  .pilula.warn{background:var(--warn-bg);color:var(--warn);border-color:var(--warn-line)}
+  .pilula.err{background:var(--err-bg);color:var(--err);border-color:var(--err-line)}
+  details{margin-top:14px}
+  summary{cursor:pointer;color:var(--link);font-weight:600}
+  ul.lista{list-style:none;padding:0;margin:10px 0 0}
+  ul.lista li{padding:8px 0;border-top:1px solid var(--line)}
+  ul.lista li:first-child{border-top:0}
+  a{color:var(--link)}
+  #aviso:empty{display:none}
+  #aviso .caixa:last-child{margin-bottom:20px}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+  @media (max-width:560px){
+    .linha{flex-wrap:wrap} .linha input{flex:1 1 100%}
+    .passos{flex-direction:column} .status{grid-template-columns:1fr} .status dt{margin-top:6px}
+  }
+</style>
+<link rel="stylesheet" href="/layout.css">
+<link rel="stylesheet" href="/tema-hn.css?v=5">
+<style>
+/* ===== Configurações — Workspace redesign ===== */
+.cfg-shell{max-width:none!important;margin:0!important;padding:30px clamp(24px,3vw,46px) 70px!important;background:transparent}
+.cfg-hero{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:space-between;gap:28px;min-height:168px;padding:30px 34px;margin-bottom:24px;border:1px solid rgba(24,183,246,.22);border-radius:24px;background:linear-gradient(120deg,#071923 0%,#0b2636 55%,#0c3551 100%);box-shadow:0 18px 60px rgba(11,34,48,.12)}
+.cfg-hero:before{content:"";position:absolute;width:420px;height:420px;right:-90px;top:-230px;border:1px solid rgba(117,245,240,.22);border-radius:50%;box-shadow:0 0 0 54px rgba(43,211,244,.035),0 0 0 108px rgba(19,125,249,.025)}
+.cfg-hero:after{content:"";position:absolute;inset:0;background:radial-gradient(500px 220px at 88% 35%,rgba(43,211,244,.18),transparent 65%);pointer-events:none}
+.cfg-hero-copy,.cfg-hero-health{position:relative;z-index:1}.cfg-eyebrow,.cfg-kicker{display:block;font-size:10px;line-height:1.2;font-weight:800;letter-spacing:.16em;color:#37d7ee;margin-bottom:9px}.cfg-hero h2{margin:0 0 8px;font-size:clamp(24px,2.2vw,34px);line-height:1.05;letter-spacing:-.035em;color:#fff}.cfg-hero p{max-width:720px;margin:0;color:#a9c3d0;font-size:14px}.cfg-hero-health{display:flex;align-items:center;gap:14px;min-width:270px;padding:14px 16px;border:1px solid rgba(117,245,240,.18);border-radius:16px;background:rgba(255,255,255,.045);backdrop-filter:blur(8px)}
+.cfg-health-ring{width:62px;height:62px;flex:0 0 62px;border-radius:50%;display:grid;place-items:center;align-content:center;background:radial-gradient(circle at center,#0b2534 56%,transparent 57%),conic-gradient(#2bd3f4 50%,rgba(255,255,255,.09) 0);box-shadow:0 0 24px rgba(43,211,244,.18)}.cfg-health-ring strong{font-size:15px;color:#fff;line-height:1}.cfg-health-ring span{font-size:9px;color:#8fb4c5;margin-top:3px}.cfg-hero-health>div:last-child{display:grid;gap:3px}.cfg-hero-health b{color:#f4fbfd;font-size:13px}.cfg-hero-health span{color:#8faeba;font-size:11px;line-height:1.35}
+.cfg-layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:24px;align-items:start}.cfg-rail{position:sticky;top:78px;padding:14px;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.72);backdrop-filter:blur(12px);box-shadow:0 8px 32px rgba(11,34,48,.05)}.cfg-rail-title{padding:6px 8px 11px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}.cfg-rail-link{display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:center;padding:11px 10px;margin:2px 0;border:1px solid transparent;border-radius:12px;text-decoration:none;color:var(--muted);transition:.18s ease}.cfg-rail-link:hover{background:#f4f9fc;color:var(--ink)}.cfg-rail-link.active{background:linear-gradient(110deg,rgba(43,211,244,.12),rgba(19,125,249,.08));border-color:rgba(24,183,246,.2);color:var(--ink)}.cfg-rail-link>span{width:26px;height:26px;display:grid;place-items:center;border-radius:8px;background:#edf6fb;color:#638194;font-size:10px;font-weight:800}.cfg-rail-link.active>span{background:var(--grad);color:#052534}.cfg-rail-link div{display:grid;gap:1px}.cfg-rail-link b{font-size:12px}.cfg-rail-link small{font-size:10px;color:var(--faint)}.cfg-rail-note{display:grid;grid-template-columns:8px 1fr;gap:9px;margin-top:12px;padding:12px 10px;border-top:1px solid var(--softline)}.cfg-dot{width:7px;height:7px;border-radius:50%;background:#18b7f6;box-shadow:0 0 0 4px rgba(24,183,246,.1);margin-top:4px}.cfg-rail-note div{display:grid;gap:2px}.cfg-rail-note b{font-size:11px;color:var(--ink)}.cfg-rail-note small{font-size:9px;line-height:1.45;color:var(--faint)}
+.cfg-workspace{min-width:0;display:grid;gap:22px}.cfg-section{scroll-margin-top:90px;background:#fff;border:1px solid var(--line);border-radius:22px;padding:24px;box-shadow:0 10px 34px rgba(11,34,48,.05)}.cfg-section-primary{background:linear-gradient(180deg,rgba(248,252,254,.96),#fff 30%)}.cfg-section-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:20px}.cfg-section-head h3{margin:0 0 4px;font-size:22px;letter-spacing:-.025em;color:var(--ink)}.cfg-section-head p{margin:0;color:var(--muted);font-size:12.5px}.cfg-status-chip{display:inline-flex;align-items:center;gap:7px;white-space:nowrap;padding:7px 10px;border:1px solid #b9dcf2;border-radius:999px;background:#eff8fe;color:#0a6fa9;font-size:10px;font-weight:800;letter-spacing:.03em;text-transform:uppercase}.cfg-status-chip i{width:7px;height:7px;border-radius:50%;background:#18b7f6;box-shadow:0 0 0 4px rgba(24,183,246,.12)}.cfg-status-safe{background:#eefaf8;border-color:#b9e8e1;color:#08756f}.cfg-status-safe i{background:#0f9c96}
+.cfg-steps{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px!important;margin:0 0 20px!important;padding:0!important;color:inherit!important}.cfg-steps li{position:relative!important;display:grid!important;grid-template-columns:34px 1fr!important;gap:10px!important;align-items:center!important;min-height:70px!important;padding:12px!important;border:1px solid var(--line)!important;border-radius:14px!important;background:#fff!important}.cfg-steps li:before{content:"";position:absolute;left:0;top:12px;bottom:12px;width:3px;border-radius:4px;background:#dbe8ef}.cfg-steps li.feito:before{background:#0f9c96}.cfg-steps li[aria-current]:before{background:var(--grad-vertical)}.cfg-step-num{width:30px;height:30px;display:grid;place-items:center;border-radius:9px;background:#edf4f8;color:#5b7788;font-size:11px;font-weight:800}.cfg-steps li.feito .cfg-step-num{background:#e3f7f3;color:#08756f}.cfg-steps li div{display:grid;gap:2px}.cfg-steps li b{font-size:11.5px;color:var(--ink)}.cfg-steps li small{font-size:9.5px;color:var(--faint)}.cfg-steps li em{grid-column:2;font-style:normal;font-size:9px;color:var(--faint);text-transform:uppercase;font-weight:800;letter-spacing:.05em}.cfg-steps li.feito em{color:#0f9c96}
+.cfg-flow{display:grid;grid-template-columns:1.15fr .85fr;gap:14px}.cfg-flow-card{position:relative;display:grid;grid-template-columns:42px 1fr;gap:14px;padding:18px;border:1px solid var(--line);border-radius:17px;background:#fff}.cfg-flow-wide{grid-column:1/-1}.cfg-flow-index .num{width:34px;height:34px;border-radius:11px;background:linear-gradient(135deg,#e3fbfb,#e4f0ff);color:#0b6fa7;font-size:12px;font-weight:900}.cfg-flow-title{display:flex;justify-content:space-between;align-items:flex-start;gap:14px}.cfg-flow-title span{display:block;margin-bottom:3px;font-size:9px;font-weight:800;letter-spacing:.13em;color:#7d9aaa}.cfg-flow-title h4,.cfg-service-title h4,.cfg-security-row h4{margin:0;color:var(--ink);font-size:15px;letter-spacing:-.015em}.cfg-desc{margin:6px 0 15px;color:var(--muted);font-size:12px;line-height:1.5}.cfg-mini-status{font-size:11px;color:var(--muted)}.cfg-inline-info{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;margin-bottom:12px;border:1px solid var(--softline);border-radius:11px;background:var(--overlay)}.cfg-inline-info span{font-size:10px;color:var(--faint);font-weight:700;text-transform:uppercase;letter-spacing:.06em}.cfg-inline-info strong{font-size:11px;color:var(--ink);overflow-wrap:anywhere}.cfg-url-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.cfg-fieldbox{padding:12px;border:1px solid var(--softline);border-radius:12px;background:#fbfdfe}.cfg-fieldbox label{margin:0 0 6px}.cfg-actions-row{padding-top:2px}.cfg-link-arrow{margin-left:auto;display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;text-decoration:none}.cfg-details{margin-top:13px;border-top:1px solid var(--softline);padding-top:12px}.cfg-details summary{display:inline-flex;align-items:center;gap:6px;font-size:11px}.cfg-history{display:grid;grid-template-columns:120px 1fr;gap:10px;margin-top:13px;padding-top:12px;border-top:1px dashed var(--line);font-size:10px}.cfg-history span{color:var(--faint);font-weight:700;text-transform:uppercase}.cfg-history div{color:var(--muted);overflow-wrap:anywhere}.cfg-form-stack{display:grid;gap:0}.lateral nav a.travado{opacity:.38;pointer-events:none}.cfg-flow-card label,.cfg-service-card label{font-size:11px;color:var(--muted)}
+.cfg-service-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.cfg-service-card{display:grid;grid-template-columns:44px 1fr;gap:14px;padding:18px;border:1px solid var(--line);border-radius:17px;background:#fff}.cfg-service-featured{background:linear-gradient(145deg,#fff 0%,#f7fcff 100%);border-color:#c7e5f4}.cfg-service-icon{width:42px;height:42px;display:grid;place-items:center;border:1px solid #d7e8f2;border-radius:12px;background:#f3f9fc;color:#0f8fd4;font-size:18px}.cfg-service-title{display:flex;justify-content:space-between;gap:14px}.cfg-service-title p{margin:4px 0 0;font-size:11px;line-height:1.45;color:var(--muted)}.cfg-service-badge{height:max-content;padding:4px 7px;border:1px solid #cce5f3;border-radius:999px;background:#f0f9fe;color:#0b73ac;font-size:8px;font-weight:900;letter-spacing:.08em}.cfg-status-list{grid-template-columns:100px 1fr!important;margin:14px 0!important;padding:11px 12px;border:1px solid var(--softline);border-radius:12px;background:#fbfdfe;font-size:11px!important}.cfg-status-list dt{font-size:10px}.cfg-status-list dd{font-size:10px}.cfg-service-card .acoes{gap:7px}.cfg-service-card .acoes>*{font-size:11px;padding:8px 10px}
+.cfg-security-row{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;padding:16px 18px;border:1px solid var(--line);border-radius:16px;background:#fbfdfe}.cfg-security-row>div:first-child{display:flex;align-items:flex-start;gap:12px}.cfg-security-icon{width:34px;height:34px;display:grid;place-items:center;border-radius:10px;background:#e8f8f5;color:#0f9c96;font-size:11px}.cfg-security-row p{margin:4px 0 0;font-size:11px;color:var(--muted)}.cfg-security-row details{margin:0;min-width:150px}.cfg-security-action{list-style:none;display:inline-flex!important;justify-content:center;width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;font-size:11px!important}.cfg-security-action::-webkit-details-marker{display:none}.cfg-password-form{min-width:300px;margin-top:12px;padding:14px;border:1px solid var(--softline);border-radius:12px;background:#fff}.cfg-password-form label{font-size:11px}.cfg-password-form .sub{font-size:10px}
+.cfg-shell input{min-height:38px;border-radius:10px}.cfg-shell button,.cfg-shell .botao{border-radius:10px;font-size:12px}.cfg-shell .caixa{font-size:11px;border-radius:11px}.cfg-shell .caixa p{font-size:10px}.cfg-shell .lista li{font-size:11px}.cfg-shell code{font-size:10px}.cfg-shell .hn-credito{margin-top:0;max-width:none;border-radius:16px}
+@media(max-width:1180px){.cfg-layout{grid-template-columns:190px minmax(0,1fr)}.cfg-flow{grid-template-columns:1fr}.cfg-flow-wide{grid-column:auto}.cfg-service-grid{grid-template-columns:1fr}.cfg-url-grid{grid-template-columns:1fr}}
+@media(max-width:900px){.cfg-shell{padding:18px 14px 50px!important}.cfg-hero{padding:24px;align-items:flex-start}.cfg-hero-health{display:none}.cfg-layout{grid-template-columns:1fr}.cfg-rail{position:static;display:flex;gap:7px;overflow-x:auto;padding:8px}.cfg-rail-title,.cfg-rail-note{display:none}.cfg-rail-link{min-width:160px}.cfg-workspace{gap:14px}.cfg-section{padding:18px}.cfg-steps{grid-template-columns:1fr!important}.cfg-flow-card,.cfg-service-card{grid-template-columns:36px 1fr}.cfg-url-grid{grid-template-columns:1fr}.cfg-security-row{flex-direction:column}.cfg-security-row details{width:100%}.cfg-password-form{min-width:0}.cfg-section-head{flex-direction:column}}
+@media(max-width:560px){.cfg-hero{min-height:auto}.cfg-hero h2{font-size:25px}.cfg-flow-card{grid-template-columns:1fr}.cfg-flow-index{display:none}.cfg-service-card{grid-template-columns:1fr}.cfg-service-icon{display:none}.cfg-inline-info{align-items:flex-start;flex-direction:column}.cfg-link-arrow{margin-left:0}.cfg-history{grid-template-columns:1fr}.cfg-status-list{grid-template-columns:1fr!important}.cfg-rail-link{min-width:145px}.cfg-rail-link small{display:none}}
+</style>
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+  const links=[...document.querySelectorAll('[data-cfg-nav]')];
+  const secs=links.map(a=>document.getElementById(a.dataset.cfgNav)).filter(Boolean);
+  if('IntersectionObserver' in window){
+    const io=new IntersectionObserver(entries=>{const hit=entries.filter(e=>e.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio)[0];if(!hit)return;links.forEach(a=>a.classList.toggle('active',a.dataset.cfgNav===hit.target.id));},{rootMargin:'-20% 0px -65% 0px',threshold:[0,.2,.5]});
+    secs.forEach(s=>io.observe(s));
+  }
+});
+</script>
+</head>
+<body>
+<div class="hn-fundo" aria-hidden="true"><div class="hn-emblema"><span class="hn-onda"></span><span class="hn-onda"></span><span class="hn-onda"></span><img src="/logo-emblema.png" alt=""></div></div>
+
+<div class="app">
+  <aside class="lateral" aria-label="Menu principal do Gestor ML">
+  <a class="hn-marca" href="/" aria-label="Gestor ML, por Henrique Niada: ir para o Início"><img src="/logo-gestor-ml.png" alt="" width="600" height="155"></a>
+  <div class="hn-rotulo">SEU ESPAÇO DE GESTÃO</div>
+  <nav aria-label="Navegação principal">
+    <a href="/"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7M5.5 9v11h5v-6h3v6h5V9"/></svg><span>Início</span><svg class="seta" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></a>
+    <a href="/publicar.html"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="5"/><path d="M12 8v8m-4-4h8"/></svg><span>Publicar</span><svg class="seta" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></a>
+    <a href="/anuncios.html"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 9h8m-8 4h5m-5 4h3"/></svg><span>Meus anúncios</span><svg class="seta" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></a>
+    <a href="/navegador.html"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 12h18M5 6.5c4 2 10 2 14 0M5 17.5c4-2 10-2 14 0"/></svg><span>Navegador</span><svg class="seta" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></a>
+    <a href="/configuracao.html" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h5m4 0h7M4 17h9m4 0h3"/><circle cx="11" cy="7" r="2"/><circle cx="15" cy="17" r="2"/></svg><span>Configurações</span><svg class="seta" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></a>
+  </nav>
+  <div class="hn-social">
+    <a class="hn-insta" href="https://www.instagram.com/henriqueniada/" target="_blank" rel="noopener noreferrer" aria-label="Seguir @henriqueniada: abrir perfil no Instagram em nova aba">
+      <div class="hn-capa">
+        <div class="hn-capa-meta"><span><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5.5"/><circle cx="12" cy="12" r="4.1"/><circle cx="17.5" cy="6.5" r=".7" fill="currentColor" stroke="none"/></svg>INSTAGRAM</span><span class="hn-vale">VALE SEGUIR</span></div>
+        <h2>Conexão<em>direta.</em></h2>
+        <svg class="hn-ig-gigante" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5.5"/><circle cx="12" cy="12" r="4.1"/><circle cx="17.5" cy="6.5" r=".7" fill="currentColor" stroke="none"/></svg>
+        <svg class="hn-estrela" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c0 7-3 10-10 10 7 0 10 3 10 10 0-7 3-10 10-10-7 0-10-3-10-10Z" fill="currentColor" stroke="none"/></svg>
+      </div>
+      <div class="hn-ticket">
+        <div class="hn-ticket-meta"><span class="hn-avatar" aria-hidden="true">HN</span><div class="hn-perfil">Henrique Niada<small>Do Gestor ML para o seu feed.</small></div><svg class="hn-ponteiro" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c0 7-3 10-10 10 7 0 10 3 10 10 0-7 3-10 10-10-7 0-10-3-10-10Z" fill="currentColor" stroke="none"/></svg></div>
+        <div class="hn-arroba"><span>@</span>henriqueniada</div>
+      </div>
+      <div class="hn-picote" aria-hidden="true"></div>
+      <div class="hn-ticket-pe"><p><strong>Vamos nos conectar?</strong>Siga no Instagram.</p><span class="hn-ticket-seta" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12"/></svg></span></div>
+    </a>
+  </div>
+  <footer class="hn-rodape"><div class="hn-rodape-titulo">Sistema gratuito <span><i aria-hidden="true"></i>USO LOCAL</span></div><p>Disponibilizado por <strong>Henrique Niada.</strong><br>Roda no seu computador.</p></footer>
+</aside>
+  <div class="conteudo">
+<header>
+  <h1>Configurações — Mercado Livre</h1>
+</header>
+
+
+<main class="cfg-shell">
+  <div class="cfg-hero">
+    <div class="cfg-hero-copy">
+      <span class="cfg-eyebrow">CENTRAL DE CONFIGURAÇÃO</span>
+      <h2>Deixe sua operação pronta para trabalhar</h2>
+      <p>Conecte o Mercado Livre e valide os serviços locais em uma única visão.</p>
+    </div>
+    <div class="cfg-hero-health" aria-label="Resumo da configuração">
+      <div class="cfg-health-ring" id="cfgAnel"><strong id="cfgScore">—</strong><span>módulos</span></div>
+      <div><b id="cfgResumo">Lendo a configuração…</b><span id="cfgResumoSub">Um instante.</span></div>
+    </div>
+  </div>
+
+  <div id="aviso" role="status" aria-live="polite"></div>
+
+  <div class="cfg-layout">
+    <aside class="cfg-rail" aria-label="Navegação das configurações">
+      <div class="cfg-rail-title">Configurações</div>
+      <a href="#integracao" class="cfg-rail-link active" data-cfg-nav="integracao"><span>01</span><div><b>Mercado Livre</b><small>Conexão e credenciais</small></div></a>
+      <a href="#servicos" class="cfg-rail-link" data-cfg-nav="servicos"><span>02</span><div><b>Serviços locais</b><small>Scraper e Claude Code</small></div></a>
+      <div class="cfg-rail-note"><span class="cfg-dot"></span><div><b>Dados locais</b><small>O painel só abre neste computador. Credenciais e dados ficam aqui.</small></div></div>
+    </aside>
+
+    <div class="cfg-workspace">
+      <section class="cfg-section cfg-section-primary" id="integracao" aria-labelledby="cfg-int-title">
+        <div class="cfg-section-head">
+          <div><span class="cfg-kicker">01 · INTEGRAÇÃO PRINCIPAL</span><h3 id="cfg-int-title">Mercado Livre</h3><p>Três etapas para liberar leitura, edição e sincronização dos seus anúncios.</p></div>
+          <div class="cfg-status-chip" id="cfgChip"><i></i> Em configuração</div>
+        </div>
+
+        <ol class="cfg-steps" id="passos" aria-label="Etapas da configuração">
+          <li id="passo1"><span class="cfg-step-num">1</span><div><b>URI de redirect</b><small>Cadastrada no app</small></div><em>Pendente</em></li>
+          <li id="passo2"><span class="cfg-step-num">2</span><div><b>Aplicativo no ML</b><small>App ID + chave</small></div><em>Pendente</em></li>
+          <li id="passo3"><span class="cfg-step-num">3</span><div><b>Conta conectada</b><small>Autorização OAuth</small></div><em>Pendente</em></li>
+        </ol>
+
+        <div class="cfg-flow">
+          <article class="cfg-flow-card cfg-flow-wide" aria-labelledby="t1">
+            <div class="cfg-flow-index"><span class="num" id="n1">1</span></div>
+            <div class="cfg-flow-body">
+              <div class="cfg-flow-title"><div><span>PASSO 1</span><h4 id="t1">Cadastrar a URI de redirect</h4></div></div>
+              <p class="cfg-desc">Depois que você autoriza, o Mercado Livre devolve o login para este endereço fixo. Ele não muda nunca e é o mesmo que o plugin hn-anuncio-ml usa.</p>
+
+              <div class="cfg-fieldbox"><label for="uCallback">URI de redirect</label><div class="linha"><input id="uCallback" readonly value="—"><button type="button" class="ghost" data-copiar="uCallback">Copiar</button></div></div>
+
+              <div id="situacao"></div>
+              <a class="cfg-link-arrow" href="https://developers.mercadolivre.com.br/devcenter" target="_blank" rel="noopener noreferrer">Abrir DevCenter <span aria-hidden="true">↗</span><span class="sr"> (abre em nova aba)</span></a>
+            </div>
+          </article>
+
+          <article class="cfg-flow-card" aria-labelledby="t2">
+            <div class="cfg-flow-index"><span class="num" id="n2">2</span></div>
+            <div class="cfg-flow-body">
+              <div class="cfg-flow-title"><div><span>PASSO 2</span><h4 id="t2">Credenciais do aplicativo</h4></div></div>
+              <p class="cfg-desc">Salvas somente neste computador. A chave é cifrada no banco antes de ser armazenada.</p>
+              <form id="formCred" novalidate class="cfg-form-stack"><label for="appId">App ID</label><input id="appId" name="app_id" autocomplete="off" spellcheck="false" placeholder="Ex.: 1234567890123456" required data-mascara="digitos" maxlength="25"><label for="secret">Chave secreta</label><div class="linha"><input id="secret" name="secret" type="password" autocomplete="off" spellcheck="false" required data-mascara="sem-espacos" maxlength="128"><button type="button" class="ghost" id="btnVerSecret" aria-pressed="false" aria-controls="secret">Mostrar</button></div><div class="acoes"><button type="submit" id="btnSalvarCred">Salvar e validar</button></div></form>
+              <div id="credErro"></div>
+              <div id="credStatus"></div>
+            </div>
+          </article>
+
+          <article class="cfg-flow-card" id="passo-conta" aria-labelledby="t3">
+            <div class="cfg-flow-index"><span class="num" id="n3">3</span></div>
+            <div class="cfg-flow-body">
+              <div class="cfg-flow-title"><div><span>PASSO 3</span><h4 id="t3">Autorizar a conta</h4></div></div>
+              <p class="cfg-desc">Autorize o acesso no Mercado Livre para começar a ler e gerenciar os dados da sua conta.</p>
+              <ul class="lista cfg-account-list" id="contas"></ul>
+              <div id="sugestaoPlugin"></div>
+              <div class="acoes"><a class="botao" id="btnConectar" href="/auth" target="_blank" rel="noopener" aria-disabled="true">Conectar conta</a><span class="sub" id="conectarDica" style="margin:0"></span></div>
+              <form id="formCodigo" novalidate class="cfg-form-stack" hidden>
+                <label for="codigo">Endereço que apareceu depois de autorizar</label>
+                <p class="sub" id="codigoDica" style="margin:0 0 6px">Na aba que abriu, autorize. O Mercado Livre leva você a uma página com um texto técnico: copie o endereço inteiro da barra do navegador (começa com <code>https://</code> e tem <code>code=</code>) e cole aqui.</p>
+                <div class="linha"><input id="codigo" autocomplete="off" spellcheck="false" required aria-describedby="codigoDica" placeholder="https://httpbin.org/get?code=TG-…"><button type="submit" id="btnCodigo">Concluir conexão</button></div>
+              </form>
+              <div id="codigoStatus"></div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="cfg-section" id="servicos" aria-labelledby="cfg-serv-title">
+        <div class="cfg-section-head"><div><span class="cfg-kicker">02 · SERVIÇOS LOCAIS</span><h3 id="cfg-serv-title">Ferramentas auxiliares</h3><p>Recursos que ampliam leitura, análise e automação dos dados.</p></div></div>
+        <div class="cfg-service-grid">
+          <article class="cfg-service-card" aria-labelledby="t4"><div class="cfg-service-icon">◎</div><div class="cfg-service-main"><div class="cfg-service-title"><div><h4 id="t4">Scraper</h4><p>Navegador autenticado para dados que a API oficial não entrega.</p></div><span class="cfg-service-badge">LOCAL</span></div><dl class="status cfg-status-list"><dt>Estado</dt><dd id="scrEstado">—</dd><dt>Endereço</dt><dd id="scrUrl" class="mono">—</dd><dt>Sessão no ML</dt><dd id="scrSessao">não testada</dd></dl><div class="acoes"><button type="button" class="ghost" id="btnTestarSessao">Testar sessão</button><a class="botao" href="/navegador.html">Fazer login</a><button type="button" class="ghost" id="btnReiniciar">Reiniciar</button></div></div></article>
+
+          <article class="cfg-service-card cfg-service-featured" aria-labelledby="t6"><div class="cfg-service-icon">⌘</div><div class="cfg-service-main"><div class="cfg-service-title"><div><h4 id="t6">Claude Code</h4><p>Pergunte em linguagem natural e consulte seus dados sem procurar tela por tela.</p></div><span class="cfg-service-badge">MCP</span></div><dl class="status cfg-status-list"><dt>Estado</dt><dd id="mcpEstado">—</dd><dt>Pasta do projeto</dt><dd id="mcpPasta" class="mono">—</dd></dl><label for="mcpComando">Comando para o Terminal</label><div class="linha"><input id="mcpComando" readonly value="—"><button type="button" class="ghost" data-copiar="mcpComando">Copiar</button></div><details class="cfg-details"><summary>Como ligar o Claude Code aos seus dados</summary><ol class="guia"><li>Conecte a sua conta do Mercado Livre no <strong>passo 3</strong>.</li><li>Abra o <strong>Terminal</strong> e cole a linha acima.</li><li>Na primeira vez, permita o servidor <strong>HN-Gestor-ML</strong>.</li><li>Digite <code>/mcp</code> e confirme que <code>HN-Gestor-ML</code> aparece como <em>connected</em>.</li><li>Pronto — é só perguntar em português.</li></ol><p class="sub"><strong>Exemplos:</strong> “quais foram meus 10 melhores produtos nos últimos 30 dias?” · “quem está na curva A?” · “o MLB123… está perdendo visitas?”</p><p class="sub">Para deixar a ponte somente em consulta, escreva <code>ML_MCP_ESCRITA=0</code> no arquivo <code>.env</code> e reinicie.</p></details></div></article>
+        </div>
+      </section>
+
+      <div class="hn-credito"><span class="selo-livre">Gratuito</span><span>Sistema <b>gratuito</b>, disponibilizado pelo <b>Henrique Niada</b>. Roda no seu computador &mdash; seus dados e suas chaves nao saem daqui.</span></div>
+    </div>
+  </div>
+</main>
+  </div>
+</div>
+
+<script src="/mascaras.js"></script>
+<script>
+const $ = (id) => document.getElementById(id);
+
+async function api(path, opts){
+  const r = await fetch(path, opts);
+  const j = await r.json().catch(() => ({}));
+  if(!r.ok) throw new Error(j.error || `erro ${r.status}`);
+  return j;
+}
+const post = (path, body) => api(path, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body || {}) });
+
+// Caixa de mensagem montada só com textContent: tudo que vem do servidor ou do ML é dado.
+function caixa(tipo, titulo, linhas = []){
+  const d = document.createElement('div');
+  d.className = 'caixa ' + tipo;
+  const s = document.createElement('strong'); s.textContent = titulo; d.appendChild(s);
+  for(const l of linhas){
+    const p = document.createElement('p');
+    for(const parte of [].concat(l)){
+      if(parte && typeof parte === 'object'){ const c = document.createElement('code'); c.textContent = parte.code; p.appendChild(c); }
+      else p.appendChild(document.createTextNode(parte));
+    }
+    d.appendChild(p);
+  }
+  return d;
+}
+const pilula = (tipo, texto) => { const s = document.createElement('span'); s.className = 'pilula ' + tipo; s.textContent = texto; return s; };
+const dataHora = (v) => v ? new Date(v).toLocaleString('pt-BR', { dateStyle:'short', timeStyle:'short' }) : '';
+
+// ---------- mensagens que chegam pela URL ----------
+const qs = new URLSearchParams(location.search);
+const MSG = {
+  credenciais: ['warn', 'Antes de conectar a conta, salve o App ID e a chave secreta (passo 2).'],
+  url: ['err', 'O seu aplicativo no Mercado Livre não tem a URI de redirect deste painel. Cadastre no DevCenter (passo 1) e tente de novo.'],
+};
+if(MSG[qs.get('erro')]) $('aviso').replaceChildren(caixa(...MSG[qs.get('erro')]));
+if(qs.toString()) history.replaceState(null, '', location.pathname);
+
+// ---------- desenho ----------
+let ultimo = null;
+function pintar(c){
+  ultimo = c;
+  $('uCallback').value = c.redirect || '—';
+
+  // situação da URI x cadastro no ML
+  const s = c.situacao || {};
+  const box = $('situacao'); box.replaceChildren();
+  if(!c.tem_credenciais){
+    box.append(caixa('warn', 'Cadastre a URI no DevCenter e depois faça o passo 2.',
+      ['Assim que o App ID e a chave estiverem salvos, o painel confere sozinho se o cadastro está certo.']));
+  } else if(s.estado === 'confere'){
+    box.append(caixa('ok', 'Conferido no Mercado Livre: o seu aplicativo tem esta URI.'));
+  } else if(s.estado === 'divergente'){
+    box.append(caixa('err', 'O aplicativo no Mercado Livre não tem esta URI.', [
+      ['Cadastradas hoje: ', { code: (s.cadastradas || []).join(', ') || '(nenhuma)' }],
+      'Abra o DevCenter, acrescente a URI acima em "URIs de redirect" e salve. Depois clique em "Verificar novamente".']));
+  } else {
+    // Sem ler o cadastro (app sem Client Credentials, ML fora do ar) o login ainda funciona:
+    // se a URI estiver errada, o próprio ML avisa na tela de autorização.
+    box.append(caixa('warn', 'Não deu para conferir o cadastro no Mercado Livre.',
+      [s.erro_ml ? s.erro_ml : 'Tudo bem: se a URI estiver cadastrada, o passo 3 funciona mesmo assim.']));
+  }
+  for(const d of (s.dicas || [])) box.append(caixa('warn', d));
+
+  // credenciais
+  const cred = $('credStatus'); cred.replaceChildren();
+  if(!c.app_id && c.plugin){
+    preencherDoPlugin();
+    cred.append(caixa('ok', 'Encontrei o aplicativo do plugin hn-anuncio-ml e já preenchi acima.',
+      ['Confira e clique em "Salvar e validar": o painel testa no Mercado Livre antes de usar.']));
+  } else if(c.credenciais_invalidas){
+    cred.append(caixa('err', 'O Mercado Livre recusou o App ID e a chave salvos.', [
+      ['App ID: ', { code: c.app_id }], 'A chave foi trocada no DevCenter? Copie as atuais de lá e salve acima.']));
+  } else if(c.app_id){
+    if(!$('appId').value) $('appId').placeholder = c.app_id;
+    const linhas = [['App ID salvo: ', { code: c.app_id }]];
+    if(c.app){
+      if(c.app.nome) linhas.push(['Aplicativo: ', c.app.nome]);
+      const faltam = ['authorization_code','client_credentials','refresh_token'].filter((f) => !c.app.fluxos.includes(f));
+      if(faltam.length) linhas.push('Fluxos OAuth que faltam marcar: ' + faltam.join(', '));
+      if(c.app.bloqueado) linhas.push('O Mercado Livre marcou este aplicativo como BLOQUEADO.');
+    }
+    cred.append(caixa(c.app && !c.app.bloqueado ? 'ok' : 'warn',
+      c.app ? 'Credenciais válidas.' : 'Credenciais salvas.', linhas));
+  }
+
+  // Sem conta, as outras telas não têm o que mostrar (o servidor também as redireciona).
+  for(const a of document.querySelectorAll('.lateral nav a:not([aria-current]), .cfg-service-card a[href="/navegador.html"]')){
+    a.classList.toggle('travado', !c.contas);
+    a.toggleAttribute('aria-disabled', !c.contas);
+    a.tabIndex = c.contas ? 0 : -1;
+    a.title = c.contas ? '' : 'Conecte uma conta do Mercado Livre para liberar';
+  }
+
+  // contas
+  const ul = $('contas'); ul.replaceChildren();
+  for(const k of (c.lista_contas || [])){
+    const li = document.createElement('li');
+    li.textContent = `${k.nickname} · ${k.site_id} · conectada em ${dataHora(k.conectada_em)}`;
+    ul.appendChild(li);
+  }
+  // Contas que o plugin já conectou e este painel ainda não. O token do plugin fica lá
+  // (é de uso único); aqui é só um login a mais, e o ML pula a tela de autorização.
+  const sug = $('sugestaoPlugin'); sug.replaceChildren();
+  const doPlugin = c.tem_credenciais && c.app_id === c.plugin?.app_id ? c.plugin.contas.filter((k) => !k.conectada) : [];
+  if(doPlugin.length){
+    sug.append(caixa('ok', 'Encontrei no plugin hn-anuncio-ml: ' + doPlugin.map((k) => k.nickname || `conta ${k.id}`).join(', ') + '.',
+      ['Conecte aqui também: estando logado no Mercado Livre com ela, é um clique, porque o aplicativo já é o mesmo.']));
+  }
+  const pode = !!(c.tem_credenciais && s.estado !== 'divergente');
+  const btn = $('btnConectar');
+  btn.setAttribute('aria-disabled', String(!pode));
+  btn.textContent = c.contas ? 'Conectar outra conta' : 'Conectar conta';
+  // Logado no ML com uma conta que já autorizou o app, o ML pula a tela de autorização e
+  // reconecta a MESMA conta na hora (medido em 19/09/2026). Para outra conta, é preciso trocar lá.
+  $('conectarDica').textContent = pode ? (c.contas ? 'Para conectar OUTRA conta: antes, saia do Mercado Livre neste '
+    + 'navegador (ou use uma janela anônima) e entre com a outra conta. Logado na mesma, o ML reconecta ela direto, '
+    + 'sem mostrar a tela de autorização.' : '') : !c.tem_credenciais ? 'Faça o passo 2 primeiro.'
+    : 'Cadastre a URI de redirect no DevCenter primeiro.';
+
+  // passos
+  // URI não verificável conta como feita quando já há conta: o login provou que está certa.
+  const passo1 = s.estado === 'confere' || (s.estado === 'nao_verificado' && !!c.contas);
+  $('passo1').className = passo1 ? 'feito' : ''; $('n1').classList.toggle('feito', passo1);
+  $('passo2').className = c.tem_credenciais ? 'feito' : ''; $('n2').classList.toggle('feito', !!c.tem_credenciais);
+  $('passo3').className = c.contas ? 'feito' : ''; $('n3').classList.toggle('feito', !!c.contas);
+  const atual = !passo1 ? $('passo1') : !c.tem_credenciais ? $('passo2') : !c.contas ? $('passo3') : null;
+  document.querySelectorAll('#passos li').forEach((li) => li.removeAttribute('aria-current'));
+  if(atual) atual.setAttribute('aria-current', 'step');
+
+  // scraper
+  const sc = c.scraper;
+  const se = $('scrEstado'); se.replaceChildren();
+  if(!sc){ se.append(pilula('warn', 'não gerenciado'), document.createTextNode(' — suba com "npm start" para ele vir junto')); $('scrUrl').textContent = '—'; }
+  else {
+    const tipo = sc.estado === 'rodando' ? 'ok' : (sc.estado === 'iniciando' || sc.estado === 'reiniciando') ? 'warn' : 'err';
+    const nome = { rodando:'rodando', iniciando:'subindo…', reiniciando:'reiniciando…', indisponivel:'indisponível', parado:'parado' }[sc.estado] || sc.estado;
+    se.append(pilula(tipo, nome));
+    if(sc.reinicios) se.append(document.createTextNode(` · reiniciado ${sc.reinicios}x`));
+    if(sc.erro && sc.estado !== 'rodando') se.append(document.createTextNode(' — ' + sc.erro));
+    $('scrUrl').textContent = sc.url;
+  }
+  $('btnReiniciar').disabled = !c.scraper_gerenciado;
+
+  // Claude Code (MCP). Sem conta conectada ele até liga, mas não tem o que responder —
+  // por isso o estado aqui espelha o passo 3, e não "o servidor está de pé".
+  const m = c.mcp || {};
+  const me = $('mcpEstado'); me.replaceChildren();
+  if(!c.contas){
+    me.append(pilula('warn', 'falta conectar a conta'), document.createTextNode(' — faça o passo 3 acima'));
+  } else {
+    me.append(pilula('ok', 'pronto para usar'));
+    me.append(document.createTextNode(m.escrita === false
+      ? ' — só consulta (ML_MCP_ESCRITA=0 no .env)'
+      : ' — consulta, publica e edita'));
+  }
+  $('mcpPasta').textContent = m.pasta || '—';
+  $('mcpComando').value = m.pasta ? `cd "${m.pasta}" && claude` : '—';
+  document.querySelector('[data-copiar="mcpComando"]').disabled = !m.pasta;
+
+  // Resumo do topo: quatro sinais reais, não um número fixo.
+  const modulos = [passo1, !!c.tem_credenciais, !!c.contas, c.scraper?.estado === 'rodando'];
+  const feitos = modulos.filter(Boolean).length;
+  const total = modulos.length;
+  $('cfgScore').textContent = `${feitos}/${total}`;
+  $('cfgAnel').style.background =
+    'radial-gradient(circle at center,#0b2534 56%,transparent 57%),'
+    + `conic-gradient(#2bd3f4 ${Math.round((feitos / total) * 100)}%,rgba(255,255,255,.09) 0)`;
+
+  const completo = feitos === total;
+  $('cfgResumo').textContent = completo ? 'Tudo configurado' : 'Configuração em andamento';
+  $('cfgResumoSub').textContent = completo
+    ? 'Os quatro módulos estão no ar.'
+    : `Faltam ${total - feitos} de ${total}. Conclua os itens essenciais primeiro.`;
+
+  const chip = $('cfgChip');
+  chip.classList.toggle('cfg-status-safe', completo);
+  chip.replaceChildren(document.createElement('i'),
+    document.createTextNode(completo ? ' Pronto' : ' Em configuração'));
+}
+
+// Pré-preenche o passo 2 com o app do plugin, uma vez só (não atropela o que o aluno digitar).
+let preenchido = false;
+async function preencherDoPlugin(){
+  if(preenchido || $('appId').value || $('secret').value) return;
+  preenchido = true;
+  const p = await api('/api/config/app-do-plugin').catch(() => null);
+  if(p && !$('appId').value && !$('secret').value){ $('appId').value = p.app_id; $('secret').value = p.secret; }
+}
+
+async function carregar(forcar){
+  try{
+    const [c, k] = await Promise.all([api('/api/config' + (forcar ? '?forcar=1' : '')), api('/api/accounts')]);
+    c.lista_contas = k.contas || [];
+    pintar(c);
+    return c;
+  }catch(e){
+    $('aviso').replaceChildren(caixa('err', 'Não consegui falar com o painel.', [e.message]));
+  }
+}
+
+// Atualiza sozinho: rápido enquanto algo está subindo, devagar quando está tudo de pé.
+// Abrir a tela já relê o cadastro no ML; depois, cache do servidor.
+async function ciclo(forcar){
+  const c = await carregar(forcar);
+  const subindo = !c || ['iniciando','reiniciando'].includes(c.scraper?.estado);
+  setTimeout(() => ciclo(false), subindo ? 4000 : 20000);
+}
+ciclo(true);
+
+// ---------- ações ----------
+document.querySelectorAll('[data-copiar]').forEach((b) => b.onclick = async () => {
+  const campo = $(b.dataset.copiar);
+  try{ await navigator.clipboard.writeText(campo.value); }
+  catch{ campo.select(); document.execCommand('copy'); }
+  const antes = b.textContent; b.textContent = 'Copiado'; setTimeout(() => b.textContent = antes, 1500);
+});
+
+// Conectar abre o ML numa aba nova; o aluno volta com o endereço e cola aqui.
+$('btnConectar').addEventListener('click', () => { $('formCodigo').hidden = false; setTimeout(() => $('codigo').focus(), 0); });
+
+$('formCodigo').onsubmit = async (ev) => {
+  ev.preventDefault();
+  const b = $('btnCodigo'); b.disabled = true; b.textContent = 'Conectando…';
+  const st = $('codigoStatus');
+  try{
+    const r = await post('/api/config/conectar', { texto: $('codigo').value });
+    $('codigo').value = ''; $('formCodigo').hidden = true;
+    const ir = document.createElement('a'); ir.href = '/'; ir.className = 'botao'; ir.textContent = 'Ir para o Início';
+    st.replaceChildren(caixa('ok', `Conta ${r.nickname} conectada. As outras telas foram liberadas.`), ir);
+    await carregar(false);
+  }catch(e){
+    st.replaceChildren(caixa('err', 'Não conectou.', [e.message]));
+  }finally{ b.disabled = false; b.textContent = 'Concluir conexão'; }
+};
+
+$('btnVerSecret').onclick = () => {
+  const i = $('secret'), mostrar = i.type === 'password';
+  i.type = mostrar ? 'text' : 'password';
+  $('btnVerSecret').textContent = mostrar ? 'Ocultar' : 'Mostrar';
+  $('btnVerSecret').setAttribute('aria-pressed', String(mostrar));
+};
+
+$('formCred').onsubmit = async (ev) => {
+  ev.preventDefault();
+  const b = $('btnSalvarCred'); b.disabled = true; b.textContent = 'Validando no Mercado Livre…';
+  const st = $('credErro'); st.replaceChildren();
+  try{
+    const r = await post('/api/config/credenciais', { app_id: $('appId').value, secret: $('secret').value });
+    $('secret').value = ''; $('appId').value = '';
+    await carregar(false);
+    if(r.avisos?.length) st.append(...r.avisos.map((a) => caixa('warn', a)));
+  }catch(e){
+    st.replaceChildren(caixa('err', 'Não salvei.', [e.message,
+      ...(preenchido ? ['Esses dados vieram do plugin hn-anuncio-ml: a chave de lá pode estar desatualizada. Copie a atual no DevCenter e cole acima.'] : [])]));
+  }finally{ b.disabled = false; b.textContent = 'Salvar e validar'; }
+};
+
+$('btnTestarSessao').onclick = async () => {
+  const b = $('btnTestarSessao'), d = $('scrSessao');
+  b.disabled = true; d.textContent = 'testando (abre uma busca no Mercado Livre, leva uns segundos)…';
+  try{
+    const r = await api('/api/scraper?forcar=1');
+    d.replaceChildren();
+    if(!r.ligado) d.append(pilula('err', 'scraper fora do ar'), document.createTextNode(' ' + (r.motivo || '')));
+    else if(r.sessao === 'valida') d.append(pilula('ok', 'válida'));
+    else if(r.sessao === 'em_uso') d.append(pilula('warn', 'em uso'), document.createTextNode(' — ' + (r.acao || '')));
+    else d.append(pilula('err', 'bloqueada'), document.createTextNode(' — faça o login ou resolva o reCAPTCHA na aba Navegador'));
+  }catch(e){ d.textContent = e.message; }
+  finally{ b.disabled = false; }
+};
+
+$('btnReiniciar').onclick = async () => {
+  try{ await post('/api/scraper/reiniciar'); await carregar(false); }
+  catch(e){ $('aviso').replaceChildren(caixa('err', 'Não reiniciou.', [e.message])); }
+};
+
+</script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+/* Menu lateral e barra de título, iguais em todas as telas do painel.
+   Carregado DEPOIS do <style> de cada página: o que estiver aqui vence o que sobrou lá. */
+
+body{margin:0}
+.app{display:flex;align-items:stretch;min-height:100vh}
+
+/* ---- coluna da esquerda (visual no tema-hn.css) ---- */
+.lateral{position:sticky;top:0;align-self:flex-start;height:100vh;width:304px;flex:0 0 304px;
+  display:flex;flex-direction:column;padding:31px 19px 21px;overflow-y:auto;box-sizing:border-box}
+
+/* ---- barra de título da página ---- */
+.conteudo{flex:1;min-width:0;display:flex;flex-direction:column}
+header{background:#fff;border-bottom:1px solid #e0e2e6;padding:14px 24px;position:sticky;top:0;z-index:30;
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px 16px;box-shadow:none}
+header h1{font-size:18px;margin:0;font-weight:700;letter-spacing:-.01em;color:#1a1a1a}
+header form{margin:0}
+header form button{background:#1a1a1a;color:#fff;border:0;border-radius:8px;
+  padding:8px 16px;font-size:13px;font-weight:600}
+.cabecaNota{font-size:13px;margin:0;color:#5f6368;background:none;padding:0;border-radius:0}
+
+#barraContas{display:flex;align-items:center;gap:8px;font-size:13px;flex-wrap:wrap}
+#barraContas label{color:#5f6368}
+#barraContas select{width:auto;padding:7px 10px;font-size:13px;border:1px solid #d5d7db;
+  border-radius:8px;background:#fff;font-family:inherit;box-shadow:none}
+#barraContas a{color:#1a1a1a;text-decoration:none;font-weight:600;line-height:1.3;
+  padding:7px 12px;border:1px solid #d5d7db;border-radius:8px;transition:background .15s ease}
+#barraContas a:hover{background:#f2f3f5}
+
+/* ---- celular: a coluna vira uma faixa no topo ---- */
+@media (max-width:900px){
+  .app{flex-direction:column}
+  .lateral{position:static;height:auto;width:auto;flex:none;flex-direction:row;align-items:center;
+    gap:8px;padding:10px 12px;overflow-x:auto}
+  header{position:static;padding:12px 16px}
+}

@@ -1,0 +1,781 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cadastro de Produtos — Mercado Livre</title>
+<style>
+  :root{
+    --bg:#f2f3f5; --card:#fff; --ink:#1a1a1a; --muted:#5f6368; --line:#e0e2e6;
+    --brand:#2968c8; --brand-ink:#fff; --ok:#00a650; --err:#d93025; --radius:8px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;color:var(--ink);
+    font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  main{max-width:780px;margin:0 auto;padding:28px 16px 72px}
+  fieldset{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:22px 24px 26px;margin:0 0 32px}
+  legend{font-weight:600;font-size:14px;padding:0 8px;color:var(--muted)}
+  label{display:block;margin:16px 0 4px;font-size:13px;font-weight:500}
+  fieldset > label:first-of-type, #attrs > div:first-child > label{margin-top:4px}
+  .hint{font-weight:400;color:var(--muted);font-size:12px}
+  input,select,textarea{width:100%;padding:10px 12px;border:1px solid var(--line);
+    border-radius:var(--radius);font:inherit;background:#fff;color:inherit}
+  input:focus,select:focus,textarea:focus,button:focus-visible,#drop:focus-visible{outline:2px solid var(--brand);outline-offset:1px}
+  textarea{min-height:90px;resize:vertical}
+  .row{display:flex;gap:12px;flex-wrap:wrap}
+  .row>div{flex:1 1 160px}
+  .inline{display:flex;gap:8px;align-items:flex-end}
+  .inline input{flex:1}
+  button{background:var(--brand);color:var(--brand-ink);border:0;border-radius:var(--radius);
+    padding:11px 18px;font:inherit;font-weight:600;cursor:pointer}
+  button:hover{filter:brightness(.94)}
+  button.ghost{background:#eef3fd;color:var(--brand)}
+  button[disabled]{opacity:.5;cursor:not-allowed}
+  .check{display:flex;align-items:center;gap:8px;margin:12px 0 0;font-size:14px}
+  .check input{width:auto}
+  #sugestoes{list-style:none;padding:0;margin:8px 0 0;display:flex;flex-wrap:wrap;gap:8px}
+  #sugestoes button{background:#eef3fd;color:var(--brand);font-size:13px;padding:6px 10px;font-weight:500}
+  #catInfo{font-size:13px;color:var(--muted);margin-top:6px}
+  /* campo que o ML pediu depois de recusar */
+  .alertaMarca{background:#fff4e0;border:1px solid #f0c46b;color:#7a4a00;border-radius:var(--radius);padding:10px 12px;margin-top:8px;font-size:14px}
+  .alertaMarca p{margin:0 0 8px}
+  #attrs .pedido{background:#fff4e0;border:1px solid #f0c46b;border-radius:var(--radius);padding:2px 12px 12px;margin:12px 0}
+  /* tabela de medidas */
+  #gradeCriar{margin-top:18px}
+  #gradeCriar summary{cursor:pointer;color:#1a5fc4;font-weight:600}
+  .gradeRolagem{overflow-x:auto;margin-top:12px}
+  .gradeTab{width:100%;border-collapse:collapse;font-size:14px}
+  .gradeTab th{text-align:left;font-size:12px;font-weight:600;color:var(--muted);padding:0 6px 6px 0}
+  .gradeTab td{padding:0 6px 8px 0;vertical-align:top}
+  .gradeTab input,.gradeTab select{padding:8px 10px;min-width:84px}
+  .gradeTab .x{background:transparent;color:var(--muted);padding:8px;font-size:18px;line-height:1}
+  #msg{margin-top:16px;padding:14px;border-radius:var(--radius);display:none;white-space:pre-wrap;font-size:14px}
+  #msg.ok{display:block;background:#e6f4ea;color:#14532d;border:1px solid #a6dcb6}
+  #msg.err{display:block;background:#fce8e6;color:#7f1d1d;border:1px solid #f0b3ad}
+  #msg a{color:inherit}
+  .acoes{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+  @media (max-width:520px){ .inline{flex-wrap:wrap} .inline input{flex:1 1 100%} }
+
+  /* área de arrastar fotos */
+  #drop{border:2px dashed var(--line);border-radius:var(--radius);background:#fafbfc;
+    padding:32px 20px;text-align:center;cursor:pointer;transition:border-color .15s,background .15s}
+  #drop:hover{border-color:var(--brand);background:#f5f9ff}
+  #drop.dentro{border-color:var(--brand);background:#eef3fd}
+  #drop strong{display:block;font-size:15px;margin-bottom:4px}
+  #thumbs{list-style:none;padding:0;margin:14px 0 0;display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:12px}
+  #thumbs li{position:relative;aspect-ratio:1;border:1px solid var(--line);border-radius:var(--radius);
+    overflow:hidden;background:#fff}
+  #thumbs img{width:100%;height:100%;object-fit:cover;display:block}
+  #thumbs .capa{position:absolute;left:0;bottom:0;right:0;background:rgba(0,0,0,.66);color:#fff;
+    font-size:11px;text-align:center;padding:3px}
+  #thumbs .x{position:absolute;top:4px;right:4px;width:24px;height:24px;padding:0;border-radius:50%;
+    background:rgba(0,0,0,.6);color:#fff;font-size:15px;line-height:1;display:grid;place-items:center}
+  #thumbs .carregando{display:grid;place-items:center;height:100%;font-size:12px;color:var(--muted)}
+</style>
+<link rel="stylesheet" href="/layout.css">
+<link rel="stylesheet" href="/tema-hn.css?v=5">
+</head>
+<body>
+<div class="hn-fundo" aria-hidden="true"><div class="hn-emblema"><span class="hn-onda"></span><span class="hn-onda"></span><span class="hn-onda"></span><img src="/logo-emblema.png" alt=""></div></div>
+
+<div class="app">
+  <aside class="lateral" aria-label="Menu principal do Gestor ML">
+  <a class="hn-marca" href="/" aria-label="Gestor ML, por Henrique Niada: ir para o Início"><img src="/logo-gestor-ml.png" alt="" width="600" height="155"></a>
+  <div class="hn-rotulo">SEU ESPAÇO DE GESTÃO</div>
+  <nav aria-label="Navegação principal">
+    <a href="/"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7M5.5 9v11h5v-6h3v6h5V9"/></svg><span>Início</span><svg class="seta" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></a>
+    <a href="/publicar.html" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="5"/><path d="M12 8v8m-4-4h8"/></svg><span>Publicar</span><svg class="seta" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></a>
+    <a href="/anuncios.html"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 9h8m-8 4h5m-5 4h3"/></svg><span>Meus anúncios</span><svg class="seta" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></a>
+    <a href="/navegador.html"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 12h18M5 6.5c4 2 10 2 14 0M5 17.5c4-2 10-2 14 0"/></svg><span>Navegador</span><svg class="seta" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></a>
+    <a href="/configuracao.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h5m4 0h7M4 17h9m4 0h3"/><circle cx="11" cy="7" r="2"/><circle cx="15" cy="17" r="2"/></svg><span>Configurações</span><svg class="seta" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></a>
+  </nav>
+  <div class="hn-social">
+    <a class="hn-insta" href="https://www.instagram.com/henriqueniada/" target="_blank" rel="noopener noreferrer" aria-label="Seguir @henriqueniada: abrir perfil no Instagram em nova aba">
+      <div class="hn-capa">
+        <div class="hn-capa-meta"><span><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5.5"/><circle cx="12" cy="12" r="4.1"/><circle cx="17.5" cy="6.5" r=".7" fill="currentColor" stroke="none"/></svg>INSTAGRAM</span><span class="hn-vale">VALE SEGUIR</span></div>
+        <h2>Conexão<em>direta.</em></h2>
+        <svg class="hn-ig-gigante" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5.5"/><circle cx="12" cy="12" r="4.1"/><circle cx="17.5" cy="6.5" r=".7" fill="currentColor" stroke="none"/></svg>
+        <svg class="hn-estrela" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c0 7-3 10-10 10 7 0 10 3 10 10 0-7 3-10 10-10-7 0-10-3-10-10Z" fill="currentColor" stroke="none"/></svg>
+      </div>
+      <div class="hn-ticket">
+        <div class="hn-ticket-meta"><span class="hn-avatar" aria-hidden="true">HN</span><div class="hn-perfil">Henrique Niada<small>Do Gestor ML para o seu feed.</small></div><svg class="hn-ponteiro" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c0 7-3 10-10 10 7 0 10 3 10 10 0-7 3-10 10-10-7 0-10-3-10-10Z" fill="currentColor" stroke="none"/></svg></div>
+        <div class="hn-arroba"><span>@</span>henriqueniada</div>
+      </div>
+      <div class="hn-picote" aria-hidden="true"></div>
+      <div class="hn-ticket-pe"><p><strong>Vamos nos conectar?</strong>Siga no Instagram.</p><span class="hn-ticket-seta" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12"/></svg></span></div>
+    </a>
+  </div>
+  <footer class="hn-rodape"><div class="hn-rodape-titulo">Sistema gratuito <span><i aria-hidden="true"></i>USO LOCAL</span></div><p>Disponibilizado por <strong>Henrique Niada.</strong><br>Roda no seu computador.</p></footer>
+</aside>
+  <div class="conteudo">
+<header>
+  <h1>Cadastro de Produtos — Mercado Livre</h1>
+  <div id="barraContas">
+    <label for="selConta" class="hint" id="rotuloConta">Conta</label>
+    <select id="selConta" aria-describedby="rotuloConta"></select>
+    <a href="/configuracao.html#passo-conta" id="addConta">+ conectar outra</a>
+  </div>
+</header>
+
+
+<main>
+<form id="form" novalidate>
+
+  <fieldset>
+    <legend>Produto</legend>
+
+    <label for="title">Título <span class="hint">— caracteres usados:</span></label>
+    <div class="inline">
+      <input id="title" name="title" maxlength="60" required data-contador="60"
+             placeholder="Camiseta Masculina Algodão Gola V Preta">
+      <button type="button" class="ghost" id="btnPrever">Sugerir categoria</button>
+    </div>
+    <ul id="sugestoes"></ul>
+
+    <label for="category_id">Categoria</label>
+    <input id="category_id" name="category_id" required placeholder="MLB31447" data-mascara="categoria" spellcheck="false" autocapitalize="characters">
+    <div id="catInfo"></div>
+
+    <div class="row">
+      <div>
+        <label for="price">Preço (R$)</label>
+        <input id="price" name="price" required placeholder="0,00" data-mascara="moeda">
+      </div>
+      <div>
+        <label for="quantity">Estoque</label>
+        <input id="quantity" name="quantity" value="1" required data-mascara="inteiro" data-max="99999">
+      </div>
+      <div>
+        <label for="condition">Condição</label>
+        <select id="condition" name="condition">
+          <option value="new">Novo</option>
+          <option value="used">Usado</option>
+        </select>
+      </div>
+      <div>
+        <label for="listing_type_id">Tipo de anúncio</label>
+        <select id="listing_type_id" name="listing_type_id">
+          <option value="gold_special">Clássico</option>
+          <option value="gold_pro">Premium</option>
+        </select>
+      </div>
+    </div>
+  </fieldset>
+
+  <fieldset id="fsAttrs" hidden>
+    <legend>Ficha técnica <span class="hint">— obrigatória nesta categoria</span></legend>
+    <div id="attrs"></div>
+  </fieldset>
+
+  <!-- Roupas e calçados: o ML exige a tabela de medidas e o tamanho do anúncio -->
+  <fieldset id="fsGrade" hidden>
+    <legend>Tabela de medidas <span class="hint">— obrigatória em roupas e calçados</span></legend>
+    <p class="hint" id="gradeDica" aria-live="polite">Escolha a Marca e o Gênero na ficha técnica acima.</p>
+    <div class="row">
+      <div>
+        <label for="gradeTabela">Tabela</label>
+        <select id="gradeTabela" disabled><option value="">—</option></select>
+      </div>
+      <div>
+        <label for="gradeLinha">Tamanho deste anúncio <span class="hint">— vale como o Tamanho do anúncio</span></label>
+        <select id="gradeLinha" disabled><option value="">—</option></select>
+      </div>
+    </div>
+    <details id="gradeCriar" hidden>
+      <summary>Criar uma tabela de medidas</summary>
+      <p class="hint">A tabela fica salva na sua conta e serve para os próximos anúncios desta marca e gênero.
+        As medidas aparecem para o comprador: use as <strong>medidas reais</strong>.</p>
+      <label for="gradeNome">Nome da tabela</label>
+      <input id="gradeNome" maxlength="60" autocomplete="off" aria-describedby="gradeNomeDica" data-mascara="nome-tabela" data-contador="60">
+      <p class="hint" id="gradeNomeDica" style="margin:4px 0 0">Só letras, números e espaços.</p>
+      <div class="gradeRolagem">
+        <table class="gradeTab">
+          <thead><tr id="gradeCab"></tr></thead>
+          <tbody id="gradeLinhas"></tbody>
+        </table>
+      </div>
+      <div class="acoes" style="margin-top:12px">
+        <button type="button" class="ghost" id="gradeMais">+ tamanho</button>
+        <button type="button" id="gradeCriarBtn">Criar tabela</button>
+      </div>
+      <p class="hint" id="gradeCriarMsg" role="status" aria-live="polite"></p>
+    </details>
+  </fieldset>
+
+  <fieldset>
+    <legend>Fotos e descrição</legend>
+
+    <label id="lblFotos">Fotos <span class="hint" id="contaFotos">— a primeira é a capa do anúncio</span></label>
+    <div id="drop" tabindex="0" role="button" aria-labelledby="lblFotos" aria-describedby="dropHint">
+      <strong>Arraste as fotos aqui</strong>
+      <span class="hint" id="dropHint">ou clique para escolher · cole com Ctrl+V · JPG, PNG, WEBP ou GIF até 10&nbsp;MB</span>
+    </div>
+    <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp,image/gif" multiple hidden>
+    <ul id="thumbs" aria-live="polite"></ul>
+
+    <label for="description">Descrição</label>
+    <textarea id="description" name="description" placeholder="Detalhes, medidas, composição, garantia…"></textarea>
+  </fieldset>
+
+  <fieldset>
+    <legend>Envio</legend>
+    <label for="shipping_mode">Modo</label>
+    <select id="shipping_mode" name="shipping_mode">
+      <option value="me2">Mercado Envios</option>
+      <option value="not_specified">Combinar com o comprador</option>
+    </select>
+    <div class="check"><input type="checkbox" id="free_shipping" name="free_shipping"><label for="free_shipping" style="margin:0">Frete grátis</label></div>
+    <div class="check"><input type="checkbox" id="local_pick_up" name="local_pick_up"><label for="local_pick_up" style="margin:0">Aceita retirada em mãos</label></div>
+  </fieldset>
+
+  <div class="acoes">
+    <button type="submit" id="btnSalvar">Publicar anúncio</button>
+    <span class="hint">O anúncio entra no ar imediatamente na sua conta.</span>
+  </div>
+  <div id="msg" role="status" aria-live="polite"></div>
+</form>
+<div class="hn-credito">
+  <span class="selo-livre">Gratuito</span>
+  <span>Sistema <b>gratuito</b>, disponibilizado pelo <b>Henrique Niada</b>. Roda no seu computador &mdash; seus dados e suas chaves nao saem daqui.</span>
+</div>
+</main>
+  </div>
+</div>
+
+<script src="/mascaras.js"></script>
+<script>
+const $ = (id) => document.getElementById(id);
+const msg = $('msg');
+function aviso(texto, tipo){ msg.className = tipo; msg.textContent = texto; msg.scrollIntoView({block:'nearest'}); }
+
+async function api(path, opts){
+  const r = await fetch(path, opts);
+  const j = await r.json();
+  if(!r.ok){
+    const e = new Error([j.error, j.detail && JSON.stringify(j.detail)].filter(Boolean).join('\n'));
+    e.dados = j;   // ex.: faltando = campos que o ML pediu
+    throw e;
+  }
+  return j;
+}
+
+// ---------- contas conectadas ----------
+const selConta = $('selConta');
+
+async function carregarContas(){
+  try{
+    const { ativa, contas } = await api('/api/accounts');
+    selConta.innerHTML = '';
+    if(!contas.length){
+      selConta.hidden = true;
+      $('rotuloConta').textContent = 'nenhuma conta conectada —';
+      $('addConta').textContent = 'conectar Mercado Livre →';
+      return;
+    }
+    selConta.hidden = false;
+    $('rotuloConta').textContent = 'Conta';
+    $('addConta').textContent = '+ conectar outra';
+    for(const c of contas){
+      const o = document.createElement('option');   // textContent: nickname vem do ML, não confiar
+      o.value = c.ml_user_id;
+      o.textContent = `${c.nickname} · ${c.site_id} · ${c.produtos} anúncio(s)`;
+      o.selected = c.ml_user_id === ativa;
+      selConta.appendChild(o);
+    }
+  }catch(e){
+    selConta.hidden = true;
+    $('rotuloConta').textContent = 'sem conexão —';
+    $('addConta').textContent = 'conectar Mercado Livre →';
+  }
+}
+
+selConta.onchange = async () => {
+  try{
+    await api('/api/accounts/active', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ ml_user_id: Number(selConta.value) }),
+    });
+    location.reload(); // troca de conta muda categoria, fotos e limites: recomeça limpo
+  }catch(e){ aviso('Não trocou de conta: ' + e.message, 'err'); }
+};
+
+carregarContas();
+
+// ---------- fotos: arrastar, clicar ou colar ----------
+let fotos = [];        // [{ id, thumb }] já enviadas ao Mercado Livre
+let maxFotos = 12;
+
+function pintarFotos(){
+  $('thumbs').innerHTML = '';
+  fotos.forEach((f, i) => {
+    const li = document.createElement('li');
+    const img = document.createElement('img');
+    img.src = f.thumb; img.alt = `Foto ${i+1}`;
+    const x = document.createElement('button');
+    x.type = 'button'; x.className = 'x'; x.textContent = '×';
+    x.setAttribute('aria-label', `Remover foto ${i+1}`);
+    x.onclick = () => { fotos.splice(i,1); pintarFotos(); };
+    li.append(img, x);
+    if(i === 0){ const c = document.createElement('span'); c.className='capa'; c.textContent='capa'; li.appendChild(c); }
+    $('thumbs').appendChild(li);
+  });
+  $('contaFotos').textContent = fotos.length
+    ? `— ${fotos.length} de ${maxFotos} · a primeira é a capa`
+    : '— a primeira é a capa do anúncio';
+}
+
+function cardCarregando(){
+  const li = document.createElement('li');
+  li.innerHTML = '<div class="carregando">enviando…</div>';
+  $('thumbs').appendChild(li);
+  return li;
+}
+
+// O ML recusa imagem com menos de 500px no maior lado — medimos antes de gastar o upload.
+async function medir(arq){
+  try{
+    const bmp = await createImageBitmap(arq);
+    const w = bmp.width, h = bmp.height;
+    bmp.close?.();
+    return { w, h, ok: Math.max(w, h) >= 500 };
+  }catch{ return { ok: true }; } // não deu para medir: deixa o ML decidir
+}
+
+async function enviarFotos(lista){
+  const arquivos = [...lista].filter(f => f.type.startsWith('image/'));
+  if(!arquivos.length) return aviso('Solte um arquivo de imagem (JPG, PNG, WEBP ou GIF).', 'err');
+  for(const arq of arquivos){
+    if(fotos.length >= maxFotos){ aviso(`Esta categoria aceita no máximo ${maxFotos} fotos.`, 'err'); break; }
+    const d = await medir(arq);
+    if(!d.ok){
+      aviso(`"${arq.name}" tem ${d.w}×${d.h}px. O Mercado Livre exige no mínimo 500px `
+        + `no maior lado — o ideal é 1200×1200 para permitir zoom.`, 'err');
+      continue;
+    }
+    const card = cardCarregando();
+    try{
+      const r = await api('/api/pictures', { method:'POST', headers:{'Content-Type':arq.type}, body:arq });
+      fotos.push({ id:r.id, thumb:r.thumb || URL.createObjectURL(arq) });
+      msg.className = '';
+    }catch(e){ aviso(`Não enviou "${arq.name}":\n${e.message}`, 'err'); }
+    finally{ card.remove(); pintarFotos(); }
+  }
+}
+
+const drop = $('drop');
+drop.onclick = () => $('fileInput').click();
+drop.onkeydown = (e) => { if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); $('fileInput').click(); } };
+$('fileInput').onchange = (e) => { enviarFotos(e.target.files); e.target.value = ''; };
+['dragenter','dragover'].forEach(ev => drop.addEventListener(ev, (e) => {
+  e.preventDefault(); drop.classList.add('dentro');
+}));
+['dragleave','drop'].forEach(ev => drop.addEventListener(ev, (e) => {
+  e.preventDefault(); drop.classList.remove('dentro');
+}));
+drop.addEventListener('drop', (e) => enviarFotos(e.dataTransfer.files));
+// impede o browser de abrir a imagem se ela cair fora da área
+['dragover','drop'].forEach(ev => document.addEventListener(ev, (e) => e.preventDefault()));
+document.addEventListener('paste', (e) => {
+  const imgs = [...(e.clipboardData?.files || [])].filter(f => f.type.startsWith('image/'));
+  if(imgs.length){ e.preventDefault(); enviarFotos(imgs); }
+});
+
+// ---------- categoria ----------
+$('btnPrever').onclick = async () => {
+  const q = $('title').value.trim();
+  if(!q) return aviso('Escreva o título antes de pedir a sugestão.', 'err');
+  const lista = $('sugestoes'); lista.innerHTML = '<li class="hint">buscando…</li>';
+  try{
+    const r = await api('/api/predict?q=' + encodeURIComponent(q));
+    const vistos = new Set();
+    lista.innerHTML = '';
+    r.filter(c => !vistos.has(c.category_id) && vistos.add(c.category_id)).forEach(c => {
+      const li = document.createElement('li');
+      const b = document.createElement('button');
+      b.type = 'button'; b.textContent = `${c.category_name} (${c.category_id})`;
+      b.onclick = () => { $('category_id').value = c.category_id; carregarCategoria(); };
+      li.appendChild(b); lista.appendChild(li);
+    });
+    if(!lista.children.length) lista.innerHTML = '<li class="hint">nenhuma sugestão — informe a categoria manualmente.</li>';
+  }catch(e){ aviso('Falha ao sugerir categoria: ' + e.message, 'err'); lista.innerHTML=''; }
+};
+
+let attrsAtuais = [], attrsTodos = [], semGtin = null, categoriaCarregada = '';
+
+// Um campo da ficha técnica. obrigatorio: a tela cobra antes de enviar.
+function campoAtributo(a, { obrigatorio = false, condicional = false } = {}){
+  if(a.id === 'GTIN') return campoGtin(a);
+  const wrap = document.createElement('div');
+  const lab = document.createElement('label');
+  lab.htmlFor = 'attr_' + a.id; lab.textContent = a.name;
+  if(condicional && !obrigatorio){
+    const h = document.createElement('span'); h.className = 'hint'; h.textContent = ' — obrigatório em alguns casos';
+    lab.appendChild(h);
+  }
+  let campo;
+  if(a.values.length && (a.value_type === 'list' || a.value_type === 'boolean')){
+    campo = document.createElement('select');
+    campo.add(new Option('— selecione —', ''));
+    a.values.forEach(v => campo.add(new Option(v, v)));   // textContent: vem do ML
+  }else if(a.values.length){
+    // Texto com sugestões (ex.: Marca): o ML aceita qualquer valor; a lista é só sugestão.
+    // Como select, não dava nem para escrever "Genérica".
+    campo = document.createElement('input');
+    const dl = document.createElement('datalist'); dl.id = 'dl_' + a.id;
+    a.values.forEach(v => dl.appendChild(new Option(v, v)));
+    campo.setAttribute('list', dl.id); campo.placeholder = 'digite ou escolha da lista';
+    wrap.appendChild(dl);
+  }else{
+    campo = document.createElement('input');
+    const numerico = a.value_type === 'number' || (a.value_type === 'number_unit' && a.unidades?.length);
+    if(numerico){ campo.dataset.mascara = 'decimal'; campo.placeholder = 'ex.: 500'; }
+    else if(a.value_type === 'number_unit') campo.placeholder = 'ex.: 500 g';
+  }
+  campo.id = 'attr_' + a.id; campo.dataset.attr = a.id; campo.required = obrigatorio;
+  wrap.appendChild(lab);
+  // "500 g" num campo só é pedir erro: número de um lado, unidade (do ML) do outro.
+  if(a.value_type === 'number_unit' && a.unidades?.length && campo.tagName === 'INPUT'){
+    const linha = document.createElement('div'); linha.style.cssText = 'display:flex;gap:6px';
+    const un = document.createElement('select'); un.style.cssText = 'width:auto;flex:0 0 auto';
+    un.dataset.unidadeDe = a.id; un.setAttribute('aria-label', 'Unidade de ' + a.name);
+    a.unidades.forEach(u => un.add(new Option(u, u)));
+    if(a.unidade_padrao) un.value = a.unidade_padrao;
+    linha.append(campo, un); wrap.appendChild(linha);
+  }else wrap.appendChild(campo);
+  if(obrigatorio) attrsAtuais.push(a);
+  return wrap;
+}
+
+// GTIN (código de barras): o ML aceita o código OU um motivo para não ter (EMPTY_GTIN_REASON,
+// que vem oculto na ficha). Medido em MLB1714: sem nenhum dos dois -> "[GTIN] are required";
+// com o motivo -> aceito.
+function campoGtin(a){
+  const wrap = document.createElement('div'); wrap.dataset.gtin = '1';
+  const lab = document.createElement('label'); lab.htmlFor = 'attr_GTIN';
+  lab.textContent = 'Código de barras (GTIN/EAN)';
+  const campo = document.createElement('input');
+  campo.id = 'attr_GTIN'; campo.dataset.attr = 'GTIN'; campo.dataset.mascara = 'digitos'; campo.maxLength = 14;
+  campo.placeholder = 'os números embaixo das barras, na embalagem (8, 12, 13 ou 14 dígitos)';
+  wrap.append(lab, campo);
+  if(semGtin?.length){
+    const chk = document.createElement('div'); chk.className = 'check';
+    const cb = document.createElement('input'); cb.type = 'checkbox'; cb.id = 'semGtin';
+    const l2 = document.createElement('label'); l2.htmlFor = 'semGtin'; l2.style.margin = '0';
+    l2.textContent = 'Este produto não tem código de barras';
+    chk.append(cb, l2);
+    const motivo = document.createElement('select');
+    motivo.id = 'attr_EMPTY_GTIN_REASON'; motivo.dataset.attr = 'EMPTY_GTIN_REASON';
+    motivo.setAttribute('aria-label', 'Motivo de não ter código de barras');
+    motivo.add(new Option('— por quê? —', ''));
+    semGtin.forEach(v => motivo.add(new Option(v, v)));
+    motivo.hidden = motivo.disabled = true; motivo.style.marginTop = '8px';
+    cb.onchange = () => {
+      motivo.hidden = motivo.disabled = !cb.checked;
+      campo.disabled = cb.checked; if(cb.checked) campo.value = '';
+    };
+    const nota = document.createElement('p'); nota.className = 'hint'; nota.id = 'gtinNota'; nota.style.margin = '6px 0 0';
+    nota.textContent = 'Vale para produto genérico (sem marca), artesanal ou kit.';
+    nota.hidden = true;
+    const alerta = document.createElement('div'); alerta.className = 'alertaMarca'; alerta.id = 'gtinAlerta'; alerta.hidden = true;
+    alerta.setAttribute('role', 'alert');
+    const txt = document.createElement('p'); txt.id = 'gtinAlertaTexto';
+    const trocar = document.createElement('button'); trocar.type = 'button'; trocar.className = 'ghost';
+    trocar.textContent = 'Trocar a marca para "Genérica"';
+    trocar.onclick = () => {
+      const m = $('attr_BRAND'); if(!m) return;
+      m.value = 'Genérica'; m.dispatchEvent(new Event('change', { bubbles: true })); checarMarcaGtin();
+    };
+    alerta.append(txt, trocar);
+    wrap.append(chk, motivo, nota, alerta);
+  }
+  return wrap;
+}
+
+// "Não tem código de barras" + uma marca de verdade = recusa certa do ML (medido: Logitech com
+// qualquer modelo e qualquer motivo foi recusado; Genérica foi aceita). Avisa na hora e oferece
+// a troca em um clique. Não troca sozinho: se o produto É da marca, o certo é o código real.
+const MARCA_GENERICA = /^(gen[eé]ric[oa]|sem marca)$/i;
+function checarMarcaGtin(){
+  const cb = $('semGtin'), alerta = $('gtinAlerta'), nota = $('gtinNota');
+  if(!cb || !alerta) return;
+  const marca = ($('attr_BRAND')?.value || '').trim();
+  const deMarca = cb.checked && marca && !MARCA_GENERICA.test(marca);
+  alerta.hidden = !deMarca;
+  if(nota) nota.hidden = !cb.checked || deMarca;
+  if(deMarca){
+    $('gtinAlertaTexto').textContent = `Com a marca "${marca}", o Mercado Livre exige o código de barras e recusa este motivo. `
+      + `Se o produto é genérico (sem marca), troque a marca. Se ele é mesmo ${marca}, desmarque esta opção e digite o código da embalagem.`;
+  }
+}
+for(const ev of ['input', 'change']){
+  document.addEventListener(ev, (e) => { if(e.target.id === 'attr_BRAND' || e.target.id === 'semGtin') checarMarcaGtin(); });
+}
+
+// Dígito verificador do EAN/GTIN (8, 12, 13 ou 14 dígitos).
+function gtinValido(d){
+  if(![8, 12, 13, 14].includes(d.length)) return false;
+  const n = [...d].map(Number), dv = n.pop();
+  const soma = n.reverse().reduce((s, x, i) => s + x * (i % 2 === 0 ? 3 : 1), 0);
+  return (10 - soma % 10) % 10 === dv;
+}
+
+// Rede de segurança: o ML recusou por falta de campo. Acrescenta à ficha exatamente os campos
+// que ele pediu, em destaque, para qualquer categoria. Devolve os que não dá para mostrar.
+function acrescentarCampos(ids){
+  const semTela = [];
+  let primeiro = null;
+  for(const id of ids){
+    const alvo = id === 'EMPTY_GTIN_REASON' ? 'GTIN' : id;
+    let el = document.querySelector(`#attrs [data-attr="${alvo}"]`);
+    if(!el){
+      const a = attrsTodos.find(x => x.id === alvo);
+      if(!a){ semTela.push(id); continue; }        // oculto na ficha do ML
+      $('attrs').appendChild(campoAtributo(a, { obrigatorio: alvo !== 'GTIN' }));
+      el = document.querySelector(`#attrs [data-attr="${alvo}"]`);
+    }else if(alvo !== 'GTIN' && !attrsAtuais.some(x => x.id === alvo)){
+      const a = attrsTodos.find(x => x.id === alvo); if(a) attrsAtuais.push(a);
+    }
+    el.closest('#attrs > div')?.classList.add('pedido');
+    primeiro = primeiro || el;
+  }
+  $('fsAttrs').hidden = false;
+  if(primeiro){ primeiro.scrollIntoView({ block: 'center' }); primeiro.focus({ preventScroll: true }); }
+  return semTela;
+}
+
+async function carregarCategoria(){
+  const id = $('category_id').value.trim().toUpperCase();
+  // O navegador repete o "change" quando o campo perde o foco. Recarregar a MESMA categoria
+  // apagaria a ficha técnica que a pessoa já preencheu (Marca, Gênero…).
+  if(id === categoriaCarregada) return;
+  categoriaCarregada = id;
+  $('fsAttrs').hidden = true; $('attrs').innerHTML = ''; attrsAtuais = []; attrsTodos = [];
+  if(!/^[A-Z]{3}\d+$/.test(id)) { $('catInfo').textContent = ''; return; }
+  $('catInfo').textContent = 'carregando ficha técnica…';
+  try{
+    const c = await api('/api/category?id=' + id);
+    $('catInfo').textContent = c.path || c.name;
+    maxFotos = c.settings?.max_pictures_per_item || 12;
+    pintarFotos();
+
+    const cond = $('condition');
+    const permitidas = c.settings?.item_conditions || ['new','used'];
+    [...cond.options].forEach(o => o.hidden = !permitidas.includes(o.value));
+    if(cond.selectedOptions[0]?.hidden) cond.value = permitidas[0];
+
+    attrsTodos = c.attributes; semGtin = c.sem_gtin;
+    // Obrigatórios + obrigatórios em alguns casos (ex.: código de barras). Com tabela de
+    // medidas, o Tamanho vem da linha da tabela: um campo separado permitiria G7 na ficha e
+    // P na tabela, e o ML recusa ("Attribute [SIZE] is not valid", medido).
+    const exibir = c.attributes.filter(a => (a.obrigatorio || a.condicional) && !(c.grade && a.id === 'SIZE'));
+    exibir.sort((x, y) => (y.obrigatorio - x.obrigatorio));
+    exibir.forEach(a => $('attrs').appendChild(campoAtributo(a, { obrigatorio: a.obrigatorio, condicional: a.condicional })));
+    $('fsAttrs').hidden = !exibir.length;
+    iniciarGrade(!!c.grade);
+  }catch(e){ $('catInfo').textContent = 'categoria não encontrada'; categoriaCarregada = ''; }
+}
+$('category_id').addEventListener('change', carregarCategoria);
+
+// ---------- tabela de medidas (roupas e calçados) ----------
+// O ML exige a tabela (SIZE_GRID_ID) e a linha do tamanho (SIZE_GRID_ROW_ID). A busca
+// depende de Marca e Gênero; quem não tem tabela cria uma aqui, com as medidas reais.
+let gradeAtiva = false, gradeFicha = null, gradeChave = '';
+const TAMANHOS_INICIAIS = ['P', 'M', 'G', 'GG'];
+
+function iniciarGrade(ativa){
+  gradeAtiva = ativa;
+  gradeChave = '';
+  $('fsGrade').hidden = !ativa;
+  $('gradeCriar').hidden = true;
+  limparSelect($('gradeTabela')); limparSelect($('gradeLinha'));
+  if(!ativa) return;
+  for(const id of ['attr_GENDER', 'attr_BRAND']) $(id)?.addEventListener('change', () => carregarTabelas());
+  carregarTabelas();
+}
+
+function limparSelect(sel, texto = '—'){
+  sel.replaceChildren(new Option(texto, '')); sel.disabled = true;
+}
+
+// nova: a tabela recém-criada. A busca do ML leva alguns segundos para enxergá-la (medido):
+// sem isto a tela dizia "nenhuma tabela ainda" e o segundo clique esbarrava no nome já usado.
+async function carregarTabelas(selecionar, nova){
+  const genero = $('attr_GENDER')?.value || '', marca = $('attr_BRAND')?.value || '';
+  // O navegador repete o "change" quando o campo perde o foco. Com Marca e Gênero iguais,
+  // recarregar desmarcaria a tabela e o tamanho já escolhidos.
+  const chave = `${$('category_id').value}|${genero}|${marca}`;
+  if(!selecionar && !nova && chave === gradeChave) return;
+  gradeChave = chave;
+  const dica = $('gradeDica');
+  limparSelect($('gradeTabela')); limparSelect($('gradeLinha'));
+  if(!genero || !marca){ dica.textContent = 'Escolha a Marca e o Gênero na ficha técnica acima.'; $('gradeCriar').hidden = true; return; }
+  dica.textContent = 'Buscando as suas tabelas de medidas…';
+  try{
+    const q = new URLSearchParams({ categoria: $('category_id').value.trim().toUpperCase(), genero, marca });
+    const r = await api('/api/tabelas?' + q);
+    if(nova && !r.tabelas.some(t => t.id === nova.id)) r.tabelas.unshift(nova);
+    gradeFicha = r.ficha;
+    const sel = $('gradeTabela');
+    sel.replaceChildren(new Option(r.tabelas.length ? '— selecione —' : 'nenhuma tabela ainda', ''));
+    for(const t of r.tabelas) sel.add(new Option(`${t.nome} (${t.linhas.length} tamanhos)`, t.id));
+    sel.disabled = !r.tabelas.length;
+    sel._tabelas = r.tabelas;
+    montarEditor(genero, marca);
+    $('gradeCriar').hidden = false;
+    if(r.tabelas.length){
+      dica.textContent = 'Escolha a tabela e o tamanho deste anúncio.';
+      if(selecionar){ sel.value = selecionar; pintarLinhas(); }
+    }else{
+      dica.textContent = `Você ainda não tem tabela de medidas para ${genero} · ${marca}. Crie uma abaixo (uma vez só).`;
+      $('gradeCriar').open = true;
+    }
+  }catch(e){ dica.textContent = 'Não consegui buscar as tabelas: ' + e.message; gradeChave = ''; }
+}
+
+function pintarLinhas(){
+  const tab = ($('gradeTabela')._tabelas || []).find(t => t.id === $('gradeTabela').value);
+  const sel = $('gradeLinha');
+  if(!tab){ limparSelect(sel); return; }
+  sel.replaceChildren(new Option('— selecione —', ''));
+  for(const l of tab.linhas) sel.add(new Option(l.tamanho || l.id, l.id));
+  sel.disabled = false;
+}
+$('gradeTabela').addEventListener('change', pintarLinhas);
+
+// Editor de criação: uma linha por tamanho, com as medidas e listas que o ML exige.
+function montarEditor(genero, marca){
+  const f = gradeFicha; if(!f) return;
+  const tipo = $('attr_GARMENT_TYPE')?.value || '';
+  $('gradeNome').value = `${tipo || 'Tabela'} ${genero} ${marca}`.replace(/[^\p{L}\p{N} ]/gu, ' ').replace(/\s+/g, ' ').trim().slice(0, 60);
+  const cab = $('gradeCab'); cab.replaceChildren();
+  const th = (t) => { const e = document.createElement('th'); e.scope = 'col'; e.textContent = t; cab.appendChild(e); };
+  th(f.principal.nome);
+  f.listas.forEach(li => th(li.nome));
+  f.medidas.forEach(m => th(`${m.nome} (${m.unidade})`));
+  th('');
+  $('gradeLinhas').replaceChildren();
+  TAMANHOS_INICIAIS.forEach(novaLinhaGrade);
+}
+
+function novaLinhaGrade(tamanho = ''){
+  const f = gradeFicha; const tr = document.createElement('tr');
+  const n = $('gradeLinhas').children.length + 1;
+  const td = (el) => { const c = document.createElement('td'); c.appendChild(el); tr.appendChild(c); return el; };
+  const tam = td(document.createElement('input'));
+  tam.value = tamanho; tam.dataset.tamanho = '1'; tam.dataset.mascara = 'maiusculas'; tam.maxLength = 10; tam.setAttribute('aria-label', `${f.principal.nome}, linha ${n}`);
+  const listas = f.listas.map(li => {
+    const s = td(document.createElement('select'));
+    s.dataset.lista = li.id; s.setAttribute('aria-label', `${li.nome}, linha ${n}`);
+    s.add(new Option('—', ''));
+    li.valores.forEach(v => s.add(new Option(v.nome, v.id)));
+    return s;
+  });
+  // Equivalência sugerida quando o tamanho digitado já é um tamanho padrão (P -> P).
+  const sugerir = () => listas.forEach(s => {
+    const alvo = [...s.options].find(o => o.text.toLowerCase() === tam.value.trim().toLowerCase());
+    if(alvo && !s.dataset.mexido) s.value = alvo.value;
+  });
+  listas.forEach(s => s.addEventListener('change', () => { s.dataset.mexido = '1'; }));
+  tam.addEventListener('input', sugerir); sugerir();
+  f.medidas.forEach(m => {
+    const i = td(document.createElement('input'));
+    i.dataset.mascara = 'decimal'; i.dataset.casas = '1'; i.dataset.medida = m.id; i.placeholder = 'ex.: 96';
+    i.setAttribute('aria-label', `${m.nome} em ${m.unidade}, linha ${n}`);
+  });
+  const x = td(document.createElement('button'));
+  x.type = 'button'; x.className = 'x'; x.textContent = '×'; x.setAttribute('aria-label', `Remover linha ${n}`);
+  x.onclick = () => tr.remove();
+  $('gradeLinhas').appendChild(tr);
+}
+$('gradeMais').onclick = () => novaLinhaGrade();
+
+$('gradeCriarBtn').onclick = async () => {
+  const b = $('gradeCriarBtn'), msgC = $('gradeCriarMsg');
+  const linhas = [...$('gradeLinhas').children].map(tr => ({
+    tamanho: tr.querySelector('[data-tamanho]').value,
+    medidas: Object.fromEntries([...tr.querySelectorAll('[data-medida]')].map(i => [i.dataset.medida, i.value])),
+    listas: Object.fromEntries([...tr.querySelectorAll('[data-lista]')].map(s => [s.dataset.lista, s.value])),
+  }));
+  b.disabled = true; msgC.textContent = 'Criando no Mercado Livre…';
+  try{
+    const t = await api('/api/tabelas', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({
+      categoria: $('category_id').value.trim().toUpperCase(), genero: $('attr_GENDER').value, marca: $('attr_BRAND').value,
+      nome: $('gradeNome').value, linhas,
+    }) });
+    msgC.textContent = `Tabela "${t.nome}" criada. Agora escolha o tamanho deste anúncio.`;
+    $('gradeCriar').open = false;
+    await carregarTabelas(t.id, t);
+  }catch(e){ msgC.textContent = 'Não criou: ' + e.message; }
+  finally{ b.disabled = false; }
+};
+
+// ---------- envio ----------
+$('form').onsubmit = async (ev) => {
+  ev.preventDefault();
+  const btn = $('btnSalvar'); btn.disabled = true; aviso('Publicando…', 'ok');
+  const f = new FormData(ev.target);
+  const dados = Object.fromEntries(f.entries());
+  dados.free_shipping = f.has('free_shipping');
+  dados.local_pick_up = f.has('local_pick_up');
+  dados.picture_ids = fotos.map(x => x.id);
+  // Máscaras: "1.234,56" -> 1234.56. Nunca Number(campo.value).
+  dados.price = Mascara.numero($('price'));
+  dados.quantity = Mascara.numero($('quantity'));
+  if(!(dados.price > 0)){ btn.disabled = false; return aviso('Informe o preço.', 'err'); }
+  if(!(dados.quantity >= 1)){ btn.disabled = false; return aviso('Informe o estoque (ao menos 1).', 'err'); }
+  dados.attributes = {};
+  document.querySelectorAll('#attrs [data-attr]').forEach(el => {
+    if(el.disabled) return;   // ex.: código de barras quando marcado "não tem"
+    let v = el.value.trim();
+    if(v && el.dataset.mascara === 'decimal') v = String(Mascara.numero(el));   // ML quer ponto decimal
+    const un = document.querySelector(`[data-unidade-de="${el.dataset.attr}"]`);
+    dados.attributes[el.dataset.attr] = v && un ? `${v} ${un.value}` : v;
+  });
+
+  const faltando = attrsAtuais.filter(a => !dados.attributes[a.id]).map(a => a.name);
+  if(faltando.length){ btn.disabled = false; return aviso('Preencha a ficha técnica: ' + faltando.join(', '), 'err'); }
+  if($('attr_GTIN')){
+    const g = dados.attributes.GTIN || '', motivo = dados.attributes.EMPTY_GTIN_REASON || '';
+    if(!g && !motivo && $('semGtin')){ btn.disabled = false; $('attr_GTIN').focus();
+      return aviso('Informe o código de barras (GTIN/EAN) ou marque que o produto não tem e diga o motivo.', 'err'); }
+    if(g && !gtinValido(g)){ btn.disabled = false; $('attr_GTIN').focus();
+      return aviso('Código de barras inválido: confira os dígitos (EAN de 8, 12, 13 ou 14 números).', 'err'); }
+    if(!g) delete dados.attributes.GTIN;
+  }
+  if(gradeAtiva){
+    if(!$('gradeTabela').value || !$('gradeLinha').value){
+      btn.disabled = false;
+      return aviso('Escolha a tabela de medidas e o tamanho deste anúncio (crie uma tabela se ainda não tiver).', 'err');
+    }
+    dados.attributes.SIZE_GRID_ID = $('gradeTabela').value;
+    dados.attributes.SIZE_GRID_ROW_ID = $('gradeLinha').value;
+    dados.attributes.SIZE = $('gradeLinha').selectedOptions[0].text;   // tem de ser igual ao da linha
+  }
+  if(!fotos.length){ btn.disabled = false; return aviso('Adicione ao menos uma foto.', 'err'); }
+
+  try{
+    const r = await api('/api/items', {
+      method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(dados)
+    });
+    msg.className = 'ok';
+    msg.innerHTML = `Anúncio <strong>${r.id}</strong> publicado (${r.status}).` +
+      (r.permalink ? ` <a href="${r.permalink}" target="_blank" rel="noopener">Abrir no Mercado Livre →</a>` : '') +
+      (r.description_ok === false ? '<br>Atenção: a descrição não foi salva — edite o anúncio para incluí-la.' : '');
+    ev.target.reset(); fotos = []; pintarFotos(); categoriaCarregada = '';
+    $('sugestoes').innerHTML = ''; $('fsAttrs').hidden = true; $('catInfo').textContent = '';
+    iniciarGrade(false);
+  }catch(e){
+    const pedidos = e.dados?.faltando || [];
+    if(pedidos.length){
+      const semTela = acrescentarCampos(pedidos);
+      aviso('Não publicou: ' + e.dados.error + (semTela.length ? `\n(Estes não aparecem na ficha do ML: ${semTela.join(', ')})` : ''), 'err');
+    }else aviso('Não publicou:\n' + e.message, 'err');
+  }
+  finally{ btn.disabled = false; }
+};
+</script>
+<script src="/aviso.js" defer></script>
+</body>
+</html>

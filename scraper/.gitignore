@@ -1,0 +1,7 @@
+# sessão do navegador = cookies logados. NUNCA versionar.
+.sessao_ml/
+.venv/
+__pycache__/
+*.pyc
+saida/
+.env*

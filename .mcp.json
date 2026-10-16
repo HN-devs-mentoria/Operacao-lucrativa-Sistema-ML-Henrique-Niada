@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "HN-Gestor-ML": {
+      "command": "node",
+      "args": ["mcp.js"],
+      "env": {}
+    }
+  }
+}

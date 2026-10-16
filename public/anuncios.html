@@ -1,0 +1,2155 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meus anúncios — Mercado Livre</title>
+<style>
+  :root{--bg:#f2f3f5;--card:#fff;--ink:#1a1a1a;--muted:#5f6368;--line:#e0e2e6;
+    --brand:#2968c8;--ok:#00a650;--err:#d93025;--warn:#f5a623;--radius:8px}
+  *{box-sizing:border-box}
+  body{margin:0;color:var(--ink);
+    font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  main{max-width:1000px;margin:0 auto;padding:24px 16px 72px}
+  .painel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:16px;margin-bottom:20px;display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
+  .painel label{font-size:13px;font-weight:500;display:block;margin-bottom:4px}
+  input,select,button{font:inherit}
+  input,select{padding:9px 11px;border:1px solid var(--line);border-radius:var(--radius);background:#fff}
+  input:focus,select:focus,button:focus-visible{outline:2px solid var(--brand);outline-offset:1px}
+  button{background:var(--brand);color:#fff;border:0;border-radius:var(--radius);
+    padding:9px 14px;font-weight:600;cursor:pointer}
+  button:hover{filter:brightness(.94)}
+  button.ghost{background:#eef3fd;color:var(--brand)}
+  button.perigo{background:#fce8e6;color:#a1160a}
+  button[disabled]{opacity:.5;cursor:not-allowed}
+  ul{list-style:none;padding:0;margin:0}
+  .item{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:14px;margin-bottom:12px;display:grid;gap:14px;
+    grid-template-columns:72px minmax(200px,1fr) auto auto;align-items:center}
+  .item img{width:72px;height:72px;object-fit:cover;border-radius:6px;background:#f4f4f5}
+  .tituloInput{width:100%;font-weight:500;padding:6px 8px;border:1px solid transparent;border-radius:6px;background:#fafbfc}
+  .tituloInput:hover{border-color:var(--line)}
+  .tituloInput:focus{border-color:var(--brand);background:#fff}
+  .meta{font-size:12px;color:var(--muted);margin-top:4px}
+  .meta a{color:var(--brand)}
+  .campos{display:flex;gap:10px}
+  .campos label{font-size:11px;color:var(--muted);display:block;margin-bottom:3px}
+  .campos input{width:104px;padding:7px 9px}
+  .acoes{display:flex;gap:10px;align-items:center;flex-wrap:nowrap}
+  .statusTexto{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.02em;white-space:nowrap}
+  .statusTexto.active{color:var(--ok)} .statusTexto.paused{color:#9a6400}
+  .statusTexto.closed{color:#777}   .statusTexto.under_review{color:#1f3d8f}
+  .statusTexto.inactive{color:#b23b3b}
+  details.menu{position:relative}
+  details.menu > summary{list-style:none;cursor:pointer;width:32px;height:32px;border-radius:50%;
+    display:grid;place-items:center;font-size:18px;line-height:1;color:var(--muted);user-select:none}
+  details.menu > summary::-webkit-details-marker{display:none}
+  details.menu > summary:hover{background:#eef0f3;color:var(--ink)}
+  details.menu[open] > summary{background:#e6e9ed;color:var(--ink)}
+  details.menu .itens{position:absolute;right:0;top:36px;z-index:30;background:#fff;
+    border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 8px 28px rgba(0,0,0,.14);
+    min-width:190px;padding:5px;display:flex;flex-direction:column}
+  details.menu .itens button{background:none;color:var(--ink);text-align:left;font-weight:400;
+    padding:9px 12px;border-radius:6px;font-size:14px;white-space:nowrap}
+  details.menu .itens button:hover{background:#f2f3f5;filter:none}
+  details.menu .itens button.perigo{color:#a1160a}
+  details.menu .itens button.perigo:hover{background:#fce8e6}
+  details.menu .itens hr{border:0;border-top:1px solid var(--line);margin:5px 0}
+  .btnSalvar{display:none}
+  .item.sujo .btnSalvar{display:inline-block}
+  .selo{font-size:11px;font-weight:700;padding:3px 8px;border-radius:99px;text-transform:uppercase}
+  .selo.active{background:#e6f4ea;color:#14532d}
+  .selo.paused{background:#fff4e0;color:#7a4a00}
+  .selo.closed{background:#f1f1f1;color:#555}
+  .selo.under_review{background:#e8eefc;color:#1f3d8f}
+  .saude{height:4px;border-radius:2px;background:#eee;margin-top:6px;width:120px;overflow:hidden}
+  .saude i{display:block;height:100%;background:var(--ok)}
+  #msg{padding:13px;border-radius:var(--radius);margin-bottom:16px;display:none;white-space:pre-wrap;font-size:14px}
+  #msg.ok{display:block;background:#e6f4ea;color:#14532d;border:1px solid #a6dcb6}
+  #msg.err{display:block;background:#fce8e6;color:#7f1d1d;border:1px solid #f0b3ad}
+  #paginacao{display:flex;gap:10px;align-items:center;justify-content:center;margin-top:20px;font-size:14px}
+  .vazio{background:var(--card);border:1px dashed var(--line);border-radius:var(--radius);
+    padding:40px 20px;text-align:center;color:var(--muted)}
+  #ads{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:16px;margin-bottom:20px;font-size:14px}
+  #ads h2{font-size:14px;margin:0 0 8px}
+  @media (max-width:760px){
+    .item{grid-template-columns:56px 1fr;gap:10px}
+    .item img{width:56px;height:56px}
+    .campos,.acoes{grid-column:1/-1}
+  }
+  dialog{border:0;border-radius:12px;padding:0;width:min(720px,94vw);max-height:92vh;
+    box-shadow:0 20px 60px rgba(0,0,0,.25)}
+  dialog::backdrop{background:rgba(0,0,0,.45)}
+  dialog form{display:flex;flex-direction:column;max-height:92vh}
+  .mCabeca{padding:18px 22px;border-bottom:1px solid var(--line);display:flex;
+    justify-content:space-between;align-items:center;gap:12px}
+  .mCabeca h2{font-size:16px;margin:0}
+  .mCabeca .sub{font-size:12px;color:var(--muted);margin-top:2px}
+  .mCorpo{padding:20px 22px;overflow:auto;flex:1}
+  .mPe{padding:14px 22px;border-top:1px solid var(--line);display:flex;gap:10px;
+    justify-content:flex-end;align-items:center;background:#fafbfc;flex-wrap:wrap}
+  .mPe .esq{margin-right:auto;font-size:12px;color:var(--muted)}
+  .mCorpo label{display:block;font-size:13px;font-weight:500;margin:16px 0 4px}
+  .mCorpo label:first-child{margin-top:0}
+  .mCorpo input,.mCorpo select,.mCorpo textarea{width:100%;padding:9px 11px;
+    border:1px solid var(--line);border-radius:var(--radius);font:inherit;background:#fff}
+  .mCorpo textarea{min-height:110px;resize:vertical}
+  .grade{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+  .grade label{margin-top:0}
+  .secao{border-top:1px solid var(--line);margin-top:22px;padding-top:6px}
+  .secao h3{font-size:13px;color:var(--muted);margin:10px 0 0;text-transform:uppercase;letter-spacing:.03em}
+  .travado{opacity:.55}
+  .nota{font-size:12px;color:var(--muted);margin-top:4px}
+  .nota.alerta{color:#7a4a00;background:#fff4e0;padding:8px 10px;border-radius:6px}
+  .linkAnuncio{display:inline-flex;align-items:center;gap:5px;color:inherit;text-decoration:none;
+    border-radius:4px}
+  /* a.linkAnuncio > svg vence o ".grafico svg{width:100%}" do bloco de análise */
+  a.linkAnuncio > svg{flex:none;width:14px;height:14px;display:inline-block;color:#1b5fc4}
+  .linkAnuncio:hover{text-decoration:underline}
+  .tabPos{width:100%;margin-top:6px;font-size:13px;border-collapse:collapse}
+  .tabPos th{text-align:left;color:var(--muted);font-weight:500;font-size:11px;text-transform:uppercase;
+    padding:4px 6px;border-bottom:1px solid var(--line)}
+  .tabPos td{padding:5px 6px;border-bottom:1px solid #f2f3f5}
+  .tabPos td:nth-child(3){white-space:nowrap}
+  .tabPos tr.este td{font-weight:700;background:#eef3fd}
+  .tabPos tr.seu td{background:#f7f9fc}
+  .tabPos tr.pulo td{color:var(--muted);font-size:12px;padding:3px 6px;background:#fafbfc}
+  .tabPos .marca{margin-left:6px;padding:1px 6px;border-radius:999px;font-size:10px;font-weight:700;
+    text-transform:uppercase;letter-spacing:.03em;background:#e8f0fe;color:#1b5fc4;vertical-align:1px}
+  .tabPos .marca.este{background:#1b5fc4;color:#fff}
+  .barraPos{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:10px}
+  .barraPos .nota{margin:0;flex:1 1 280px}
+  .barraPos button{padding:6px 11px;font-size:13px}
+  .rolagemPos{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .tabPos{min-width:560px;table-layout:fixed}
+  .anuncioPos{display:flex;align-items:center;gap:9px;min-width:0}
+  .anuncioPos img{width:36px;height:36px;object-fit:contain;border-radius:4px;background:#fff;
+    border:1px solid var(--line);flex:none}
+  .textoPos{min-width:0;flex:1}
+  .metaPos{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .acoesTermo{display:flex;align-items:center;gap:8px;margin-left:auto;flex-wrap:wrap}
+  .textoPos .linkAnuncio{display:flex;max-width:100%}
+  .textoPos .linkAnuncio > span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .metaPos{font-size:11px;color:var(--muted);font-weight:400;margin-top:1px}
+  .difPos{display:block;font-size:11px;font-weight:400;color:var(--muted);white-space:normal}
+  .tabPos tr.pulo button{background:none;color:#1b5fc4;padding:2px 0;font-size:12px;font-weight:600;
+    border-radius:4px}
+  .tabPos tr.pulo button:hover{text-decoration:underline;filter:none}
+  .linkAnuncio:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  #mFotos{list-style:none;padding:0;margin:10px 0 0;display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:10px}
+  #mFotos li{position:relative;aspect-ratio:1;border:1px solid var(--line);
+    border-radius:6px;overflow:hidden;background:#fff}
+  #mFotos img{width:100%;height:100%;object-fit:cover;display:block}
+  #mFotos .barra{position:absolute;left:0;right:0;bottom:0;display:flex;
+    background:rgba(0,0,0,.62)}
+  #mFotos .barra button{flex:1;background:none;color:#fff;border:0;padding:4px 0;
+    font-size:13px;cursor:pointer;font-weight:400}
+  #mFotos .barra button:hover{background:rgba(255,255,255,.18)}
+  #mFotos .capa{position:absolute;top:0;left:0;background:var(--brand);color:#fff;
+    font-size:10px;padding:2px 6px;border-bottom-right-radius:6px;font-weight:700}
+  #mSolta{margin-top:10px;border:2px dashed var(--line);border-radius:var(--radius);
+    background:#fafbfc;padding:18px;text-align:center;cursor:pointer;font-size:13px}
+  #mSolta:hover,#mSolta.dentro{border-color:var(--brand);background:#f5f9ff}
+  #mErro{margin-top:14px;padding:12px;border-radius:var(--radius);display:none;
+    background:#fce8e6;color:#7f1d1d;border:1px solid #f0b3ad;font-size:13px;white-space:pre-wrap}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:10px;margin:0 0 18px}
+  .kpi{background:#fafbfc;border:1px solid var(--line);border-radius:var(--radius);padding:12px}
+  .kpi .rot{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.03em}
+  .kpi .val{font-size:20px;font-weight:600;margin-top:3px;line-height:1.2}
+  .kpi .sub{font-size:11px;color:var(--muted);margin-top:2px}
+  .kpi.destaque .val{color:var(--ok)}
+  .kpi.aviso .val{color:var(--warn)}
+  .grafico{background:#fafbfc;border:1px solid var(--line);border-radius:var(--radius);padding:14px;margin-bottom:18px}
+  .grafico h4{margin:0 0 10px;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.03em}
+  .grafico svg{width:100%;height:110px;display:block}
+  .listaDados{list-style:none;padding:0;margin:0}
+  .listaDados li{display:flex;justify-content:space-between;gap:12px;padding:7px 0;
+    border-bottom:1px solid var(--line);font-size:14px}
+  .listaDados li:last-child{border-bottom:0}
+  .listaDados .rot{color:var(--muted)}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .chips span{background:#eef3fd;color:var(--brand);font-size:12px;padding:4px 9px;border-radius:99px}
+  .colunas{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
+
+  /* ---------- cabeçalho dos modais: nome do produto, código e link ---------- */
+  .mCabeca{align-items:flex-start}
+  .cabecaTexto{min-width:0;flex:1}
+  .tituloModal{font-size:20px;line-height:1.25;margin:0;font-weight:700;overflow-wrap:anywhere;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .linhaCodigo{display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px;margin-top:6px;font-size:13px;color:var(--muted)}
+  .linhaCodigo code{font:600 13px/1 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--ink);
+    background:#f2f3f5;border-radius:4px;padding:3px 6px}
+  .linhaCodigo a{color:#1b5fc4;font-weight:600}
+  .cabecaAcoes{display:flex;gap:10px;align-items:center;flex:none}
+  /* celular: período e fechar numa linha em cima; o nome do produto fica com a largura toda */
+  @media (max-width:560px){
+    .mCabeca{flex-wrap:wrap}
+    .cabecaTexto{order:2;flex-basis:100%}
+    .cabecaAcoes{order:1;margin-left:auto}
+  }
+
+  /* ---------- período na listagem ---------- */
+  #resumoPeriodo{font-size:13px;color:var(--muted);margin:-8px 0 16px;min-height:1.5em}
+  #resumoPeriodo strong{color:var(--ink)}
+  .periodo{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px 22px;
+    border-top:1px dashed var(--line);padding-top:12px;font-size:12px;color:var(--muted)}
+  .periodo .carregando{font-style:italic}
+  .mini{width:150px}
+  .mini .topo{display:flex;justify-content:space-between;align-items:baseline;gap:6px;margin-bottom:2px}
+  .mini .nome{font-size:11px;text-transform:uppercase;letter-spacing:.03em}
+  .numPer .val{display:block;font-size:15px;font-weight:600;color:var(--ink);line-height:1.3}
+  .numPer .val.prejuizo{color:#a1160a}
+  .numPer button.link{background:none;color:#1b5fc4;padding:0;font-size:13px;font-weight:600;border-radius:4px}
+  .numPer button.link:hover{text-decoration:underline;filter:none}
+  .tend{font-size:11px;font-weight:700;white-space:nowrap}
+  .tend.queda{color:#b3261e} .tend.alta{color:#0b7a3b} .tend.estavel,.tend.poucos_dados{color:var(--muted)}
+  .abc{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:6px;font-weight:800;font-size:13px}
+  .abc.A{background:#1b4f9c;color:#fff} .abc.B{background:#d6e4f7;color:#123a73} .abc.C{background:#eef0f3;color:#4a4f57}
+
+  /* gráfico de linha com dica ao passar o mouse */
+  .graf{position:relative}
+  .graf svg{display:block;width:100%;overflow:visible;touch-action:pan-y}
+  .graf .dica{position:absolute;top:-30px;transform:translateX(-50%);background:#1a1a1a;color:#fff;
+    font-size:11px;padding:3px 7px;border-radius:5px;white-space:nowrap;pointer-events:none;z-index:5}
+  .grafico .graf svg{height:110px}
+  .mini .graf svg{height:34px}
+
+  /* ---------- custos e lucro (análise) ---------- */
+  .lucroBloco{display:grid;grid-template-columns:minmax(220px,260px) 1fr;gap:18px}
+  @media (max-width:640px){ .lucroBloco{grid-template-columns:1fr} }
+  .formCusto label{display:block;font-size:13px;font-weight:500;margin:0 0 4px}
+  .formCusto .campo{margin-bottom:12px}
+  .formCusto input{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:var(--radius);background:#fff}
+  .formCusto .nota{margin-top:3px}
+  .formCusto .salvo{font-size:12px;color:#0b7a3b;margin-left:8px}   /* #00a650 dá 3,1:1 em texto pequeno */
+  .contas{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+  .conta h5{margin:0 0 6px;font-size:12px;color:var(--muted);font-weight:600}
+  .conta table{width:100%;border-collapse:collapse;font-size:13px}
+  .conta td{padding:5px 0;border-bottom:1px solid #eceef1;vertical-align:top}
+  .conta td:last-child{text-align:right;white-space:nowrap;padding-left:10px;font-variant-numeric:tabular-nums}
+  .conta td small{display:block;color:var(--muted);font-size:11px}
+  .conta tr.total td{border-bottom:0;border-top:2px solid var(--ink);font-weight:700;padding-top:7px}
+  .conta tr.total.prejuizo td{color:#a1160a}
+  .conta .falta{color:var(--muted);font-weight:400;font-style:italic}
+</style>
+<link rel="stylesheet" href="/layout.css">
+<link rel="stylesheet" href="/tema-hn.css?v=5">
+</head>
+<body>
+<div class="hn-fundo" aria-hidden="true"><div class="hn-emblema"><span class="hn-onda"></span><span class="hn-onda"></span><span class="hn-onda"></span><img src="/logo-emblema.png" alt=""></div></div>
+
+<div class="app">
+  <aside class="lateral" aria-label="Menu principal do Gestor ML">
+  <a class="hn-marca" href="/" aria-label="Gestor ML, por Henrique Niada: ir para o Início"><img src="/logo-gestor-ml.png" alt="" width="600" height="155"></a>
+  <div class="hn-rotulo">SEU ESPAÇO DE GESTÃO</div>
+  <nav aria-label="Navegação principal">
+    <a href="/"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7M5.5 9v11h5v-6h3v6h5V9"/></svg><span>Início</span><svg class="seta" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></a>
+    <a href="/publicar.html"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="5"/><path d="M12 8v8m-4-4h8"/></svg><span>Publicar</span><svg class="seta" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></a>
+    <a href="/anuncios.html" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 9h8m-8 4h5m-5 4h3"/></svg><span>Meus anúncios</span><svg class="seta" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></a>
+    <a href="/navegador.html"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 12h18M5 6.5c4 2 10 2 14 0M5 17.5c4-2 10-2 14 0"/></svg><span>Navegador</span><svg class="seta" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></a>
+    <a href="/configuracao.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h5m4 0h7M4 17h9m4 0h3"/><circle cx="11" cy="7" r="2"/><circle cx="15" cy="17" r="2"/></svg><span>Configurações</span><svg class="seta" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></a>
+  </nav>
+  <div class="hn-social">
+    <a class="hn-insta" href="https://www.instagram.com/henriqueniada/" target="_blank" rel="noopener noreferrer" aria-label="Seguir @henriqueniada: abrir perfil no Instagram em nova aba">
+      <div class="hn-capa">
+        <div class="hn-capa-meta"><span><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5.5"/><circle cx="12" cy="12" r="4.1"/><circle cx="17.5" cy="6.5" r=".7" fill="currentColor" stroke="none"/></svg>INSTAGRAM</span><span class="hn-vale">VALE SEGUIR</span></div>
+        <h2>Conexão<em>direta.</em></h2>
+        <svg class="hn-ig-gigante" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5.5"/><circle cx="12" cy="12" r="4.1"/><circle cx="17.5" cy="6.5" r=".7" fill="currentColor" stroke="none"/></svg>
+        <svg class="hn-estrela" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c0 7-3 10-10 10 7 0 10 3 10 10 0-7 3-10 10-10-7 0-10-3-10-10Z" fill="currentColor" stroke="none"/></svg>
+      </div>
+      <div class="hn-ticket">
+        <div class="hn-ticket-meta"><span class="hn-avatar" aria-hidden="true">HN</span><div class="hn-perfil">Henrique Niada<small>Do Gestor ML para o seu feed.</small></div><svg class="hn-ponteiro" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c0 7-3 10-10 10 7 0 10 3 10 10 0-7 3-10 10-10-7 0-10-3-10-10Z" fill="currentColor" stroke="none"/></svg></div>
+        <div class="hn-arroba"><span>@</span>henriqueniada</div>
+      </div>
+      <div class="hn-picote" aria-hidden="true"></div>
+      <div class="hn-ticket-pe"><p><strong>Vamos nos conectar?</strong>Siga no Instagram.</p><span class="hn-ticket-seta" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12"/></svg></span></div>
+    </a>
+  </div>
+  <footer class="hn-rodape"><div class="hn-rodape-titulo">Sistema gratuito <span><i aria-hidden="true"></i>USO LOCAL</span></div><p>Disponibilizado por <strong>Henrique Niada.</strong><br>Roda no seu computador.</p></footer>
+</aside>
+  <div class="conteudo">
+<header>
+  <h1>Meus anúncios</h1>
+  <div id="barraContas">
+    <label for="selConta" id="rotuloConta">Conta</label>
+    <select id="selConta" aria-describedby="rotuloConta"></select>
+    <a href="/configuracao.html#passo-conta" id="addConta">+ conectar outra</a>
+  </div>
+</header>
+
+
+<main>
+  <div id="msg" role="status" aria-live="polite"></div>
+
+  <section id="ads" hidden>
+    <h2>Mercado Ads</h2>
+    <div id="adsCorpo"></div>
+  </section>
+
+  <div class="painel">
+    <div>
+      <label for="fStatus">Situação</label>
+      <select id="fStatus">
+        <option value="">Todas</option>
+        <option value="active">Ativos</option>
+        <option value="paused">Pausados</option>
+        <option value="closed">Encerrados</option>
+        <option value="under_review">Em revisão</option>
+      </select>
+    </div>
+    <div style="flex:1 1 220px">
+      <label for="fBusca">Buscar no título</label>
+      <input id="fBusca" placeholder="iMac, camiseta…">
+    </div>
+    <div>
+      <label for="fDias">Período</label>
+      <select id="fDias">
+        <option value="15">Últimos 15 dias</option>
+        <option value="30" selected>Últimos 30 dias</option>
+        <option value="60">Últimos 60 dias</option>
+        <option value="90">Últimos 90 dias</option>
+        <option value="150">Últimos 150 dias</option>
+      </select>
+    </div>
+    <div>
+      <label for="fOrdem">Ordenar por</label>
+      <select id="fOrdem">
+        <optgroup label="No período escolhido">
+          <option value="vendas_desc">Mais vendidos</option>
+          <option value="vendas_asc">Menos vendidos</option>
+          <option value="abc">Curva ABC (faturamento)</option>
+          <option value="queda">Maiores quedas de venda</option>
+        </optgroup>
+        <optgroup label="Desde a criação do anúncio">
+          <option value="sold_quantity_desc">Mais vendidos (total)</option>
+          <option value="sold_quantity_asc">Menos vendidos (total)</option>
+        </optgroup>
+        <optgroup label="Outros">
+          <option value="last_updated_desc" selected>Atualizados recentemente</option>
+          <option value="price_desc">Maior preço</option>
+          <option value="price_asc">Menor preço</option>
+          <option value="available_quantity_desc">Maior estoque</option>
+          <option value="available_quantity_asc">Menor estoque</option>
+          <option value="start_time_desc">Mais novos</option>
+          <option value="stop_time_asc">Padrão do Mercado Livre</option>
+        </optgroup>
+      </select>
+    </div>
+    <button id="btnFiltrar">Filtrar</button>
+    <span id="total" style="font-size:13px;color:var(--muted)"></span>
+  </div>
+  <p id="resumoPeriodo" aria-live="polite"></p>
+
+  <ul id="lista"></ul>
+  <div id="paginacao" hidden>
+    <button class="ghost" id="ant">← anteriores</button>
+    <span id="pagina"></span>
+    <button class="ghost" id="prox">próximos →</button>
+  </div>
+<div class="hn-credito">
+  <span class="selo-livre">Gratuito</span>
+  <span>Sistema <b>gratuito</b>, disponibilizado pelo <b>Henrique Niada</b>. Roda no seu computador &mdash; seus dados e suas chaves nao saem daqui.</span>
+</div>
+</main>
+  </div>
+</div>
+
+<dialog id="modalAn" aria-labelledby="anTitulo">
+  <form method="dialog">
+    <div class="mCabeca">
+      <div class="cabecaTexto">
+        <h1 id="anTitulo" class="tituloModal">Análise do anúncio</h1>
+        <div class="linhaCodigo" id="anSub"></div>
+      </div>
+      <div class="cabecaAcoes">
+        <label for="anDias" class="sub" style="margin:0">Período</label>
+        <select id="anDias" style="padding:6px 9px;border:1px solid var(--line);border-radius:8px;font:inherit;font-size:13px">
+          <option value="15">15 dias</option>
+          <option value="30">30 dias</option>
+          <option value="60">60 dias</option>
+          <option value="90">90 dias</option>
+          <option value="150">150 dias</option>
+        </select>
+        <button type="button" class="ghost" id="anFechar" aria-label="Fechar">✕</button>
+      </div>
+    </div>
+    <div class="mCorpo" id="anCorpo"></div>
+    <div class="mPe">
+      <span class="esq" id="anRodape"></span>
+      <button type="button" id="anOk">Fechar</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="modal" aria-labelledby="mTitulo">
+  <form id="formEdit">
+    <div class="mCabeca">
+      <div class="cabecaTexto">
+        <h1 id="mTitulo" class="tituloModal">Editar anúncio</h1>
+        <div class="linhaCodigo" id="mSub"></div>
+      </div>
+      <button type="button" class="ghost" id="mFechar" aria-label="Fechar">✕</button>
+    </div>
+
+    <div class="mCorpo">
+      <label for="mTituloCampo">Título <span class="nota" style="display:inline">(máx. 60)</span></label>
+      <input id="mTituloCampo" maxlength="60" required data-contador="60">
+
+      <div class="grade" style="margin-top:16px">
+        <div>
+          <label for="mPreco">Preço (R$)</label>
+          <input id="mPreco" placeholder="0,00" data-mascara="moeda">
+        </div>
+        <div>
+          <label for="mEstoque">Estoque</label>
+          <input id="mEstoque" data-mascara="inteiro" data-max="99999">
+        </div>
+        <div>
+          <label for="mCondicao">Condição</label>
+          <select id="mCondicao">
+            <option value="new">Novo</option>
+            <option value="used">Usado</option>
+            <option value="not_specified">Não especificada</option>
+          </select>
+        </div>
+        <div>
+          <label for="mTipo">Tipo de anúncio</label>
+          <select id="mTipo"></select>
+        </div>
+      </div>
+      <div class="nota" id="mTravaNota" hidden></div>
+
+      <div class="secao"><h3>Fotos</h3></div>
+      <ul id="mFotos"></ul>
+      <div id="mSolta" tabindex="0" role="button">
+        Arraste fotos aqui, clique ou cole (Ctrl+V) · mín. 500px no maior lado
+      </div>
+      <input type="file" id="mArquivo" accept="image/jpeg,image/png,image/webp,image/gif" multiple hidden>
+
+      <div class="secao"><h3>Ficha técnica</h3></div>
+      <div id="mAttrs"><p class="nota">carregando…</p></div>
+
+      <div class="secao"><h3>Descrição</h3></div>
+      <label for="mDescricao" class="sr">Descrição</label>
+      <textarea id="mDescricao" placeholder="Detalhes, medidas, composição, garantia…"></textarea>
+
+      <div class="secao"><h3>Outros</h3></div>
+      <div class="grade">
+        <div>
+          <label for="mSku">SKU interno</label>
+          <input id="mSku" maxlength="60" placeholder="opcional" data-contador="60">
+        </div>
+        <div>
+          <label for="mVideo">Vídeo do YouTube <span class="nota" style="display:inline">(cole o link ou o id)</span></label>
+          <input id="mVideo" placeholder="opcional" data-mascara="youtube">
+        </div>
+        <div>
+          <label for="mFrete">Envio</label>
+          <select id="mFrete">
+            <option value="me2">Mercado Envios</option>
+            <option value="not_specified">Combinar com o comprador</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:flex;gap:18px;margin-top:12px;flex-wrap:wrap">
+        <label style="display:flex;align-items:center;gap:7px;margin:0;font-weight:400">
+          <input type="checkbox" id="mFreteGratis" style="width:auto"> Frete grátis</label>
+        <label style="display:flex;align-items:center;gap:7px;margin:0;font-weight:400">
+          <input type="checkbox" id="mRetirada" style="width:auto"> Aceita retirada em mãos</label>
+      </div>
+
+      <div id="mErro" role="alert"></div>
+    </div>
+
+    <div class="mPe">
+      <span class="esq" id="mRodape"></span>
+      <button type="button" class="ghost" id="mCancelar">Cancelar</button>
+      <button type="submit" id="mSalvar">Salvar alterações</button>
+    </div>
+  </form>
+</dialog>
+
+
+<script src="/mascaras.js"></script>
+<script src="/analise.js"></script>
+<script>
+const $ = (id) => document.getElementById(id);
+const msg = $('msg');
+const ROTULO = { active:'ativo', paused:'pausado', closed:'encerrado',
+  under_review:'em revisão', inactive:'inativo', payment_required:'aguardando pagamento' };
+const https = (u) => (u || '').replace(/^http:\/\//i, 'https://');
+const brl = new Intl.NumberFormat('pt-BR', { style:'currency', currency:'BRL' });
+function aviso(t, tipo){ msg.className = tipo; msg.textContent = t; window.scrollTo({top:0,behavior:'smooth'}); }
+
+async function api(path, opts){
+  const r = await fetch(path, opts);
+  if(r.status === 401 && !path.includes('/accounts')){
+    const j = await r.json().catch(()=>({}));
+    throw new Error(j.error || 'não autorizado');
+  }
+  const j = await r.json();
+  if(!r.ok) throw new Error([j.error, j.detail && JSON.stringify(j.detail)].filter(Boolean).join('\n'));
+  return j;
+}
+
+// ---------- contas ----------
+const selConta = $('selConta');
+async function carregarContas(){
+  try{
+    const { ativa, contas } = await api('/api/accounts');
+    selConta.innerHTML = '';
+    if(!contas.length){
+      selConta.hidden = true; $('rotuloConta').textContent = 'nenhuma conta —';
+      $('addConta').textContent = 'conectar Mercado Livre →'; return;
+    }
+    selConta.hidden = false;
+    for(const c of contas){
+      const o = document.createElement('option');  // textContent: nickname vem do ML
+      o.value = c.ml_user_id;
+      o.textContent = `${c.nickname} · ${c.site_id}`;
+      o.selected = c.ml_user_id === ativa;
+      selConta.appendChild(o);
+    }
+  }catch{ selConta.hidden = true; }
+}
+selConta.onchange = async () => {
+  await api('/api/accounts/active', { method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ ml_user_id: Number(selConta.value) }) });
+  location.reload();
+};
+
+// ---------- Mercado Ads ----------
+// Razão vazia é '—' e não 0: investir sem vender não é "ACOS zero", é ACOS indefinido.
+const razao = (v, casas = 2) => (v == null ? '—' : v.toFixed(casas));
+const vezes = (v) => (v == null ? '—' : v.toFixed(2).replace('.', ',') + '×');
+
+async function carregarAds(){
+  const corpo = $('adsCorpo');
+  $('ads').hidden = false;
+  corpo.textContent = 'consultando o Mercado Ads…';
+  corpo.style.color = '';
+  try{
+    const a = await api(`/api/ads/metricas?dias=${$('fDias').value || 30}`);
+    corpo.replaceChildren();
+
+    if(!a.habilitado){
+      corpo.textContent = a.motivo;
+      corpo.style.color = 'var(--muted)';
+      return;
+    }
+
+    const t = a.total;
+    const kpis = document.createElement('div');
+    kpis.className = 'kpis';
+    kpis.append(
+      kpi(`Investimento ${a.dias} dias`, dinheiro(t.investimento), `${num(t.campanhas)} campanha(s)`),
+      kpi('Receita do anúncio', dinheiro(t.receita), 'direta + indireta'),
+      kpi('ROAS', vezes(t.roas), 'receita ÷ investimento', 'destaque'),
+      kpi('ACOS', t.acos == null ? '—' : pct(t.acos), 'investimento ÷ receita do anúncio',
+        t.acos != null && t.acos > 0.3 ? 'aviso' : ''),
+      kpi('TACOS', t.tacos == null ? '—' : pct(t.tacos), 'investimento ÷ receita da loja'),
+      kpi('Cliques', num(t.cliques), `${num(t.impressoes)} impressões`),
+      kpi('CPC', t.cpc == null ? '—' : dinheiro(t.cpc), `CTR ${t.ctr == null ? '—' : pct(t.ctr)}`),
+      kpi('Conversão do clique', t.cvr == null ? '—' : pct(t.cvr), `${num(t.unidades)} unidade(s)`),
+    );
+    corpo.appendChild(kpis);
+
+    if(a.campanhas.length){
+      const tab = document.createElement('table');
+      tab.className = 'tabPos';
+      const thead = document.createElement('thead');
+      const tr = document.createElement('tr');
+      for(const h of ['Campanha', 'Situação', 'Investido', 'Receita', 'ROAS', 'ACOS', 'Cliques']){
+        const th = document.createElement('th'); th.scope = 'col'; th.textContent = h; tr.appendChild(th);
+      }
+      thead.appendChild(tr); tab.appendChild(thead);
+
+      const tb = document.createElement('tbody');
+      for(const c of a.campanhas){
+        const l = document.createElement('tr');
+        for(const v of [c.nome || c.id, c.status, dinheiro(c.investimento), dinheiro(c.receita),
+          vezes(c.roas), c.acos == null ? '—' : pct(c.acos), num(c.cliques)]){
+          const td = document.createElement('td'); td.textContent = v; l.appendChild(td);
+        }
+        tb.appendChild(l);
+      }
+      tab.appendChild(tb);
+      const rolagem = document.createElement('div');
+      rolagem.style.overflowX = 'auto';
+      rolagem.appendChild(tab);
+      corpo.appendChild(rolagem);
+    }
+
+    const pe = document.createElement('p');
+    pe.className = 'nota';
+    pe.textContent = `Janela de ${a.date_from} a ${a.date_to}. ${a.nota}`;
+    corpo.appendChild(pe);
+  }catch(e){
+    corpo.textContent = 'Não consultou o Ads: ' + e.message;
+    corpo.style.color = 'var(--muted)';
+  }
+}
+
+// ---------- anúncios ----------
+let offset = 0, limite = 20, total = 0;
+
+function cartao(it){
+  const li = document.createElement('li');
+  li.className = 'item';
+  // Medido na API: o que trava a edição não é o anúncio estar pausado.
+  //   family_name presente -> "You cannot modify the title if the item has a family_name"
+  //   variações            -> preço e estoque vivem na variação, não no item
+  const encerrado = it.status === 'closed';
+  const precoEditavel = !encerrado && !it.tem_variacoes;
+  const tituloEditavel = !encerrado && !it.tem_familia;
+
+  const img = document.createElement('img');
+  img.src = https(it.secure_thumbnail || it.thumbnail);
+  img.alt = ''; img.loading = 'lazy';
+
+  const info = document.createElement('div');
+  const tituloInput = document.createElement('input');
+  tituloInput.className = 'tituloInput'; tituloInput.maxLength = 60;
+  tituloInput.value = it.title || '';                      // value: título vem do ML
+  tituloInput.disabled = !tituloEditavel;
+  if(!tituloEditavel) tituloInput.title = encerrado
+    ? 'Anúncio encerrado: o Mercado Livre não aceita mais alterações.'
+    : 'Este anúncio pertence a uma família de produtos — o Mercado Livre não deixa mudar o título por aqui.';
+  tituloInput.setAttribute('aria-label', 'Título do anúncio ' + it.id);
+
+  const meta = document.createElement('div');
+  meta.className = 'meta';
+  meta.textContent = [it.id, it.listing_type_id,
+    `${num(it.sold_quantity ?? 0)} vendido(s) no total`,
+  ].filter(Boolean).join(' · ');
+  const abrir = document.createElement('a');
+  abrir.href = it.permalink || '#'; abrir.target = '_blank'; abrir.rel = 'noopener';
+  abrir.textContent = ' · abrir ↗'; abrir.style.whiteSpace = 'nowrap';
+  meta.appendChild(abrir);
+  info.append(tituloInput, meta);
+
+  if(typeof it.health === 'number'){
+    const b = document.createElement('div'); b.className = 'saude';
+    const i = document.createElement('i'); i.style.width = Math.round(it.health*100) + '%';
+    if(it.health < 0.5) i.style.background = 'var(--err)';
+    else if(it.health < 0.8) i.style.background = 'var(--warn)';
+    b.appendChild(i); b.title = `Qualidade do anúncio: ${Math.round(it.health*100)}%`;
+    info.appendChild(b);
+  }
+
+  const campos = document.createElement('div');
+  campos.className = 'campos';
+  const preco = campo('Preço', 'moeda', it.price);
+  const estoque = campo('Estoque', 'inteiro', it.available_quantity);
+  preco.input.disabled = estoque.input.disabled = !precoEditavel;
+  if(!precoEditavel){
+    const t = encerrado
+      ? 'Anúncio encerrado: o Mercado Livre não permite mais alterações.'
+      : 'Este anúncio tem variações: preço e estoque são definidos em cada variação, não no anúncio.';
+    preco.input.title = estoque.input.title = t;
+    preco.wrap.style.opacity = estoque.wrap.style.opacity = '.55';
+  }
+  campos.append(preco.wrap, estoque.wrap);
+
+  const acoes = document.createElement('div');
+  acoes.className = 'acoes';
+
+  const st = document.createElement('span');
+  st.className = 'statusTexto ' + it.status;
+  st.textContent = ROTULO[it.status] || it.status;
+  acoes.appendChild(st);
+
+  // Salvar só aparece depois que algo muda — mantém a linha limpa.
+  const salvar = botao('Salvar', '', async () => {
+    const mudancas = {};
+    const t = tituloInput.value.trim();
+    if(tituloEditavel && t && t !== it.title) mudancas.title = t;
+    if(precoEditavel){
+      if(Mascara.numero(preco.input) !== it.price) mudancas.price = Mascara.numero(preco.input);
+      if(Mascara.numero(estoque.input) !== it.available_quantity) mudancas.available_quantity = Mascara.numero(estoque.input);
+    }
+    if(!Object.keys(mudancas).length) return aviso('Nada mudou nesse anúncio.', 'err');
+    await mandar(it, mudancas, `${it.id} atualizado.`);
+  });
+  salvar.classList.add('btnSalvar');
+  [tituloInput, preco.input, estoque.input].forEach(el =>
+    el.addEventListener('input', () => li.classList.add('sujo')));
+  acoes.appendChild(salvar);
+
+  const menu = document.createElement('details');
+  menu.className = 'menu';
+  const alca = document.createElement('summary');
+  alca.textContent = '⋮';
+  alca.setAttribute('aria-label', 'Ações do anúncio ' + it.id);
+  alca.title = 'Ações';
+  const itens = document.createElement('div');
+  itens.className = 'itens';
+
+  const opcao = (texto, fn, classe) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.textContent = texto; if(classe) b.className = classe;
+    b.onclick = async () => { menu.open = false; await fn(); };
+    return b;
+  };
+  const separador = () => document.createElement('hr');
+
+  itens.appendChild(opcao('Análise do anúncio', () => abrirAnalytics(it.id)));
+  if(it.status !== 'closed') itens.appendChild(opcao('Editar', () => abrirModal(it.id)));
+  if(it.status === 'paused' || it.status === 'inactive')
+    itens.appendChild(opcao('Ativar', () => mandar(it, { status:'active' }, `${it.id} ativado.`)));
+  if(it.status === 'active')
+    itens.appendChild(opcao('Pausar', () => mandar(it, { status:'paused' }, `${it.id} pausado.`)));
+  itens.appendChild(opcao('Abrir no Mercado Livre', () => window.open(it.permalink, '_blank', 'noopener')));
+  if(it.status !== 'closed'){
+    itens.appendChild(separador());
+    itens.appendChild(opcao('Encerrar', () => {
+      // encerrar é definitivo no ML: não dá para reativar depois
+      if(!confirm(`Encerrar "${it.title}" de vez?\n\nO Mercado Livre NÃO permite reativar um anúncio encerrado. Para tirar do ar temporariamente, use Pausar.`)) return;
+      return mandar(it, { status:'closed' }, `${it.id} encerrado.`);
+    }, 'perigo'));
+  }
+
+  menu.append(alca, itens);
+  acoes.appendChild(menu);
+
+  // Vendas, curva ABC e lucro chegam depois (/api/periodo): a lista aparece na hora e
+  // esta faixa se completa sozinha.
+  const periodo = document.createElement('div');
+  periodo.className = 'periodo';
+  periodo.dataset.id = it.id;
+  const esp = document.createElement('span');
+  esp.className = 'carregando'; esp.textContent = 'calculando o período…';
+  periodo.appendChild(esp);
+
+  // Análise embutida: abre no próprio cartão em vez de roubar a tela com um modal.
+  // O conteúdo só é buscado na primeira abertura.
+  const analise = document.createElement('section');
+  analise.className = 'analise';
+  analise.id = 'analise-' + it.id;
+  analise.hidden = true;
+
+  const verAnalise = document.createElement('button');
+  verAnalise.type = 'button';
+  verAnalise.className = 'ghost btnAnalise';
+  verAnalise.setAttribute('aria-expanded', 'false');
+  verAnalise.setAttribute('aria-controls', analise.id);
+  verAnalise.innerHTML = '<span class="seta" aria-hidden="true">▾</span> Análise';
+  verAnalise.onclick = () => {
+    const abrindo = analise.hidden;
+    analise.hidden = !abrindo;
+    li.classList.toggle('aberto', abrindo);
+    verAnalise.setAttribute('aria-expanded', String(abrindo));
+    if(abrindo && !analise.dataset.pronto) pintarAnalise(it.id, analise);
+  };
+  acoes.insertBefore(verAnalise, menu);
+
+  li.dataset.id = it.id;
+  li.append(img, info, campos, acoes, periodo, analise);
+  return li;
+}
+
+// ---------- análise dentro do cartão ----------
+// Mesmos dados do modal de análise, pintados no lugar. Reusa os helpers de sempre
+// (kpi/num/dinheiro/pct/grafico); o modal continua existindo para quem preferir.
+async function pintarAnalise(id, alvo, dias){
+  alvo.innerHTML = '<p class="nota">carregando…</p>';
+  try{
+    const janela = dias || $('fDias').value || 30;
+    const a = await api(`/api/items/${id}/analytics?dias=${janela}`);
+    const D = a.janela.dias, V = a.vendas, vis = a.visitas || {};
+    // O servidor manda os ingredientes (a.lucro); a conta é a mesma do modal, em analise.js.
+    const L = a.lucro, freteU = L.frete?.por_unidade ?? null;
+    const custos = { custo: L.custo?.custo ?? null, outros: L.custo?.outros ?? null, impostoPct: L.imposto_pct ?? null };
+    const lucro = Analise.economia({ faturamento: V.faturamento, unidades: V.unidades, tarifas: V.tarifas,
+      freteUnidade: freteU, ...custos }).lucro;
+    const margem = Analise.margemUnitaria({ preco: a.item.preco, tarifa: L.tarifa_unit ?? 0, tarifaPct: L.tarifa_pct,
+      tarifaFixa: L.tarifa_fixa, frete: freteU, ...custos })?.pct ?? null;
+    alvo.innerHTML = '';
+
+    const g = document.createElement('div');
+    g.className = 'kpis';
+    g.append(
+      kpi(`Faturamento ${D} dias`, dinheiro(V.faturamento), `ticket ${dinheiro(V.ticket_medio)}`),
+      kpi(`Lucro real ${D} dias`, dinheiro(lucro), lucro == null ? 'informe o custo' : 'já sem comissão e frete', 'destaque'),
+      kpi('Margem de contribuição', pct(margem), 'por unidade, no preço de hoje'),
+      kpi(`Vendas ${D} dias`, `${num(V.unidades)} un.`, `${num(V.pedidos)} pedido(s) pago(s)`),
+      kpi(`Visitas ${D} dias`, num(vis.janela), `${num(vis.historico)} desde sempre`),
+      kpi('Conversão', pct(V.conversao), 'pedidos ÷ visitas',
+        V.conversao != null && V.conversao < 0.01 ? 'aviso' : ''),
+      kpi('Vendidos (sempre)', num(V.vendidos_historico), 'histórico do anúncio'),
+      kpi('Qualidade', a.item.health == null ? '—' : Math.round(a.item.health * 100) + '%',
+        'health do Mercado Livre', a.item.health != null && a.item.health < 0.8 ? 'aviso' : ''),
+    );
+    alvo.appendChild(g);
+
+    // Anúncio patrocinado. Só aparece se o item teve movimento na janela —
+    // conta sem anunciante ou item fora de campanha não ganha faixa vazia.
+    if(a.ads && a.ads.investimento != null){
+      const d = a.ads;
+      const t = document.createElement('h4');
+      t.textContent = `Mercado Ads · ${D} dias`;
+      t.style.cssText = 'font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0 0 10px';
+      const ga = document.createElement('div');
+      ga.className = 'kpis';
+      ga.append(
+        kpi('Investimento', dinheiro(d.investimento), d.status ? `hoje: ${d.status}` : ''),
+        kpi('Receita do anúncio', dinheiro(d.receita), 'direta + indireta'),
+        kpi('ROAS', vezes(d.roas), 'receita ÷ investimento', 'destaque'),
+        kpi('ACOS', d.acos == null ? '—' : pct(d.acos), 'investimento ÷ receita',
+          d.acos != null && d.acos > 0.3 ? 'aviso' : ''),
+        kpi('TACOS', d.tacos == null ? '—' : pct(d.tacos), 'sobre a receita da loja'),
+        kpi('Cliques', num(d.cliques), `${num(d.impressoes)} impressões`),
+      );
+      alvo.append(t, ga);
+    }
+
+    const datas = vis.datas || [];
+    const br = (d) => d.slice(8, 10) + '/' + d.slice(5, 7);
+    if(vis.serie && vis.serie.length){
+      const w = document.createElement('div');
+      w.className = 'grafico';
+      const h = document.createElement('h4');
+      h.textContent = `Visitas nos últimos ${D} dias`;
+      w.append(h, grafico(vis.serie, { altura: 110,
+        descricao: `Visitas nos últimos ${D} dias`,
+        rotulo: (i, v) => `${datas[i] ? br(datas[i]) : ''}: ${num(v)} visita(s)` }));
+      alvo.appendChild(w);
+    }
+
+    const pe = document.createElement('p');
+    pe.className = 'nota';
+    pe.textContent = `Janela de ${D} dias. Para trocar o período, use o filtro no topo da página.`;
+    alvo.appendChild(pe);
+
+    alvo.dataset.pronto = '1';
+  }catch(e){
+    alvo.innerHTML = '';
+    const p = document.createElement('p');
+    p.className = 'nota';
+    p.textContent = 'não foi possível carregar a análise: ' + e.message;
+    alvo.appendChild(p);
+  }
+}
+
+// ---------- gráfico de linha (sem biblioteca) ----------
+// Eixo começa em zero para não mentir na inclinação. Uma série por gráfico: visitas e
+// vendas têm escalas diferentes e nunca dividem o mesmo eixo. Passar o mouse (ou o dedo)
+// mostra o valor do ponto.
+function grafico(serie, { rotulo, descricao, altura = 34 }){
+  const L = 300, A = altura, pad = 3;
+  const max = Math.max(1, ...serie);
+  const passo = serie.length > 1 ? (L - pad*2) / (serie.length - 1) : 0;
+  const px = (i) => pad + i*passo, py = (v) => A - pad - (v / max) * (A - pad*2);
+  const linha = serie.map((v, i) => `${px(i).toFixed(1)},${py(v).toFixed(1)}`).join(' ');
+  const ns = 'http://www.w3.org/2000/svg';
+  const el = (tag, at) => { const e = document.createElementNS(ns, tag); for(const k in at) e.setAttribute(k, at[k]); return e; };
+  const svg = el('svg', { viewBox:`0 0 ${L} ${A}`, preserveAspectRatio:'none', role:'img', 'aria-label': descricao });
+  svg.append(
+    el('polygon', { points:`${pad},${A-pad} ${linha} ${px(serie.length-1).toFixed(1)},${A-pad}`, fill:'rgba(41,104,200,.12)' }),
+    el('polyline', { points:linha, fill:'none', stroke:'var(--brand)', 'stroke-width':'2',
+      'stroke-linejoin':'round', 'vector-effect':'non-scaling-stroke' }),
+  );
+  const guia = el('line', { y1:0, y2:A, stroke:'#9aa0a6', 'stroke-width':'1', 'vector-effect':'non-scaling-stroke', visibility:'hidden' });
+  svg.appendChild(guia);
+  const caixa = document.createElement('div');
+  caixa.className = 'graf';
+  const ponto = document.createElement('span');     // marcador em HTML: no SVG esticado ele viraria elipse
+  ponto.style.cssText = 'position:absolute;width:8px;height:8px;border-radius:50%;background:var(--brand);'
+    + 'border:2px solid #fff;transform:translate(-50%,-50%);pointer-events:none;visibility:hidden';
+  const dica = document.createElement('div');
+  dica.className = 'dica'; dica.hidden = true;
+  caixa.append(svg, ponto, dica);
+  const mostrar = (ev) => {
+    const r = svg.getBoundingClientRect();
+    const i = Math.max(0, Math.min(serie.length - 1, Math.round(((ev.clientX - r.left) / r.width * L - pad) / (passo || 1))));
+    const x = px(i) / L * r.width, y = py(serie[i]) / A * r.height;
+    guia.setAttribute('x1', px(i)); guia.setAttribute('x2', px(i)); guia.setAttribute('visibility', 'visible');
+    ponto.style.left = x + 'px'; ponto.style.top = y + 'px'; ponto.style.visibility = 'visible';
+    dica.textContent = rotulo(i, serie[i]); dica.hidden = false;
+    dica.style.left = Math.max(40, Math.min(r.width - 40, x)) + 'px';
+  };
+  const esconder = () => { guia.setAttribute('visibility', 'hidden'); ponto.style.visibility = 'hidden'; dica.hidden = true; };
+  svg.addEventListener('pointermove', mostrar);
+  svg.addEventListener('pointerdown', mostrar);
+  svg.addEventListener('pointerleave', esconder);
+  return caixa;
+}
+
+// Seta + palavra: a tendência nunca depende só da cor.
+function chipTendencia(t, dias){
+  const s = document.createElement('span');
+  s.className = 'tend ' + t.direcao;
+  // trunca (não arredonda): −14,6% é "estável" e não pode aparecer como −15%, o limiar de "em queda"
+  const pct = t.delta == null ? '' : ` ${t.delta > 0 ? '+' : '−'}${Math.trunc(Math.abs(t.delta * 100))}%`;
+  s.textContent = ({ queda:'▼ em queda', alta:'▲ em alta', estavel:'● estável', poucos_dados:'pouco dado' })[t.direcao] + pct;
+  const meio = Math.floor(dias / 2);
+  s.title = t.direcao === 'poucos_dados'
+    ? 'Movimento pequeno demais para dizer se sobe ou desce.'
+    : `Últimos ${meio} dias (${num(t.depois)}) contra os ${meio} anteriores (${num(t.antes)}).`;
+  return s;
+}
+
+// "20/08" ou "20/08–21/08" para o ponto i de uma série agrupada em pontos de `tam` dias.
+function rotuloDias(datas, tam, i){
+  const br = (d) => d.slice(8, 10) + '/' + d.slice(5, 7);
+  const ini = datas[i * tam], fim = datas[Math.min(datas.length, (i + 1) * tam) - 1];
+  return tam > 1 ? `${br(ini)}–${br(fim)}` : br(ini);
+}
+
+function miniGrafico(nome, serie, tendencia, dias, unidade){
+  const datas = Analise.diasDaJanela(dias), tam = Math.ceil(dias / serie.length);
+  const w = document.createElement('div');
+  w.className = 'mini';
+  const topo = document.createElement('div'); topo.className = 'topo';
+  const n = document.createElement('span'); n.className = 'nome'; n.textContent = nome;
+  topo.append(n, chipTendencia(tendencia, dias));
+  w.append(topo, grafico(serie, {
+    descricao: `${nome} nos últimos ${dias} dias: ${({ queda:'em queda', alta:'em alta', estavel:'estável', poucos_dados:'pouco movimento' })[tendencia.direcao]}`,
+    rotulo: (i, v) => `${rotuloDias(datas, tam, i)}: ${num(v)} ${unidade}`,
+  }));
+  return w;
+}
+
+function numPer(valor, rotulo, classe){
+  const d = document.createElement('div'); d.className = 'numPer';
+  const v = document.createElement('span'); v.className = 'val' + (classe ? ' ' + classe : '');
+  if(valor instanceof Node) v.appendChild(valor); else v.textContent = valor;
+  d.append(v, rotulo);
+  return d;
+}
+
+// Preenche a faixa do período de cada cartão. geracaoLista evita que a resposta de um
+// filtro antigo pinte os cartões do filtro novo.
+let geracaoLista = 0;
+async function pintarPeriodo(itens, dias, minha){
+  const vis = Object.fromEntries(itens.map((it) => [it.id, it.visitas]));
+  let p;
+  try{ p = await api(`/api/periodo?dias=${dias}&ids=${itens.map((it) => it.id).join(',')}`); }
+  catch(e){
+    if(minha !== geracaoLista) return;
+    document.querySelectorAll('.periodo .carregando').forEach((s) => { s.textContent = 'Não calculou o período: ' + e.message; });
+    return;
+  }
+  if(minha !== geracaoLista) return;
+  const c = p.conta, br = (d) => new Date(d + 'T12:00:00').toLocaleDateString('pt-BR', { day:'2-digit', month:'2-digit' });
+  const r = $('resumoPeriodo');
+  r.textContent = '';
+  const forte = (t) => { const s = document.createElement('strong'); s.textContent = t; return s; };
+  r.append(`De ${br(p.janela.de)} a ${br(p.janela.ate)}: `, forte(dinheiro(c.faturamento)),
+    ` em ${num(c.pedidos)} pedido(s) e ${num(c.unidades)} unidade(s); ${num(c.anuncios_com_venda)} anúncio(s) venderam.`);
+
+  for(const it of itens){
+    const x = p.itens[it.id], faixa = document.querySelector(`.periodo[data-id="${it.id}"]`);
+    if(!x || !faixa) continue;
+    faixa.textContent = '';
+    faixa.append(miniGrafico('Vendas', x.serie, x.tendencia, dias, 'un.'));
+    if(vis[it.id]) faixa.append(miniGrafico('Visitas', vis[it.id].serie, vis[it.id].tendencia, dias, 'visitas'));
+    faixa.append(numPer(`${num(x.unidades)} un. · ${dinheiro(x.faturamento)}`, `vendidos em ${dias} dias · ${num(vis[it.id]?.total)} visitas`));
+
+    const selo = document.createElement('span');
+    const classe = x.abc?.classe || 'C';
+    selo.className = 'abc ' + classe; selo.textContent = classe;
+    selo.title = x.abc
+      ? `${(x.abc.participacao * 100).toFixed(1).replace('.', ',')}% do faturamento da conta no período (${x.abc.ranking}º)`
+      : 'Não vendeu no período';
+    faixa.append(numPer(selo, x.abc ? 'curva ABC' : 'curva ABC · sem vendas'));
+
+    if(x.lucro != null){
+      faixa.append(numPer(dinheiro(x.lucro), `lucro real · margem ${pct(x.margem)}`, x.lucro < 0 ? 'prejuizo' : ''));
+    }else if(x.falta.includes('custo')){
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'link'; b.textContent = 'Informar custo';
+      b.onclick = () => abrirAnalytics(it.id, dias, { focarCusto: true });
+      faixa.append(numPer(b, 'para ver o lucro real'));
+    }else{
+      faixa.append(numPer('—', 'lucro: sem dado de frete'));
+    }
+  }
+}
+
+function campo(rotulo, mascara, valor){
+  const wrap = document.createElement('div');
+  const l = document.createElement('label'); l.textContent = rotulo;
+  const input = document.createElement('input');
+  input.dataset.mascara = mascara;
+  if(mascara === 'inteiro') input.dataset.max = '99999';
+  Mascara.definir(input, valor);
+  l.htmlFor = input.id = 'c' + Math.random().toString(36).slice(2);
+  wrap.append(l, input);
+  return { wrap, input };
+}
+function botao(texto, classe, fn){
+  const b = document.createElement('button');
+  b.type = 'button'; b.textContent = texto; if(classe) b.className = classe;
+  b.onclick = async () => { b.disabled = true; try{ await fn(); } finally { b.disabled = false; } };
+  return b;
+}
+
+async function mandar(it, mudancas, sucesso){
+  try{
+    await api('/api/items/' + it.id, { method:'PUT', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(mudancas) });
+    aviso(sucesso, 'ok');
+    carregar();
+  }catch(e){ aviso(`Não alterou ${it.id}:\n${e.message}`, 'err'); }
+}
+
+const ORDENS_PERIODO = ['vendas_desc', 'vendas_asc', 'abc', 'queda'];
+let ultimaLista = null;   // a página na tela, para repintar o lucro depois de salvar um custo
+async function carregar(){
+  const minha = ++geracaoLista;
+  const dias = Number($('fDias').value);
+  const porPeriodo = ORDENS_PERIODO.includes($('fOrdem').value);
+  $('lista').innerHTML = '';
+  const esperando = document.createElement('li');
+  esperando.className = 'vazio';
+  // a 1ª ordenação por período de uma janela nova baixa os pedidos dela (medido: 2 mil
+  // pedidos em ~3 s; 11 mil em 150 dias levam mais)
+  esperando.textContent = porPeriodo ? `organizando pelas vendas dos últimos ${dias} dias…` : 'carregando…';
+  $('lista').appendChild(esperando);
+  $('resumoPeriodo').textContent = '';
+  $('paginacao').hidden = true;
+  try{
+    const qs = new URLSearchParams({ offset, limit: limite, dias });
+    if($('fStatus').value) qs.set('status', $('fStatus').value);
+    if($('fBusca').value.trim()) qs.set('q', $('fBusca').value.trim());
+    qs.set('sort', $('fOrdem').value);
+    const r = await api('/api/items?' + qs);
+    if(minha !== geracaoLista) return;
+    total = r.total;
+    $('total').textContent = `${total} anúncio(s)`;
+    $('lista').innerHTML = '';
+    if(r.aviso) aviso(r.aviso, 'ok');
+    if(!r.itens.length){
+      $('lista').innerHTML = '<li class="vazio">Nenhum anúncio com esse filtro.</li>';
+      $('paginacao').hidden = true; return;
+    }
+    r.itens.forEach(it => $('lista').appendChild(cartao(it)));
+    ultimaLista = { itens: r.itens, dias };
+    pintarPeriodo(r.itens, dias, minha);
+    $('paginacao').hidden = total <= limite;
+    $('pagina').textContent = `${offset+1}–${Math.min(offset+limite, total)} de ${total}`;
+    $('ant').disabled = offset === 0;
+    $('prox').disabled = offset + limite >= total;
+  }catch(e){
+    $('lista').innerHTML = '';
+    aviso('Não listou: ' + e.message, 'err');
+  }
+}
+
+document.addEventListener('click', (e) => {
+  document.querySelectorAll('details.menu[open]').forEach(d => { if(!d.contains(e.target)) d.open = false; });
+});
+
+$('btnFiltrar').onclick = () => { offset = 0; carregar(); };
+$('fBusca').onkeydown = (e) => { if(e.key === 'Enter'){ offset = 0; carregar(); } };
+$('fStatus').onchange = () => { offset = 0; carregar(); };
+$('fOrdem').onchange = () => { offset = 0; lembrarFiltros(); carregar(); };
+$('fDias').onchange = () => { offset = 0; lembrarFiltros(); carregar(); };
+// Período e ordenação voltam como estavam (só neste navegador; sem armazenamento, segue o padrão).
+function lembrarFiltros(){
+  try{ localStorage.setItem('anuncios.filtros', JSON.stringify({ dias: $('fDias').value, ordem: $('fOrdem').value })); }catch{}
+}
+try{
+  const f = JSON.parse(localStorage.getItem('anuncios.filtros') || 'null');
+  if(f && [...$('fDias').options].some((o) => o.value === f.dias)) $('fDias').value = f.dias;
+  if(f && [...$('fOrdem').options].some((o) => o.value === f.ordem)) $('fOrdem').value = f.ordem;
+}catch{}
+$('ant').onclick = () => { offset = Math.max(0, offset - limite); carregar(); };
+$('prox').onclick = () => { offset += limite; carregar(); };
+
+
+// ---------- modal de edição ----------
+const modal = $('modal');
+let ed = null; // { it, fotos:[{id,thumb}], attrs:[], descricao, precoEditavel, tituloEditavel }
+// Abrir uma modal enquanto a anterior ainda busca fazia a resposta atrasada escrever
+// na caixa já limpa — a ficha aparecia duas vezes, de categorias diferentes.
+let geracao = 0;
+
+function mErro(t){ const e = $('mErro'); e.style.display = t ? 'block' : 'none'; e.textContent = t || ''; }
+
+// Cabeçalho dos modais: o nome do produto em H1 e, embaixo, o código do anúncio e o
+// link para ver como o comprador vê. textContent: título e status vêm do ML.
+function cabecalho(h1, linha, { id, titulo, status, permalink, extras = [] }){
+  h1.textContent = titulo || id;
+  h1.title = titulo || '';
+  linha.textContent = '';
+  const cod = document.createElement('code');
+  cod.textContent = id;
+  cod.title = 'Código do anúncio';
+  linha.appendChild(cod);
+  for(const t of [ROTULO[status] || status, ...extras].filter(Boolean)){
+    const s = document.createElement('span'); s.textContent = t; linha.appendChild(s);
+  }
+  if(permalink){
+    const a = document.createElement('a');
+    a.href = permalink; a.target = '_blank'; a.rel = 'noopener';
+    a.textContent = 'Ver anúncio ↗';
+    a.setAttribute('aria-label', 'Ver anúncio no Mercado Livre (abre em nova aba)');
+    linha.appendChild(a);
+  }
+}
+function cabecalhoCarregando(h1, linha, id){
+  h1.textContent = 'carregando…'; h1.title = '';
+  linha.textContent = '';
+  const cod = document.createElement('code'); cod.textContent = id; linha.appendChild(cod);
+}
+
+async function abrirModal(id){
+  const meu = ++geracao;
+  mErro(''); cabecalhoCarregando($('mTitulo'), $('mSub'), id);
+  $('mAttrs').innerHTML = '<p class="nota">carregando…</p>';
+  modal.showModal();
+  try{
+    const it = await api('/api/items/' + id);
+    if(meu !== geracao) return;                 // o usuário já abriu outro anúncio
+    const encerrado = it.status === 'closed';
+    const precoEditavel = !encerrado && !it.tem_variacoes;
+    const tituloEditavel = !encerrado && !it.tem_familia;
+    ed = {
+      it, precoEditavel, tituloEditavel,
+      fotos: (it.pictures || []).map(p => ({ id: p.id, thumb: https(p.secure_url || p.url) })),
+      descricao: it.descricao || '',
+    };
+
+    cabecalho($('mTitulo'), $('mSub'), { id: it.id, titulo: it.title, status: it.status,
+      permalink: it.permalink, extras: [`${num(it.sold_quantity ?? 0)} vendido(s)`] });
+    $('mTituloCampo').value = it.title || '';
+    Mascara.definir($('mPreco'), it.price);
+    Mascara.definir($('mEstoque'), it.available_quantity);
+    $('mCondicao').value = it.condition || 'not_specified';
+    // "refurbished" existe em algumas categorias e é recusado em outras (400).
+    // Quem manda é settings.item_conditions da categoria.
+    api('/api/category?id=' + it.category_id).then(cat => {
+      if(meu !== geracao) return;
+      const ok = cat.settings?.item_conditions || ['new','used','not_specified'];
+      const sel = $('mCondicao');
+      const rotulos = { new:'Novo', used:'Usado', not_specified:'Não especificada', refurbished:'Recondicionado' };
+      sel.innerHTML = '';
+      for(const v of ok){
+        const o = document.createElement('option');
+        o.value = v; o.textContent = rotulos[v] || v;
+        o.selected = v === it.condition;
+        sel.appendChild(o);
+      }
+    }).catch(() => {});
+    $('mSku').value = it.seller_custom_field || '';
+    $('mVideo').value = it.video_id || '';
+    $('mFrete').value = it.shipping?.mode === 'me2' ? 'me2' : 'not_specified';
+    $('mFreteGratis').checked = !!it.shipping?.free_shipping;
+    $('mRetirada').checked = !!it.shipping?.local_pick_up;
+    $('mDescricao').value = ed.descricao;
+
+    // Medido na API: o bloqueio não vem de estar pausado, vem destas duas condições.
+    $('mPreco').disabled = $('mEstoque').disabled = !precoEditavel;
+    $('mPreco').parentElement.classList.toggle('travado', !precoEditavel);
+    $('mEstoque').parentElement.classList.toggle('travado', !precoEditavel);
+    $('mTituloCampo').disabled = !tituloEditavel;
+
+    const avisos = [];
+    if(encerrado) avisos.push('Anúncio encerrado: o Mercado Livre não aceita mais nenhuma alteração.');
+    if(it.tem_variacoes) avisos.push('Este anúncio tem variações — preço e estoque são definidos em cada variação, não aqui.');
+    if(it.tem_familia) avisos.push('Este anúncio pertence a uma família de produtos — o Mercado Livre recusa mudança de título.');
+    const nota = $('mTravaNota');
+    nota.hidden = !avisos.length;
+    nota.className = 'nota alerta';
+    nota.textContent = avisos.join(' ');
+
+    $('mSalvar').disabled = encerrado;
+    pintarFotosModal();
+    carregarTipos(it, meu);
+    carregarAttrs(it, meu);
+  }catch(e){ mErro('Não abriu o anúncio: ' + e.message); $('mTitulo').textContent = 'Editar anúncio'; }
+}
+
+async function carregarTipos(it, meu){
+  const sel = $('mTipo');
+  sel.innerHTML = '';
+  const atual = document.createElement('option');
+  atual.value = it.listing_type_id; atual.textContent = it.listing_type_id + ' (atual)';
+  sel.appendChild(atual);
+  try{
+    const ups = await api(`/api/items/${it.id}/upgrades`);
+    if(meu !== geracao) return;
+    for(const u of (ups || [])){
+      const o = document.createElement('option');
+      o.value = u.id || u; o.textContent = (u.id || u) + ' (upgrade)';
+      sel.appendChild(o);
+    }
+    sel.disabled = !(ups || []).length;
+    if(!(ups || []).length) sel.title = 'O Mercado Livre não oferece troca de tipo para este anúncio.';
+  }catch{ sel.disabled = true; }
+}
+
+// Um controle por tipo. number_unit precisa do par valor+unidade: o ML espera
+// "16 GB" num campo só, mas pedir isso ao usuário digitado é pedir erro.
+function controleAtributo(a, valorAtual){
+  const wrap = document.createElement('div');
+  const lab = document.createElement('label');
+  lab.htmlFor = 'ma_' + a.id;
+  lab.textContent = a.name + (a.obrigatorio ? ' *' : '');
+  wrap.appendChild(lab);
+
+  let campo;
+  if(a.value_type === 'boolean' || (a.values.length && a.values.length <= 40)){
+    campo = document.createElement('select');
+    const vazio = document.createElement('option');
+    vazio.value = ''; vazio.textContent = '— selecione —';
+    campo.appendChild(vazio);
+    for(const v of a.values){                       // textContent: vem do ML
+      const o = document.createElement('option'); o.textContent = v; campo.appendChild(o);
+    }
+  }else{
+    campo = document.createElement('input');
+    if(a.value_type === 'number' || (a.value_type === 'number_unit' && a.unidades.length)) campo.dataset.mascara = 'decimal';
+    else if(a.value_type === 'number_unit') campo.inputMode = 'decimal';
+    if(a.values.length){                            // muitas opções: sugere sem travar
+      const dl = document.createElement('datalist');
+      dl.id = 'dl_' + a.id;
+      for(const v of a.values){ const o=document.createElement('option'); o.value=v; dl.appendChild(o); }
+      wrap.appendChild(dl);
+      campo.setAttribute('list', dl.id);
+    }
+  }
+  campo.id = 'ma_' + a.id;
+  campo.dataset.attr = a.id;
+  campo.dataset.tipo = a.value_type;
+
+  if(a.value_type === 'number_unit' && a.unidades.length){
+    const linha = document.createElement('div');
+    linha.style.cssText = 'display:flex;gap:6px';
+    const un = document.createElement('select');
+    un.style.cssText = 'width:auto;flex:0 0 auto';
+    un.dataset.unidadeDe = a.id;
+    for(const u of a.unidades){ const o=document.createElement('option'); o.textContent=u; un.appendChild(o); }
+    // "16 GB" -> valor 16, unidade GB
+    const m = /^([\d.,]+)\s*(\S+)?$/.exec(String(valorAtual || '').trim());
+    Mascara.definir(campo, m ? Number(m[1].replace(',', '.')) : '');   // o ML manda ponto decimal
+    if(m && m[2] && a.unidades.includes(m[2])) un.value = m[2];
+    else if(a.unidade_padrao) un.value = a.unidade_padrao;
+    linha.append(campo, un);
+    wrap.appendChild(linha);
+  }else{
+    if(campo.dataset.mascara === 'decimal') Mascara.definir(campo, valorAtual ? Number(String(valorAtual).replace(',', '.')) : '');
+    else campo.value = valorAtual || '';
+    wrap.appendChild(campo);
+  }
+
+  if(a.dica){
+    const d = document.createElement('div');
+    d.className = 'nota'; d.textContent = a.dica;
+    wrap.appendChild(d);
+  }
+  return wrap;
+}
+
+function lerAtributos(raiz){
+  const out = {};
+  raiz.querySelectorAll('[data-attr]').forEach(el => {
+    let v = el.value.trim();
+    if(v && el.dataset.mascara === 'decimal') v = String(Mascara.numero(el));   // "1,5" -> "1.5" para o ML
+    if(!v) return;
+    const un = raiz.querySelector(`[data-unidade-de="${el.dataset.attr}"]`);
+    out[el.dataset.attr] = un ? `${v} ${un.value}` : v;
+  });
+  return out;
+}
+
+async function carregarAttrs(it, meu){
+  const caixa = $('mAttrs');
+  caixa.innerHTML = '';
+  try{
+    const cat = await api('/api/category?id=' + it.category_id);
+    if(meu !== geracao) return;
+    const atuais = Object.fromEntries((it.attributes || []).map(a => [a.id, a.value_name]));
+    ed.attrs = cat.attributes;
+
+    const obrig = cat.attributes.filter(a => a.obrigatorio);
+    const resto = cat.attributes.filter(a => !a.obrigatorio);
+
+    if(obrig.length){
+      const g = document.createElement('div'); g.className = 'grade';
+      for(const a of obrig) g.appendChild(controleAtributo(a, atuais[a.id]));
+      caixa.appendChild(g);
+      const falta = obrig.filter(a => !atuais[a.id]).length;
+      if(falta){
+        const p = document.createElement('p');
+        p.className = 'nota alerta';
+        p.textContent = `${falta} campo(s) obrigatório(s) em branco — é isso que derruba a exposição do anúncio.`;
+        caixa.appendChild(p);
+      }
+    }
+
+    if(resto.length){
+      const vazios = resto.filter(a => !atuais[a.id]).length;
+      const det = document.createElement('details');
+      det.style.marginTop = '16px';
+      const sum = document.createElement('summary');
+      sum.style.cssText = 'cursor:pointer;font-size:13px;font-weight:500;padding:9px 0;color:var(--brand)';
+      sum.textContent = `Ficha técnica completa — ${resto.length} campos, ${vazios} em branco`;
+      det.appendChild(sum);
+      const g2 = document.createElement('div');
+      g2.className = 'grade'; g2.style.marginTop = '10px';
+      for(const a of resto) g2.appendChild(controleAtributo(a, atuais[a.id]));
+      det.appendChild(g2);
+      caixa.appendChild(det);
+    }
+
+    // Garantia é sale_term, não atributo. O campo "warranty" do item é derivado
+    // destes dois ("Garantia de fábrica: 12 meses"), por isso não é editável aqui.
+    if((it.termos || []).length){
+      const h = document.createElement('div'); h.className = 'secao';
+      const t = document.createElement('h3'); t.textContent = 'Garantia';
+      h.appendChild(t); caixa.appendChild(h);
+      const g3 = document.createElement('div'); g3.className = 'grade';
+      for(const termo of it.termos){
+        const w = controleAtributo({
+          ...termo, values: termo.values || [], unidades: termo.unidades || [],
+          obrigatorio: false, dica: null,
+        }, termo.valor);
+        const campo = w.querySelector('[data-attr]');
+        campo.dataset.termo = campo.dataset.attr;
+        delete campo.dataset.attr;
+        g3.appendChild(w);
+      }
+      caixa.appendChild(g3);
+    }
+  }catch(e){
+    caixa.innerHTML = '';
+    const p = document.createElement('p');
+    p.className = 'nota'; p.textContent = 'Não carregou a ficha técnica: ' + e.message;
+    caixa.appendChild(p);
+  }
+}
+
+function pintarFotosModal(){
+  const ul = $('mFotos'); ul.innerHTML = '';
+  ed.fotos.forEach((f, i) => {
+    const li = document.createElement('li');
+    const img = document.createElement('img'); img.src = f.thumb; img.alt = `Foto ${i+1}`; img.loading = 'lazy';
+    li.appendChild(img);
+    if(i === 0){ const c = document.createElement('span'); c.className='capa'; c.textContent='CAPA'; li.appendChild(c); }
+    const barra = document.createElement('div'); barra.className = 'barra';
+    barra.append(
+      btnFoto('←', 'Mover para a esquerda', i === 0, () => { [ed.fotos[i-1], ed.fotos[i]] = [ed.fotos[i], ed.fotos[i-1]]; pintarFotosModal(); }),
+      btnFoto('✕', 'Remover foto', false, () => { ed.fotos.splice(i,1); pintarFotosModal(); }),
+      btnFoto('→', 'Mover para a direita', i === ed.fotos.length-1, () => { [ed.fotos[i+1], ed.fotos[i]] = [ed.fotos[i], ed.fotos[i+1]]; pintarFotosModal(); }),
+    );
+    li.appendChild(barra); ul.appendChild(li);
+  });
+}
+function btnFoto(txt, rotulo, off, fn){
+  const b = document.createElement('button');
+  b.type = 'button'; b.textContent = txt; b.title = rotulo;
+  b.setAttribute('aria-label', rotulo); b.disabled = off;
+  if(off) b.style.opacity = '.3';
+  b.onclick = fn;
+  return b;
+}
+
+async function medirImg(arq){
+  try{ const b = await createImageBitmap(arq); const r = { w:b.width, h:b.height, ok: Math.max(b.width,b.height) >= 500 }; b.close?.(); return r; }
+  catch{ return { ok:true }; }
+}
+async function subirFotos(lista){
+  for(const arq of [...lista].filter(f => f.type.startsWith('image/'))){
+    const d = await medirImg(arq);
+    if(!d.ok){ mErro(`"${arq.name}" tem ${d.w}×${d.h}px. O Mercado Livre exige no mínimo 500px no maior lado.`); continue; }
+    try{
+      const r = await api('/api/pictures', { method:'POST', headers:{'Content-Type':arq.type}, body:arq });
+      ed.fotos.push({ id:r.id, thumb:r.thumb || URL.createObjectURL(arq) });
+      mErro(''); pintarFotosModal();
+    }catch(e){ mErro(`Não enviou "${arq.name}": ${e.message}`); }
+  }
+}
+$('mSolta').onclick = () => $('mArquivo').click();
+$('mSolta').onkeydown = (e) => { if(e.key==='Enter'||e.key===' '){ e.preventDefault(); $('mArquivo').click(); } };
+$('mArquivo').onchange = (e) => { subirFotos(e.target.files); e.target.value = ''; };
+['dragenter','dragover'].forEach(ev => $('mSolta').addEventListener(ev, e => { e.preventDefault(); $('mSolta').classList.add('dentro'); }));
+['dragleave','drop'].forEach(ev => $('mSolta').addEventListener(ev, e => { e.preventDefault(); $('mSolta').classList.remove('dentro'); }));
+$('mSolta').addEventListener('drop', e => subirFotos(e.dataTransfer.files));
+modal.addEventListener('paste', e => {
+  const imgs = [...(e.clipboardData?.files || [])].filter(f => f.type.startsWith('image/'));
+  if(imgs.length){ e.preventDefault(); subirFotos(imgs); }
+});
+
+const fecharModal = () => { modal.close(); ed = null; };
+$('mFechar').onclick = fecharModal;
+$('mCancelar').onclick = fecharModal;
+
+$('formEdit').onsubmit = async (ev) => {
+  ev.preventDefault();
+  if(!ed) return;
+  const { it, precoEditavel, tituloEditavel } = ed;
+  const b = $('mSalvar'); b.disabled = true; mErro('');
+  $('mRodape').textContent = 'salvando…';
+
+  // Só o que mudou vai no PUT: mandar campo intocado pode esbarrar numa trava do ML.
+  const mud = {};
+  const t = $('mTituloCampo').value.trim();
+  if(tituloEditavel && t !== it.title) mud.title = t;
+  if(precoEditavel){
+    if(Mascara.numero($('mPreco')) !== it.price) mud.price = Mascara.numero($('mPreco'));
+    if(Mascara.numero($('mEstoque')) !== it.available_quantity) mud.available_quantity = Mascara.numero($('mEstoque'));
+  }
+  if($('mCondicao').value !== it.condition) mud.condition = $('mCondicao').value;
+  if($('mSku').value.trim() !== (it.seller_custom_field || '')) mud.seller_custom_field = $('mSku').value.trim();
+  if($('mVideo').value.trim() !== (it.video_id || '')) mud.video_id = $('mVideo').value.trim();
+
+  const fotosAgora = ed.fotos.map(f => f.id).join(',');
+  if(fotosAgora !== (it.pictures || []).map(p => p.id).join(',')) mud.picture_ids = ed.fotos.map(f => f.id);
+
+  const attrsAgora = lerAtributos($('mAttrs'));
+  const attrsAntes = Object.fromEntries((it.attributes || []).filter(a => a.value_name).map(a => [a.id, a.value_name]));
+  if(ed.attrs.some(a => (attrsAgora[a.id] || '') !== (attrsAntes[a.id] || ''))) mud.attributes = attrsAgora;
+
+  const freteAntes = { mode: it.shipping?.mode, free_shipping: !!it.shipping?.free_shipping, local_pick_up: !!it.shipping?.local_pick_up };
+  const freteAgora = { mode: $('mFrete').value, free_shipping: $('mFreteGratis').checked, local_pick_up: $('mRetirada').checked };
+  if(JSON.stringify(freteAntes) !== JSON.stringify(freteAgora)) mud.shipping = freteAgora;
+
+  const termos = {};
+  $('mAttrs').querySelectorAll('[data-termo]').forEach(el => {
+    const v = el.value.trim();
+    if(!v) return;
+    const un = $('mAttrs').querySelector(`[data-unidade-de="${el.dataset.termo}"]`);
+    termos[el.dataset.termo] = un ? `${v} ${un.value}` : v;
+  });
+  const termosAntes = Object.fromEntries((it.termos || []).map(t => [t.id, t.valor]));
+  if(Object.keys(termos).some(k => termos[k] !== termosAntes[k])) mud.sale_terms = termos;
+
+  const descNova = $('mDescricao').value.trim();
+  const descMudou = descNova !== (ed.descricao || '').trim();
+  const tipoNovo = $('mTipo').value;
+  const tipoMudou = tipoNovo && tipoNovo !== it.listing_type_id;
+
+  if(!Object.keys(mud).length && !descMudou && !tipoMudou){
+    b.disabled = false; $('mRodape').textContent = '';
+    return mErro('Nada mudou.');
+  }
+
+  try{
+    if(Object.keys(mud).length){
+      await api('/api/items/' + it.id, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(mud) });
+    }
+    if(descMudou){
+      await api(`/api/items/${it.id}/description`, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ plain_text: descNova }) });
+    }
+    if(tipoMudou){
+      await api(`/api/items/${it.id}/listing-type`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ listing_type_id: tipoNovo }) });
+    }
+    fecharModal();
+    aviso(`${it.id} atualizado.`, 'ok');
+    carregar();
+  }catch(e){ mErro('O Mercado Livre recusou:\n' + e.message); }
+  finally{ b.disabled = false; $('mRodape').textContent = ''; }
+};
+
+
+// ---------- análise do anúncio ----------
+const modalAn = $('modalAn');
+const num = (n) => n == null ? '—' : new Intl.NumberFormat('pt-BR').format(n);
+const dinheiro = (n) => n == null ? '—' : brl.format(n);
+const pct = (n) => n == null ? '—' : (n * 100).toFixed(n < 0.1 ? 2 : 1).replace('.', ',') + '%';
+
+function kpi(rot, val, sub, classe){
+  const d = document.createElement('div');
+  d.className = 'kpi' + (classe ? ' ' + classe : '');
+  const r = document.createElement('div'); r.className = 'rot'; r.textContent = rot;
+  const v = document.createElement('div'); v.className = 'val'; v.textContent = val;
+  d.append(r, v);
+  if(sub){ const s = document.createElement('div'); s.className = 'sub'; s.textContent = sub; d.appendChild(s); }
+  return d;
+}
+
+function linhas(pares){
+  const ul = document.createElement('ul');
+  ul.className = 'listaDados';
+  for(const [rot, val] of pares){
+    if(val == null) continue;
+    const li = document.createElement('li');
+    const a = document.createElement('span'); a.className = 'rot'; a.textContent = rot;
+    const b = document.createElement('span'); b.textContent = val;
+    li.append(a, b); ul.appendChild(li);
+  }
+  return ul;
+}
+
+function bloco(titulo, conteudo){
+  const d = document.createElement('div');
+  d.className = 'grafico';
+  const h = document.createElement('h4'); h.textContent = titulo;
+  d.append(h, conteudo);
+  return d;
+}
+
+async function abrirAnalytics(id, dias, { focarCusto = false } = {}){
+  // o browser restaura o valor do select ao recarregar a página: fixa o padrão na abertura
+  if(itemAtual !== id) $('anDias').value = String(dias || $('fDias').value || 30);
+  const minha = ++geracaoAn;          // trocar de período rápido não pode pintar a resposta velha
+  $('anCorpo').innerHTML = '<p class="nota">carregando…</p>';
+  cabecalhoCarregando($('anTitulo'), $('anSub'), id);
+  $('anRodape').textContent = '';
+  if(!modalAn.open) modalAn.showModal();
+  try{
+    const a = await api(`/api/items/${id}/analytics?dias=${$('anDias').value}`);
+    if(minha !== geracaoAn) return;
+    const c = $('anCorpo');
+    c.innerHTML = '';
+    cabecalho($('anTitulo'), $('anSub'), { id: a.item.id, titulo: a.item.titulo, status: a.item.status,
+      permalink: a.item.permalink, extras: [a.item.tipo] });
+    const D = a.janela.dias, V = a.vendas;
+
+    const g = document.createElement('div');
+    g.className = 'kpis';
+    const kLucro = kpi(`Lucro real ${D} dias`, '—', 'informe o custo', 'destaque');
+    const kMargem = kpi('Margem de contribuição', '—', 'por unidade, no preço de hoje');
+    g.append(
+      kpi(`Faturamento ${D} dias`, dinheiro(V.faturamento), `ticket ${dinheiro(V.ticket_medio)}`),
+      kLucro, kMargem,
+      kpi(`Vendas ${D} dias`, `${num(V.unidades)} un.`, `${num(V.pedidos)} pedido(s) pago(s)`),
+      kpi(`Visitas ${D} dias`, num(a.visitas.janela), `${num(a.visitas.historico)} desde sempre`),
+      kpi('Conversão', pct(V.conversao), 'pedidos ÷ visitas',
+        V.conversao != null && V.conversao < 0.01 ? 'aviso' : ''),
+      kpi('Vendidos (sempre)', num(V.vendidos_historico), 'histórico do anúncio'),
+      kpi('Qualidade', a.item.health == null ? '—' : Math.round(a.item.health*100) + '%',
+        'health do Mercado Livre', a.item.health != null && a.item.health < 0.8 ? 'aviso' : ''),
+    );
+    c.appendChild(g);
+
+    // Visitas e vendas em gráficos separados: escalas diferentes não dividem eixo.
+    const datas = a.visitas.datas, br = (d) => d.slice(8, 10) + '/' + d.slice(5, 7);
+    const blocoGrafico = (titulo, serie, tend, unidade, rodape) => {
+      const w = document.createElement('div');
+      w.className = 'grafico';
+      const h = document.createElement('h4');
+      h.style.cssText = 'display:flex;justify-content:space-between;gap:8px';
+      h.append(titulo, chipTendencia(tend, D));
+      w.append(h, grafico(serie, { altura: 110,
+        descricao: `${titulo} nos últimos ${D} dias`,
+        rotulo: (i, v) => `${br(datas[i])}: ${num(v)} ${unidade}` }));
+      if(rodape){ const p = document.createElement('div'); p.className = 'nota'; p.textContent = rodape; w.appendChild(p); }
+      return w;
+    };
+    const gs = document.createElement('div');
+    gs.className = 'colunas';
+    gs.append(
+      blocoGrafico('Visitas por dia', a.visitas.serie, a.visitas.tendencia, 'visitas',
+        a.visitas.pico ? `pico de ${num(a.visitas.pico.total)} em ${br(a.visitas.pico.data)}` : ''),
+      blocoGrafico('Vendas por dia', V.serie, V.tendencia, 'un.',
+        `${num(V.unidades)} unidade(s) em ${num(V.pedidos)} pedido(s)`),
+    );
+    c.appendChild(gs);
+
+    c.appendChild(bloco('Custos e lucro', secaoLucro(a, kLucro, kMargem)));
+
+    const cols = document.createElement('div');
+    cols.className = 'colunas';
+    cols.appendChild(bloco('Anúncio', linhas([
+      ['Exposição', a.custo?.exposicao || null],
+      ['Taxa de publicação', a.custo ? dinheiro(a.custo.taxa_anuncio) : null],
+      ['Frete grátis', a.item.frete_gratis ? 'sim' : 'não'],
+      ['Estoque', num(a.item.estoque)],
+      ['Anúncio de catálogo', a.item.catalogo ? 'sim' : 'não'],
+      ['No ar desde', new Date(a.item.criado_em).toLocaleDateString('pt-BR')],
+      ['Mercado Ads', a.ads ? [a.ads.status, a.ads.campanha && `campanha ${a.ads.campanha}`].filter(Boolean).join(' · ') || 'sem status' : 'fora de campanha'],
+    ])));
+    // Números do anúncio patrocinado. O status acima é de hoje; estes são do período,
+    // então um item hoje pausado ainda pode ter faturado na janela.
+    if(a.ads && a.ads.investimento != null){
+      const d = a.ads;
+      cols.appendChild(bloco('Mercado Ads no período', linhas([
+        ['Investimento', dinheiro(d.investimento)],
+        ['Receita do anúncio', dinheiro(d.receita)],
+        ['ROAS', vezes(d.roas)],
+        ['ACOS', d.acos == null ? '—' : pct(d.acos)],
+        ['TACOS', d.tacos == null ? '—' : pct(d.tacos)],
+        ['Cliques', `${num(d.cliques)} de ${num(d.impressoes)} impressões`],
+        ['CPC', d.cpc == null ? '—' : dinheiro(d.cpc)],
+      ])));
+    }
+    cols.appendChild(bloco('Reputação e contato', linhas([
+      ['Avaliações', a.avaliacoes ? `${num(a.avaliacoes.total)}${a.avaliacoes.nota ? ` · nota ${a.avaliacoes.nota.toFixed(1)}` : ''}` : null],
+      ['Perguntas', a.perguntas ? num(a.perguntas.total) : null],
+      ['Sem responder', a.perguntas ? num(a.perguntas.sem_resposta) : null],
+    ])));
+    c.appendChild(cols);
+
+    c.appendChild(bloco('Posição na listagem', await secaoPosicao(a.item.id)));
+    if(minha !== geracaoAn) return;
+
+    if(V.ultimos.length){
+      c.appendChild(bloco('Últimos pedidos', linhas(V.ultimos.map(o =>
+        [`${new Date(o.data).toLocaleDateString('pt-BR')} · ${num(o.quantidade)} un. · ${o.status}`, dinheiro(o.total)]))));
+    }
+
+    if(a.tendencias.length){
+      const ch = document.createElement('div');
+      ch.className = 'chips';
+      for(const t of a.tendencias){ const s = document.createElement('span'); s.textContent = t; ch.appendChild(s); }
+      const w = document.createElement('div');
+      const p = document.createElement('p');
+      p.className = 'nota';
+      p.textContent = 'O que as pessoas mais buscam nesta categoria — use no título se fizer sentido.';
+      w.append(p, ch);
+      c.appendChild(bloco('Tendências da categoria', w));
+    }
+
+    const obs = document.createElement('p');
+    obs.className = 'nota';
+    obs.textContent = `Tudo cobre os mesmos ${D} dias completos, de ${br(a.janela.de)} a ${br(a.janela.ate)} (hoje entra `
+      + 'amanhã: dia pela metade distorce a tendência). Vendas são pedidos pagos, sem cancelados; tarifa e preço são os '
+      + 'que o Mercado Livre cobrou em cada pedido. "Em queda/alta" compara a segunda metade do período com a primeira. '
+      + '"Desde sempre" e "vendidos" são o total histórico do anúncio.';
+    c.appendChild(obs);
+    $('anRodape').textContent = '';
+    if(focarCusto){
+      const campo = $('anCusto');
+      campo?.scrollIntoView({ block: 'center' });
+      campo?.focus();
+    }
+  }catch(e){
+    if(minha !== geracaoAn) return;
+    $('anCorpo').innerHTML = '';
+    const p = document.createElement('p');
+    p.className = 'nota alerta';
+    p.textContent = 'Não carregou a análise: ' + e.message;
+    $('anCorpo').appendChild(p);
+  }
+}
+let geracaoAn = 0;
+
+// Custo do produto, outros custos e imposto -> margem por unidade e lucro real do período.
+// Recalcula a cada tecla com public/analise.js (o mesmo cálculo do servidor) e só grava
+// quando o vendedor clica em Salvar.
+function secaoLucro(a, kLucro, kMargem){
+  const L = a.lucro, V = a.vendas, D = a.janela.dias;
+  const caixa = document.createElement('div');
+  caixa.className = 'lucroBloco';
+
+  const form = document.createElement('div');
+  form.className = 'formCusto';
+  const campoCusto = (id, rotulo, mascara, valor, nota) => {
+    const w = document.createElement('div'); w.className = 'campo';
+    const l = document.createElement('label'); l.htmlFor = id; l.textContent = rotulo;
+    const i = document.createElement('input'); i.id = id; i.dataset.mascara = mascara;
+    if(mascara === 'decimal') i.dataset.casas = '2';
+    i.autocomplete = 'off';
+    Mascara.definir(i, valor);
+    // o input numa caixa só dele: o "R$" do tema se alinha ao campo, não à nota de baixo
+    const caixa = document.createElement('div'); caixa.append(i);
+    w.append(l, caixa);
+    if(nota){ const n = document.createElement('div'); n.className = 'nota'; n.textContent = nota; w.appendChild(n); }
+    form.appendChild(w);
+    return i;
+  };
+  const iCusto = campoCusto('anCusto', 'Custo do produto (R$ por unidade)', 'moeda', L.custo?.custo ?? null,
+    'Quanto você pagou em cada unidade. Fica só neste painel: o Mercado Livre não vê.');
+  const iOutros = campoCusto('anOutros', 'Outros custos (R$ por unidade)', 'moeda', L.custo?.outros ?? null,
+    'Embalagem, etiqueta, brinde…');
+  const iImposto = campoCusto('anImposto', 'Imposto sobre a venda (%)', 'decimal', L.imposto_pct ?? null,
+    'Vale para todos os anúncios desta conta (ex.: Simples Nacional).');
+  const salvar = document.createElement('button');
+  salvar.type = 'button'; salvar.textContent = 'Salvar custos';
+  const estado = document.createElement('span');
+  estado.className = 'salvo'; estado.setAttribute('role', 'status');
+  const linhaBotao = document.createElement('div');
+  linhaBotao.append(salvar, estado);
+  form.appendChild(linhaBotao);
+
+  const contas = document.createElement('div');
+  contas.className = 'contas';
+  caixa.append(form, contas);
+
+  const valor = (el) => { const n = Mascara.numero(el); return Number.isFinite(n) ? n : null; };
+  const fr = L.frete;
+  const origemFrete = !fr ? 'sem dado de frete'
+    : fr.fonte === 'real' ? `cobrado de verdade em ${num(fr.amostra)} envio(s) do período`
+    : fr.fonte === 'estimativa' ? 'estimativa do ML para 1 unidade'
+    : 'fora do Mercado Envios';
+
+  function tabela(titulo, linhasT, total, rotuloTotal, faltando){
+    const w = document.createElement('div'); w.className = 'conta';
+    const h = document.createElement('h5'); h.textContent = titulo;
+    const t = document.createElement('table');
+    for(const [rot, val, det] of linhasT){
+      const tr = t.insertRow();
+      const a1 = tr.insertCell(); a1.textContent = rot;
+      if(det){ const s = document.createElement('small'); s.textContent = det; a1.appendChild(s); }
+      tr.insertCell().textContent = val;
+    }
+    const tr = t.insertRow();
+    tr.className = 'total' + (total != null && total < 0 ? ' prejuizo' : '');
+    tr.insertCell().textContent = rotuloTotal;
+    const v = tr.insertCell();
+    if(total == null){ v.className = 'falta'; v.textContent = faltando; }
+    else v.textContent = dinheiro(total);
+    w.append(h, t);
+    return w;
+  }
+  const menos = (n) => n == null ? '—' : '− ' + dinheiro(n);
+
+  function recalcular(){
+    const custo = valor(iCusto), outros = valor(iOutros), imp = valor(iImposto);
+    const freteU = fr?.por_unidade ?? null;
+    const u = Analise.margemUnitaria({ preco: a.item.preco, tarifa: L.tarifa_unit ?? 0, tarifaPct: L.tarifa_pct,
+      tarifaFixa: L.tarifa_fixa, frete: freteU, custo, outros, impostoPct: imp });
+    const faltaTexto = (f) => (f?.includes('custo') ? 'informe o custo' : 'sem dado de frete');
+    const e = Analise.economia({ faturamento: V.faturamento, unidades: V.unidades, tarifas: V.tarifas,
+      freteUnidade: freteU, custo, outros, impostoPct: imp });
+
+    contas.textContent = '';
+    contas.append(
+      tabela(`Por unidade, no preço de hoje`, [
+        ['Preço de venda', dinheiro(a.item.preco)],
+        ['Tarifa do Mercado Livre', menos(L.tarifa_unit), L.tarifa_pct != null ? `${String(L.tarifa_pct).replace('.', ',')}% do preço` : null],
+        ['Frete pago por você', menos(freteU), origemFrete],
+        ['Custo do produto', menos(custo)],
+        ['Outros custos', menos(outros || 0)],
+        ['Imposto', menos(u?.imposto ?? 0), imp != null ? `${String(imp).replace('.', ',')}% do preço` : 'sem imposto informado'],
+      ], u?.valor ?? null, u?.valor != null ? `Margem de contribuição · ${pct(u.pct)}` : 'Margem de contribuição',
+      faltaTexto(u?.falta)),
+      tabela(`No período: ${D} dias, ${num(V.unidades)} un.`, [
+        ['Faturamento', dinheiro(V.faturamento), 'preço pago em cada pedido'],
+        ['Tarifas cobradas', menos(V.tarifas), 'soma das tarifas dos pedidos'],
+        ['Frete', menos(e.custos.frete), origemFrete],
+        ['Custo dos produtos', menos(e.custos.produto)],
+        ['Outros custos', menos(e.custos.outros)],
+        ['Impostos', menos(e.custos.imposto)],
+      ], e.lucro, e.lucro != null ? `Lucro real · margem ${pct(e.margem)}` : 'Lucro real',
+      faltaTexto(e.falta)),
+    );
+    if(u?.preco_minimo != null){
+      const p = document.createElement('p');
+      p.className = 'nota';
+      p.style.gridColumn = '1/-1';
+      p.textContent = (u.markup != null ? `Markup: cada R$ 1,00 de custo do produto volta com ${dinheiro(u.markup)} de lucro. ` : '')
+        + `Preço mínimo sem prejuízo: cerca de ${dinheiro(u.preco_minimo)} (aproximado: a tarifa e o frete `
+        + 'mudam por faixa de preço).';
+      contas.appendChild(p);
+    }
+
+    const val = (k) => k.querySelector('.val'), sub = (k) => k.querySelector('.sub');
+    val(kLucro).textContent = e.lucro != null ? dinheiro(e.lucro) : '—';
+    val(kLucro).style.color = e.lucro == null ? 'var(--muted)' : e.lucro < 0 ? '#a1160a' : '#0b7a3b';
+    sub(kLucro).textContent = e.lucro != null ? `margem ${pct(e.margem)} sobre o faturamento`
+      : faltaTexto(e.falta);
+    val(kMargem).textContent = u?.valor != null ? dinheiro(u.valor) : '—';
+    sub(kMargem).textContent = u?.valor != null
+      ? `${pct(u.pct)} do preço · markup ${pct(u.markup)} sobre o custo` : faltaTexto(u?.falta);
+  }
+  [iCusto, iOutros, iImposto].forEach((i) => i.addEventListener('input', () => { estado.textContent = ''; recalcular(); }));
+  recalcular();
+
+  salvar.onclick = async () => {
+    salvar.disabled = true; estado.textContent = 'salvando…'; estado.style.color = 'var(--muted)';
+    try{
+      await api(`/api/items/${a.item.id}/custo`, { method:'PUT', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ custo: valor(iCusto), outros: valor(iOutros) }) });
+      if(valor(iImposto) !== (L.imposto_pct ?? null)){
+        const r = await api('/api/imposto', { method:'PUT', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ pct: valor(iImposto) }) });
+        L.imposto_pct = r.imposto_pct;
+      }
+      estado.textContent = 'salvo ✓'; estado.style.color = '#0b7a3b';
+      if(ultimaLista) pintarPeriodo(ultimaLista.itens, ultimaLista.dias, geracaoLista);  // a listagem já mostra o lucro
+    }catch(e){ estado.textContent = e.message; estado.style.color = 'var(--err)'; }
+    finally{ salvar.disabled = false; }
+  };
+  return caixa;
+}
+$('anDias').onchange = () => { if(itemAtual) abrirAnalytics(itemAtual); };
+$('anFechar').onclick = () => modalAn.close();
+$('anOk').onclick = () => modalAn.close();
+
+
+// ---------- posição na listagem ----------
+let itemAtual = null;
+
+async function secaoPosicao(id){
+  itemAtual = id;
+  const caixa = document.createElement('div');
+
+  const estado = document.createElement('p');
+  estado.className = 'nota';
+  estado.textContent = 'verificando o scraper…';
+  caixa.appendChild(estado);
+
+  const lista = document.createElement('div');
+  caixa.appendChild(lista);
+
+  const form = document.createElement('div');
+  form.style.cssText = 'display:flex;gap:8px;margin-top:12px';
+  const campo = document.createElement('input');
+  campo.placeholder = 'cascata piscina inox';
+  campo.setAttribute('aria-label', 'Nova palavra-chave');
+  campo.maxLength = 80;
+  const add = document.createElement('button');
+  add.type = 'button'; add.textContent = 'Acompanhar termo';
+  add.onclick = async () => {
+    const t = campo.value.trim();
+    if(t.length < 2) return;
+    add.disabled = true; add.textContent = 'Adicionando…';
+    try{
+      await api('/api/keywords', { method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ item:id, termo:t }) });
+      campo.value = '';
+      await pintarPalavras(id, lista, t.toLowerCase());   // o servidor grava em minúsculas
+    }catch(e){ estado.className='nota alerta'; estado.textContent = e.message; }
+    finally{ add.disabled = false; add.textContent = 'Acompanhar termo'; }
+  };
+  campo.onkeydown = (e) => { if(e.key === 'Enter'){ e.preventDefault(); add.click(); } };
+  form.append(campo, add);
+  caixa.appendChild(form);
+
+  api('/api/scraper').then(s => {
+    if(s.ligado && s.sessao === 'valida'){
+      estado.className = 'nota';
+      estado.textContent = 'O Mercado Livre não entrega posição pela API oficial (403). '
+        + 'Quem mede é o scraper local — cada consulta leva de 5 a 15 s.';
+    }else if(s.ligado){
+      estado.className = 'nota alerta';
+      estado.textContent = s.sessao === 'em_uso'
+        ? 'O navegador do scraper está aberto para login ou reCAPTCHA. Conclua ou feche na aba '
+        : 'O Mercado Livre bloqueou a sessão do scraper. Resolva na aba ';
+      const link = document.createElement('a');
+      link.href = '/navegador.html'; link.textContent = 'Navegador';
+      estado.append(link, '.');
+    }else{
+      estado.className = 'nota alerta';
+      estado.textContent = s.motivo;
+    }
+  }).catch(() => {});
+
+  pintarPalavras(id, lista);
+  return caixa;
+}
+
+// ---------- tabela de posição ----------
+const TIPO_ANUNCIO = { PAD:'Pago', ORGANIC:'Orgânico' };
+
+// URL limpa do item. O link do card de um anúncio pago passa por click1.mercadolivre
+// e conta um clique pago para o concorrente — por isso não é usado.
+function linkAnuncio(itemId, rotulo = null){
+  const a = document.createElement('a');
+  a.href = 'https://produto.mercadolivre.com.br/MLB-' + itemId.replace(/^MLB/, '');
+  a.target = '_blank'; a.rel = 'noopener noreferrer';
+  a.setAttribute('aria-label', `Abrir ${rotulo || itemId} no Mercado Livre (nova aba)`);
+  a.className = 'linkAnuncio';
+  a.innerHTML = '<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" '
+    + 'stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
+    + '<path d="M14 4h6v6"/><path d="M10 14 20 4"/>'
+    + '<path d="M19 13v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h6"/></svg>';
+  const texto = document.createElement('span');
+  texto.textContent = rotulo || itemId;   // textContent: título vem da página do ML
+  a.append(texto);
+  return a;
+}
+
+// Uma tabela só, na ordem da busca, com anúncios de TODOS os vendedores para comparar preço
+// e posição. Resumo: os primeiros colocados, os vizinhos deste anúncio e todos os seus; cada
+// trecho escondido vira "⋯ N anúncios — mostrar" e abre ali mesmo; "Ver todos" abre a busca.
+// Medição antiga (sem k.lista) só guardou vizinhos e os seus: os trechos não abrem.
+function tabelaPosicao(id, k){
+  const temLista = Array.isArray(k.lista) && k.lista.length > 0;
+  const posMeus = new Set((k.meus || []).map((m) => m.posicao));
+  let linhas;
+  if(temLista){
+    linhas = k.lista;
+  }else{
+    const porPos = new Map();
+    for(const v of [...(k.vizinhos || []), ...(k.meus || [])]) if(!porPos.has(v.posicao)) porPos.set(v.posicao, v);
+    linhas = [...porPos.values()].sort((a, b) => a.posicao - b.posicao);
+  }
+  if(!linhas.length) return null;
+
+  const ehSeu = (v) => v.item_id !== id && (temLista ? v.seu === true : posMeus.has(v.posicao));
+  const meuPreco = linhas.find((v) => v.item_id === id)?.preco ?? null;
+  const viz = k.vizinhos || [];
+  const [vizIni, vizFim] = viz.length ? [viz[0].posicao, viz.at(-1).posicao] : [0, -1];
+  const lideres = k.posicao == null ? 5 : 3;
+  const noResumo = (v) => v.item_id === id || ehSeu(v) || v.posicao <= lideres
+    || (v.posicao >= vizIni && v.posicao <= vizFim);
+  const outros = linhas.filter(ehSeu).length;
+
+  let todos = false;
+  const abertos = new Set();   // chave = posição do primeiro anúncio do trecho aberto
+  const caixa = document.createElement('div');
+
+  function legenda(){
+    if(todos) return `Todos os ${linhas.length} anúncios lidos nesta busca, de todos os vendedores.`;
+    const partes = [`os ${lideres} primeiros`];
+    if(viz.length) partes.push(`os vizinhos deste anúncio (${vizIni}º a ${vizFim}º)`);
+    if(outros) partes.push(outros === 1 ? 'seu outro anúncio' : `seus ${outros} outros anúncios`);
+    return (k.posicao == null ? 'Este anúncio não apareceu. ' : '')
+      + 'Mostrando ' + partes.join(', ').replace(/, ([^,]*)$/, ' e $1') + '.'
+      + (temLista ? '' : ' Meça de novo para ver também os outros vendedores.');
+  }
+
+  function desenhar(foco){
+    caixa.textContent = '';
+    const barra = document.createElement('div');
+    barra.className = 'barraPos';
+    const p = document.createElement('p');
+    p.className = 'nota'; p.textContent = legenda();
+    barra.appendChild(p);
+    if(temLista){
+      const alternar = document.createElement('button');
+      alternar.type = 'button'; alternar.className = 'ghost alternarPos';
+      alternar.textContent = todos ? 'Mostrar resumo' : `Ver todos os ${linhas.length}`;
+      alternar.setAttribute('aria-expanded', String(todos));
+      alternar.onclick = () => { todos = !todos; abertos.clear(); desenhar('.alternarPos'); };
+      barra.appendChild(alternar);
+    }
+    caixa.appendChild(barra);
+
+    const t = document.createElement('table');
+    t.className = 'tabPos';
+    // colunas curtas com largura fixa; o anúncio fica com o resto e o título corta em "…"
+    const cols = t.appendChild(document.createElement('colgroup'));
+    for(const w of ['46px', null, '124px', '76px', '78px']){
+      const c = document.createElement('col'); if(w) c.style.width = w; cols.appendChild(c);
+    }
+    const cab = t.createTHead().insertRow();
+    for(const h of ['pos', 'anúncio', 'preço', 'vendidos', 'tipo']){
+      const th = document.createElement('th'); th.scope = 'col'; th.textContent = h; cab.appendChild(th);
+    }
+    const corpo = t.createTBody();
+
+    // agrupa: linha visível ou trecho escondido (anúncios seguidos fora do resumo)
+    const blocos = [];
+    for(const v of linhas){
+      if(todos || !temLista || noResumo(v)) blocos.push({ v });
+      else if(blocos.at(-1)?.trecho) blocos.at(-1).trecho.push(v);
+      else blocos.push({ trecho: [v] });
+    }
+    let anterior = null;
+    for(const b of blocos){
+      if(b.v){
+        // medição antiga: a numeração pula direto, sem os dados do que ficou no meio
+        if(!temLista && anterior != null && b.v.posicao - anterior > 1){
+          linhaTrecho(corpo, anterior + 1, b.v.posicao - anterior - 1, false);
+        }
+        linhaAnuncio(corpo, b.v);
+        anterior = b.v.posicao;
+      }else if(abertos.has(b.trecho[0].posicao)){
+        b.trecho.forEach((v) => linhaAnuncio(corpo, v));
+      }else{
+        linhaTrecho(corpo, b.trecho[0].posicao, b.trecho.length, true);
+      }
+    }
+    const rolagem = document.createElement('div');
+    rolagem.className = 'rolagemPos';
+    rolagem.appendChild(t);
+    caixa.appendChild(rolagem);
+    if(foco) caixa.querySelector(foco)?.focus();
+  }
+
+  function linhaTrecho(corpo, ini, n, abre){
+    const tr = corpo.insertRow(); tr.className = 'pulo';
+    const td = tr.insertCell(); td.colSpan = 5;
+    const texto = `⋯ ${n} ${n > 1 ? 'anúncios' : 'anúncio'} de outros vendedores`
+      + ` (${ini}º${n > 1 ? ` a ${ini + n - 1}º` : ''})`;
+    if(!abre){ td.textContent = texto; return; }
+    const b = document.createElement('button');
+    b.type = 'button'; b.textContent = texto + ' — mostrar';
+    b.onclick = () => { abertos.add(ini); desenhar(`tr[data-pos="${ini}"] a`); };
+    td.appendChild(b);
+  }
+
+  function linhaAnuncio(corpo, v){
+    const este = v.item_id === id, seu = ehSeu(v);
+    const tr = corpo.insertRow();
+    tr.dataset.pos = v.posicao;
+    if(este || seu) tr.className = este ? 'este' : 'seu';
+    tr.insertCell().textContent = `${v.posicao}º`;
+
+    const bloco = document.createElement('div');
+    bloco.className = 'anuncioPos';
+    if(v.imagem){
+      const img = document.createElement('img');
+      img.src = v.imagem; img.alt = ''; img.loading = 'lazy'; img.width = 36; img.height = 36;
+      img.referrerPolicy = 'no-referrer';
+      bloco.appendChild(img);
+    }
+    const txt = document.createElement('div');
+    txt.className = 'textoPos';
+    const a = linkAnuncio(v.item_id, v.titulo);
+    if(v.titulo) a.title = v.titulo;
+    txt.appendChild(a);
+    const meta = document.createElement('div');
+    meta.className = 'metaPos';
+    meta.textContent = [v.titulo ? v.item_id : null, v.vendedor].filter(Boolean).join(' · ');
+    if(este || seu){
+      const marca = document.createElement('span');
+      marca.className = 'marca' + (este ? ' este' : '');
+      marca.textContent = este ? 'este' : 'seu';
+      meta.appendChild(marca);
+    }
+    if(meta.childNodes.length) txt.appendChild(meta);
+    bloco.appendChild(txt);
+    tr.insertCell().appendChild(bloco);
+
+    const preco = tr.insertCell();
+    preco.append(celulaPreco(v));
+    if(!este && meuPreco && v.preco){
+      const d = Math.round((v.preco / meuPreco - 1) * 100);
+      const dif = document.createElement('span');
+      dif.className = 'difPos';
+      dif.textContent = d === 0 ? 'mesmo preço que o seu' : `${Math.abs(d)}% ${d < 0 ? 'abaixo' : 'acima'} do seu`;
+      preco.appendChild(dif);
+    }
+    tr.insertCell().textContent = v.vendidos != null ? `${v.vendidos}+` : '—';
+    tr.insertCell().textContent = TIPO_ANUNCIO[v.tipo] || v.tipo || '—';
+  }
+
+  desenhar();
+  return [caixa];
+}
+
+function celulaPreco(v){
+  if(v.preco == null) return '—';
+  const f = document.createDocumentFragment();
+  f.append(brl.format(v.preco));
+  if(v.preco_original){
+    const antes = document.createElement('s');
+    antes.textContent = brl.format(v.preco_original);
+    antes.title = 'preço sem desconto';
+    antes.style.cssText = 'display:block;font-size:11px;font-weight:400;color:var(--muted)';
+    f.append(antes);
+  }
+  return f;
+}
+
+// medirTermo: o termo recém-cadastrado já entra medindo, sem precisar clicar em "Medir agora"
+async function pintarPalavras(id, onde, medirTermo = null){
+  onde.innerHTML = '';
+  let palavras = [];
+  try{ palavras = await api('/api/keywords?item=' + id); }catch{ return; }
+  if(!palavras.length){
+    const p = document.createElement('p');
+    p.className = 'nota';
+    p.textContent = 'Nenhum termo acompanhado. Cadastre a busca que importa para este produto.';
+    onde.appendChild(p);
+    return;
+  }
+  for(const k of palavras) onde.appendChild(linhaPalavra(id, k, onde, k.termo === medirTermo));
+}
+
+function linhaPalavra(id, k, onde, medirJa = false){
+  const li = document.createElement('div');
+  li.style.cssText = 'border:1px solid var(--line);border-radius:var(--radius);padding:11px 13px;margin-bottom:9px';
+
+  const topo = document.createElement('div');
+  topo.style.cssText = 'display:flex;align-items:center;gap:10px;flex-wrap:wrap';
+
+  const termo = document.createElement('strong');
+  termo.textContent = k.termo; termo.style.fontSize = '14px';
+
+  const pos = document.createElement('span');
+  pos.style.cssText = 'font-size:14px';
+  if(!k.medida_em){
+    pos.className = 'nota'; pos.textContent = 'ainda não medido';
+  }else if(k.posicao == null){
+    // mediu e não achou: dizer isso, não "ainda não medido" (parecia que o botão não fazia nada)
+    pos.textContent = `fora das ${k.total || 'primeiras'} primeiras posições`;
+    pos.style.cssText = 'font-size:14px;font-weight:600;color:#7a4a00';
+  }else{
+    pos.innerHTML = '';
+    const n = document.createElement('strong');
+    n.textContent = `${k.posicao}º`;
+    n.style.cssText = 'font-size:17px;color:var(--brand)';
+    pos.appendChild(n);
+    const det = document.createElement('span');
+    det.className = 'nota';
+    det.textContent = ` de ${k.total}` + (k.patrocinados_acima
+      ? ` · ${k.patrocinados_acima} ${k.patrocinados_acima > 1 ? 'pagos' : 'pago'} acima` : '');
+    pos.appendChild(det);
+    if(k.variacao != null && k.variacao !== 0){
+      const v = document.createElement('span');
+      // posição menor é melhor: variação negativa quer dizer que subiu
+      v.textContent = k.variacao < 0 ? ` ▲ subiu ${-k.variacao}` : ` ▼ caiu ${k.variacao}`;
+      v.style.cssText = 'font-size:12px;font-weight:700;margin-left:6px;color:'
+        + (k.variacao < 0 ? 'var(--ok)' : 'var(--err)');
+      pos.appendChild(v);
+    }
+  }
+
+  const medir = document.createElement('button');
+  medir.type = 'button'; medir.className = 'ghost'; medir.textContent = 'Medir agora';
+  medir.style.cssText = 'padding:6px 11px;font-size:13px';
+  const fundo = document.createElement('button');   // só aparece quando não achou na 1ª página
+  fundo.type = 'button'; fundo.className = 'ghost'; fundo.textContent = 'Buscar em 3 páginas';
+  fundo.style.cssText = 'padding:6px 11px;font-size:13px';
+  fundo.hidden = !(k.medida_em && k.posicao == null && (k.total || 0) <= 60);
+
+  // Mede e redesenha. Enquanto roda, mostra o tempo: com o Mac carregado leva 5–15 s,
+  // e um botão parado em "medindo…" sem contador parecia travado.
+  async function rodarMedicao(paginas){
+    li.querySelector('.erroMedicao')?.remove();
+    medir.disabled = fundo.disabled = true; medir.textContent = 'medindo…';
+    li.setAttribute('aria-busy', 'true');
+    const t0 = Date.now();
+    const tick = () => {
+      pos.className = 'nota'; pos.style.cssText = 'font-size:14px';
+      pos.textContent = `medindo${paginas > 1 ? ` ${paginas} páginas` : ''}… ${Math.round((Date.now() - t0) / 1000)} s`;
+    };
+    tick();
+    const relogio = setInterval(tick, 1000);
+    try{
+      await api('/api/posicao', { method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ item:id, termo:k.termo, paginas }) });
+      clearInterval(relogio);
+      await pintarPalavras(id, onde);
+    }catch(e){
+      clearInterval(relogio);
+      li.removeAttribute('aria-busy');
+      pos.textContent = 'a medição falhou';
+      medir.textContent = 'Medir agora'; medir.disabled = fundo.disabled = false;
+      const err = document.createElement('p');
+      err.className = 'nota alerta erroMedicao'; err.style.marginTop = '8px'; err.textContent = e.message;
+      err.setAttribute('role', 'alert');
+      li.appendChild(err);
+    }
+  }
+  medir.onclick = () => rodarMedicao(1);
+  fundo.onclick = () => rodarMedicao(3);
+
+  const tirar = document.createElement('button');
+  tirar.type = 'button'; tirar.textContent = '✕';
+  tirar.setAttribute('aria-label', 'Parar de acompanhar ' + k.termo);
+  tirar.style.cssText = 'background:none;color:var(--muted);padding:6px 8px;font-size:14px';
+  tirar.onclick = async () => {
+    await api('/api/keywords/remove', { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ item:id, termo:k.termo }) });
+    await pintarPalavras(id, onde);
+  };
+
+  const acoes = document.createElement('span');   // os botões quebram juntos, à direita
+  acoes.className = 'acoesTermo';
+  acoes.append(fundo, medir, tirar);
+  topo.append(termo, pos, acoes);
+  li.appendChild(topo);
+
+  if(k.medida_em){
+    const q = document.createElement('div');
+    q.className = 'nota';
+    q.style.marginTop = '3px';
+    q.textContent = 'medido em ' + new Date(k.medida_em).toLocaleString('pt-BR');
+    li.appendChild(q);
+  }
+
+  const tabela = tabelaPosicao(id, k);
+  if(tabela) li.append(...tabela);
+
+  if(medirJa) rodarMedicao(1);
+  return li;
+}
+
+carregarContas(); carregarAds(); carregar();
+</script>
+<script src="/aviso.js" defer></script>
+</body>
+</html>
